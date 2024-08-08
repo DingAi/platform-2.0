@@ -1,29 +1,70 @@
 <template>
     <div class="space-y-4 text-center size-full">
-        <div class="flex md:flex-row flex-col justify-between h-96 space-x-4">
-            <div class="bg-slate-500 md:w-2/3">
-                <h1 class="p-2 text-7xl text-conter text-green-100">ANALYSIS DATA PAGES</h1>
+        <div class="flex md:flex-row flex-col justify-between items-center bg-slate-600 pt-2 pb-2 h-40 rounded space-x-2">
+            <div class="flex items-center justify-center h-full w-1/3 rounded-tl rounded-bl pl-20 pr-20">
+                <MultiSelect v-model="selectedValues" />
             </div>
-            <div class="bg-lime-500 md:w-1/3">
-                <h1 class="p-2 text-7xl text-conter text-green-100">ANALYSIS DATA PAGES</h1>
+            <div class="flex items-center justify-center h-full w-1/3 rounded-tl rounded-bl pl-10 pr-10">
+                <TimeDatePicker v-model="timeRange"/>
+            </div>
+            <div class="flex items-center justify-center h-full w-1/3 rounded-tl rounded-bl p-20">
+                <SubmitButton class="">
+                    分析数据加载
+                </SubmitButton>
             </div>
         </div>
-        <div class="bg-slate-400 p-2 w-full h-96">
-            <h1 class="text-9xl text-conter text-green-300">ANALYSIS DATA PAGES</h1>
+        <div class="flex w-full analysis-div space-x-4">
+            <div class="w-1/4 bg-indigo-600 rounded"></div>
+            <div class="w-3/4 h-full flex flex-col items-center space-y-4">
+                <div class="w-full h-1/2 bg-pink-600 rounded"></div>
+                <div class="w-full h-1/2 bg-pink-600 rounded"></div>
+            </div>
         </div>
-        <div class="bg-slate-300 p-2 w-full h-96">
-            <h1 class="text-9xl text-conter text-green-600">ANALYSIS DATA PAGES</h1>
+        <div class="flex md:flex-row flex-col justify-between items-center bg-slate-600 pt-2 pb-2 h-40 rounded space-x-2">
+
         </div>
-        <div class="bg-slate-200 p-2 w-full h-96">
-            <h1 class="text-9xl text-conter text-green-700">ANALYSIS DATA PAGES</h1>
+        <div class="flex md:flex-row flex-col justify-between items-center bg-slate-600 pt-2 pb-2 analysis-div rounded space-x-2">
+            <el-transfer v-model="value" :data="data" />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 
+import SubmitButton from "@/components/SubmitButton.vue";
+import TimeDatePicker from "@/components/TimeDatePicker.vue";
+import MultiSelect from "@/components/MultiSelect.vue";
+import {ref} from "vue";
+import {getTimeRange} from "@/utils/tools-functions";
+
+
+const timeRange = ref(getTimeRange(6))
+const selectedValues = ref([]);
+
+interface Option {
+    key: number
+    label: string
+    disabled: boolean
+}
+
+const generateData = () => {
+    const data: Option[] = []
+    for (let i = 1; i <= 15; i++) {
+        data.push({
+            key: i,
+            label: `Option ${i}`,
+            disabled: i % 4 === 0,
+        })
+    }
+    return data
+}
+
+const data = ref<Option[]>(generateData())
+const value = ref([])
 </script>
 
 <style scoped>
-
+.analysis-div {
+    height: 55rem;
+}
 </style>

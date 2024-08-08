@@ -112,6 +112,11 @@ const filesDownload = async () => {
         }else {
             let folderName = folders.value[activeTab.value];
             let fileNames = selectedFiles.value.map(file => file.name);
+            ElMessage({
+                duration: 2000,
+                message: '文件开始下载，请不要关闭界面',
+                type: 'info'
+            })
             const res = await postFilesDownload(folderName, fileNames);
             // 创建一个 URL 对象指向 Blob
             const url = window.URL.createObjectURL(new Blob([res.data]));
@@ -128,11 +133,6 @@ const filesDownload = async () => {
             // 清理 URL 对象和 <a> 标签
             link.remove();
             window.URL.revokeObjectURL(url);
-            ElMessage({
-                duration: 2000,
-                message: '文件开始下载',
-                type: 'info'
-            })
         }
     } catch (error) {
         console.log(error);

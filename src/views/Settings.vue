@@ -69,7 +69,7 @@ import { postEquipmentAdd } from "@/server/request-apis.js";
 import TableTemplate from "@/components/TableTemplate.vue";
 import { useAuthStore } from "@/stores/userStore.js";
 import { storeToRefs } from "pinia";
-import { transposeMatrix } from "@/utils/tools.js";
+import { transposeMatrix } from "@/utils/tools-functions.js";
 import SubmitButton from "@/components/SubmitButton.vue";
 import {ElMessage} from "element-plus";
 
