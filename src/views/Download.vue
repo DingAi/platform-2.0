@@ -1,6 +1,6 @@
 <template>
     <div class="space-y-2 size-full">
-        <div class="mx-auto p-4 flex text-white">
+        <div class="mx-auto p-4 flex text-white bg-gray-800 div-min-h">
             <div class="flex flex-col space-y-4 border-r pr-4">
                 <button
                     v-for="(folder, index) in folders"
@@ -247,6 +247,10 @@ const nextPage = () => {
 
 .bg-gray-600 {
     background-color: #4a5568; /* 使用中灰色背景 */
+}
+
+.div-min-h{
+    min-height: 53rem;
 }
 
 </style>

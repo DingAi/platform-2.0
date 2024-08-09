@@ -78,9 +78,9 @@ import {storeToRefs} from "pinia";
 import {useRoute} from 'vue-router'
 import Cookies from 'js-cookie';
 
-
 const authStore = useAuthStore();
 const {SCGData, user} = storeToRefs(authStore);
+
 
 const showSubMenu = ref(false);
 const showUserMenu = ref(false);

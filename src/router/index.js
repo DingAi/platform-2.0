@@ -2,8 +2,6 @@ import {createRouter, createWebHistory} from 'vue-router'
 import Home from '../views/Home.vue'
 import History from '../views/History.vue'
 import Analysis from '../views/Analysis.vue'
-import MasterStation from '../views/MasterStation.vue'
-import SalveStation from '../views/SalveStation.vue'
 import Settings from '../views/Settings.vue'
 import Login from '../views/Login.vue'
 import Download from '../views/Download.vue'
@@ -29,18 +27,6 @@ const routes = [
         path: '/analysis',
         name: 'Analysis',
         component: Analysis,
-        meta: { requiresAuth: true }
-    },
-    {
-        path: '/master',
-        name: 'MasterStation',
-        component: MasterStation,
-        meta: { requiresAuth: true }
-    },
-    {
-        path: '/slave',
-        name: 'SalveStation',
-        component: SalveStation,
         meta: { requiresAuth: true }
     },
     {

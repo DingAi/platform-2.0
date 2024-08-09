@@ -1,8 +1,8 @@
 <template>
     <div class="space-y-4 text-center size-full">
-        <div class="flex md:flex-row flex-col justify-between items-center bg-gray-700 p-2 h-96">
+        <div class="flex md:flex-row flex-col justify-between items-center bg-gray-700 p-2 h-96 rounded">
         </div>
-        <div class="flex md:flex-row flex-col justify-between items-center bg-gray-700 p-2 h-96">
+        <div class="flex md:flex-row flex-col justify-between items-center bg-gray-700 p-2 h-96 rounded">
             <div class="w-1/4 p-20">
                 <SubmitButton @click="downloadFile">下载测试</SubmitButton>
             </div>

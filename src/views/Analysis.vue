@@ -1,8 +1,9 @@
 <template>
     <div class="space-y-4 text-center size-full">
-        <div class="flex md:flex-row flex-col justify-between items-center bg-slate-600 pt-2 pb-2 h-40 rounded space-x-2">
+        <div
+            class="flex md:flex-row flex-col justify-between items-center bg-gray-700 pt-2 pb-2 h-40 rounded space-x-2">
             <div class="flex items-center justify-center h-full w-1/3 rounded-tl rounded-bl pl-20 pr-20">
-                <MultiSelect v-model="selectedValues" />
+                <MultiSelect v-model="selectedValues"/>
             </div>
             <div class="flex items-center justify-center h-full w-1/3 rounded-tl rounded-bl pl-10 pr-10">
                 <TimeDatePicker v-model="timeRange"/>
@@ -14,17 +15,40 @@
             </div>
         </div>
         <div class="flex w-full analysis-div space-x-4">
-            <div class="w-1/4 bg-indigo-600 rounded"></div>
+            <div class="w-1/4 bg-indigo-600 rounded p-5">
+                <el-timeline style="max-width: 600px">
+                    <el-timeline-item center timestamp="2018/4/12" placement="top">
+                        <el-card>
+                            <h4>Update Github template</h4>
+                            <p>Tom committed 2018/4/12 20:46</p>
+                        </el-card>
+                    </el-timeline-item>
+                    <el-timeline-item timestamp="2018/4/3" placement="top">
+                        <el-card>
+                            <h4>Update Github template</h4>
+                            <p>Tom committed 2018/4/3 20:46</p>
+                        </el-card>
+                    </el-timeline-item>
+                    <el-timeline-item center timestamp="2018/4/2" placement="top">
+                        Event start
+                    </el-timeline-item>
+                    <el-timeline-item timestamp="2018/4/2" placement="top">
+                        Event end
+                    </el-timeline-item>
+                </el-timeline>
+            </div>
             <div class="w-3/4 h-full flex flex-col items-center space-y-4">
                 <div class="w-full h-1/2 bg-pink-600 rounded"></div>
                 <div class="w-full h-1/2 bg-pink-600 rounded"></div>
             </div>
         </div>
-        <div class="flex md:flex-row flex-col justify-between items-center bg-slate-600 pt-2 pb-2 h-40 rounded space-x-2">
+        <div
+            class="flex md:flex-row flex-col justify-between items-center bg-gray-700 pt-2 pb-2 h-40 rounded space-x-2">
 
         </div>
-        <div class="flex md:flex-row flex-col justify-between items-center bg-slate-600 pt-2 pb-2 analysis-div rounded space-x-2">
-            <el-transfer v-model="value" :data="data" />
+        <div
+            class="flex md:flex-row flex-col justify-between items-center bg-gray-700 pt-2 pb-2 analysis-div rounded space-x-2 p-20">
+            <el-transfer v-model="value" :data="data"/>
         </div>
     </div>
 </template>
