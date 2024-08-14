@@ -44,7 +44,7 @@
                 <div v-if="showUserMenu"
                      class="mt-2 z-10 absolute right-0 mt-2 bg-gray-800 shadow-lg py-2 rounded-md w-48 origin-top-right
                      animate-zoom-in-up pr-2 pl-2">
-                    <p class="px-4 py-2 text-white font-bold bg-indigo-600 rounded">{{ Cookies.get('user') }}</p>
+                    <p class="px-4 py-2 text-white font-bold bg-pink-600 rounded">{{ Cookies.get('user') }}</p>
                     <router-link to="/" class="block hover:bg-gray-700 px-4 py-2 text-white rounded mt-0.5"
                                  :class="{ 'bg-gray-700 text-green-500': $route.path === '/' }">用户主页
                     </router-link>

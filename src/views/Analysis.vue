@@ -46,10 +46,6 @@
             class="flex md:flex-row flex-col justify-between items-center bg-gray-700 pt-2 pb-2 h-40 rounded space-x-2">
 
         </div>
-        <div
-            class="flex md:flex-row flex-col justify-between items-center bg-gray-700 pt-2 pb-2 analysis-div rounded space-x-2 p-20">
-            <el-transfer v-model="value" :data="data"/>
-        </div>
     </div>
 </template>
 

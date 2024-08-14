@@ -14,7 +14,7 @@ const mainMinHeight = computed(() => {
 
 <template>
     <Nav class="z-max"/>
-    <main :style="{ 'min-height': mainMinHeight }" class="bg-gradient-to-b from-gray-800 to-gray-900 pt-10 sm:pt-20">
+    <main :style="{ 'min-height': mainMinHeight }" class="bg-gradient-to-b from-gray-800 to-gray-900 pt-10 sm:pt-10">
         <div class="mx-auto container">
             <router-view></router-view>
         </div>

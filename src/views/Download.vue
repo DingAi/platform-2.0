@@ -250,7 +250,7 @@ const nextPage = () => {
 }
 
 .div-min-h{
-    min-height: 53rem;
+    min-height: 52rem;
 }
 
 </style>

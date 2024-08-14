@@ -61,7 +61,7 @@ onMounted(() =>{
 
 <style scoped lang="less">
 .history-chart {
-    height: 52rem;
+    height: 43rem;
 }
 
 </style>

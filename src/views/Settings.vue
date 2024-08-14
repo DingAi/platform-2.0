@@ -2,23 +2,49 @@
     <div class="space-y-2 size-full">
         <div class="flex md:flex-row flex-col justify-between">
             <div class="md:w-1/6 sticky pr-6 border-r pt-6">
-                <el-affix :offset="185">
-                    <el-menu mode="vertical" :ellipsis="false" default-active="1">
-                        <el-menu-item index="1" @click="scrollToSection('section1')">设备列表</el-menu-item>
-                        <el-menu-item index="2" @click="scrollToSection('section2')">Section 2</el-menu-item>
-                        <el-menu-item index="3" @click="scrollToSection('section3')">Section 3</el-menu-item>
-                    </el-menu>
-                </el-affix>
+                <!-- Sticky menu -->
+                <nav class="space-y-2 sticky top-52 text-white">
+                    <ul class="space-y-2">
+                        <li>
+                            <button
+                                @click="scrollToSection('section1'); activeSection = 'section1'"
+                                :class="{ 'bg-green-600': activeSection === 'section1' }"
+                                class="w-full text-left p-2 hover:bg-green-600 rounded"
+                            >
+                                设备管理
+                            </button>
+                        </li>
+                        <li>
+                            <button
+                                @click="scrollToSection('section2'); activeSection = 'section2'"
+                                :class="{ 'bg-green-600': activeSection === 'section2' }"
+                                class="w-full text-left p-2 hover:bg-green-600 rounded"
+                            >
+                                用户列表
+                            </button>
+                        </li>
+                        <hr class="my-6 border-gray-600" />
+                        <li>
+                            <button
+                                @click="scrollToSection('section3'); activeSection = 'section3'"
+                                :class="{ 'bg-green-600': activeSection === 'section3' }"
+                                class="w-full text-left p-2 hover:bg-green-600 rounded"
+                            >
+                                Mqtt连接测试
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
             </div>
             <div class="md:w-5/6">
                 <div class="content space-y-4 pr-4 pl-4">
                     <div id="section1" class="section rounded p-20">
                         <h1 class="text-4xl text-white mb-6">设备列表</h1>
                         <div class="mb-12">
-                            <TableTemplate :header="header" :column="column"/>
+                            <TableTemplate :header="header" :column="column" :showButton="true" buttonLabel="Del"/>
                         </div>
                         <el-divider/>
-                        <h1 class="text-3xl text-white mb-6 mt-12">添加设备</h1>
+                        <h1 class="text-3xl text-white mb-6 mt-12">SN 码激活</h1>
                         <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                             <form class="space-y-2" @submit.prevent="addEquipment">
                                 <div>
@@ -74,6 +100,7 @@ import SubmitButton from "@/components/SubmitButton.vue";
 import {ElMessage} from "element-plus";
 
 const addLoading = ref(false);
+const activeSection = ref('section1');
 
 const authStore = useAuthStore();
 const { SCGData } = storeToRefs(authStore);
