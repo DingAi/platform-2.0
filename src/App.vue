@@ -6,8 +6,14 @@ import {computed} from "vue";
 const route = useRoute();
 
 const mainMinHeight = computed(() => {
-    const headerHeight = route.path === '/login' ? 80 : 152;
-    return `calc(100vh - ${headerHeight}px)`;
+    const headerHeight = () => {
+        if (route.path === '/login' || route.path === '/init-roll') {
+            return 80;
+        } else {
+            return 152;
+        }
+    };
+    return `calc(100vh - ${headerHeight()}px)`;
 });
 
 </script>

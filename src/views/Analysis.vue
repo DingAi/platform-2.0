@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="flex w-full analysis-div space-x-4">
-            <div class="w-1/4 bg-indigo-600 rounded p-5">
+            <div class="w-1/4 bg-gray-900 rounded p-5">
                 <el-timeline style="max-width: 600px">
                     <el-timeline-item center timestamp="2018/4/12" placement="top">
                         <el-card>

@@ -1,6 +1,6 @@
 <template>
     <div class="space-y-2 size-full">
-        <div class="mx-auto p-4 flex text-white bg-gray-800 div-min-h">
+        <div class="mx-auto p-4 flex text-white">
             <div class="flex flex-col space-y-4 border-r pr-4">
                 <button
                     v-for="(folder, index) in folders"
@@ -35,7 +35,7 @@
                     </li>
                 </ul>
                 <!-- 分页 -->
-                <div class="flex justify-center items-center space-x-3 mt-4">
+                <div class="flex justify-center items-center space-x-3 mt-8">
                     <button @click="prevPage" class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800"
                             :disabled="currentPage === 1">上一页
                     </button>
@@ -247,10 +247,6 @@ const nextPage = () => {
 
 .bg-gray-600 {
     background-color: #4a5568; /* 使用中灰色背景 */
-}
-
-.div-min-h{
-    min-height: 52rem;
 }
 
 </style>

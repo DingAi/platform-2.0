@@ -23,7 +23,7 @@
                         我的设备
                     </button>
                     <div v-if="showSubMenu"
-                         class="mt-2 z-10 absolute bg-gray-800 shadow-lg py-2 rounded-md w-48 origin-top-right animate-zoom-in-up"
+                         class="mt-2 z-10 absolute bg-gray-800 shadow-lg py-2 rounded-md w-48 origin-top-right animate-zoom-in-up max-h-64 overflow-auto"
                          :class="{ 'avatar-hover': isAvatarHovering }">
                         <div v-for="(device, index) in devices" :key="index" class="pr-2 pl-2">
                             <router-link @click="toggleSubMenu" :to="getPath(device)"
@@ -53,9 +53,6 @@
                     </router-link>
                     <router-link to="/settings" class="block hover:bg-gray-700 px-4 py-2 text-white rounded mt-0.5"
                                  :class="{ 'bg-gray-700 text-green-500': $route.path === '/settings' }">设置
-                    </router-link>
-                    <router-link to="/admin" class="block hover:bg-gray-700 px-4 py-2 text-white rounded mt-0.5"
-                                 :class="{ 'bg-gray-700 text-green-500': $route.path === '/admin' }">ADMIN
                     </router-link>
                     <router-link to="login"
                                  class="block w-full text-left hover:bg-gray-700 px-4 py-2 text-white rounded mt-0.5"
@@ -89,7 +86,9 @@ const isAvatarHovering = ref(false);
 
 const route = useRoute()
 
-const showNavbar = computed(() => route.path !== '/login')
+const showNavbar = computed(() => {
+    return !(route.path === '/login' || route.path === '/init-roll');
+});
 
 // 根据设备编码的第一个字母生成不同的路由路径
 const devices = computed(() => {

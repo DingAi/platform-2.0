@@ -5,8 +5,8 @@ import {useAuthStore} from "@/stores/userStore.js";
 
 // 创建axios实例
 const apiClient = axios.create({
-    baseURL: '/DjangoServer',
-    // baseURL: 'local',
+    // baseURL: '/django',
+    baseURL: 'xu',
     timeout: 60000, // 请求超时时间
     headers: {
         'Content-Type': 'application/json',

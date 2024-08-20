@@ -120,22 +120,68 @@ const postDownloadIsComplete = (sn) => {
     })
 }
 
-const downloadTest = () =>{
-    let url = 'dt';
-    return axios({
+const getLogData = () =>{
+    let url = 'log';
+    return apiClient({
         url: url,
         method: "get",
-        responseType: 'blob',
     });
 }
 
-// const apiTest = () =>{
-//     let url = '/django/tt/';
-//     return axios({
-//         url: url,
-//         method: "get",
-//     });
-// }
+const postDeleteEquipment = (sn) => {
+    let url = 'equipment_delete';
+    return apiClient({
+        url: url,
+        method: 'post',
+        data: {
+            sn:sn,
+        }
+    })
+}
+
+const getUserList = () =>{
+    let url = 'user_profile';
+    return apiClient({
+        url: url,
+        method: "get",
+    });
+}
+
+const getSNList = () =>{
+    let url = 'background_sn';
+    return apiClient({
+        url: url,
+        method: "get",
+    });
+}
+
+const postUserSN = (username) => {
+    let url = 'user_associated_device';
+    return apiClient({
+            url: url,
+            method: 'post',
+        data: {
+            username:username,
+        }
+    })
+}
+
+const postFileUpload = (file) => {
+    let url = 'remote_upgrade';
+    
+    // 创建 FormData 对象并将文件添加到其中
+    let formData = new FormData();
+    formData.append('file', file);
+    
+    return apiClient({
+        url: url,
+        method: 'post',
+        data: formData,
+        headers: {
+            'Content-Type': 'multipart/form-data'  // 确保使用 multipart/form-data 作为 Content-Type
+        }
+    });
+}
 
 export {
     postInitRoll,
@@ -149,5 +195,10 @@ export {
     getFilesList,
     postFilesDownload,
     postDownloadIsComplete,
-    downloadTest,
+    getLogData,
+    postDeleteEquipment,
+    getUserList,
+    getSNList,
+    postUserSN,
+    postFileUpload,
 }
