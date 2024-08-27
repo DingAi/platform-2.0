@@ -6,7 +6,6 @@ import Settings from '../views/Settings.vue'
 import Login from '../views/Login.vue'
 import Download from '../views/Download.vue'
 import InitEnroll from '../views/InitEnroll.vue'
-import AdminPage from '../views/admin/Admin.vue'
 import Cookies from 'js-cookie'
 import {ElMessage} from "element-plus";
 
@@ -54,12 +53,6 @@ const routes = [
         path: '/init-roll',
         name: 'InitEnroll',
         component: InitEnroll
-    },
-    {
-        path: '/admin',
-        name: 'Admin',
-        component: AdminPage,
-        meta: {requiresAuth: true, role: 'admin'} // 仅管理员可访问
     },
     {
         path: '/type-a-equipment/:id',

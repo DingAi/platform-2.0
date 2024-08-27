@@ -13,7 +13,7 @@
                 </SubmitButton>
             </div>
         </div>
-        <div class="bg-gray-700 p-2 w-full history-chart rounded" ref="tempChartRef">
+        <div class="bg-slate-800 p-2 w-full history-chart rounded" ref="tempChartRef">
 
         </div>
     </div>
@@ -23,8 +23,8 @@
 import SubmitButton from "@/components/SubmitButton.vue";
 import {getTimeRange} from '@/utils/tools-functions.js'
 import {onMounted, ref} from "vue";
-import TimeDatePicker from "@/components/TimeDatePicker.vue";
-import MultiSelect from "@/components/MultiSelect.vue";
+import TimeDatePicker from "@/components/ElementTimeDatePicker.vue";
+import MultiSelect from "@/components/ElementMultiSelect.vue";
 import {lineOptionTemplate} from "@/assets/echarts-template/line-chart.js";
 import {addSeriesData, refInitEcharts, setChartType, setOptionXAxis, setSeriesData} from "@/utils/eharts-init.js";
 import {useAuthStore} from "@/stores/userStore.js";

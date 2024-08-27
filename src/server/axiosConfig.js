@@ -1,92 +1,98 @@
-import axios from 'axios';
-import {ElMessage, ElNotification} from "element-plus";
+import axios from "axios";
+import { ElMessage } from "element-plus";
 import Router from "@/router/index.js";
-import {useAuthStore} from "@/stores/userStore.js";
+import { useAuthStore } from "@/stores/userStore.js";
 
 // 创建axios实例
 const apiClient = axios.create({
-    // baseURL: '/django',
-    baseURL: 'xu',
-    timeout: 60000, // 请求超时时间
-    headers: {
-        'Content-Type': 'application/json',
-    },
+  // baseURL: "ylzs",
+  baseURL: 'xu',
+  timeout: 60000, // 请求超时时间
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
-
-
 
 // 请求拦截器
 apiClient.interceptors.request.use(
-    config => {
-        //添加统一的token
-        const authStore = useAuthStore(); // 重新获取最新的 store 状态
-        if (authStore.token) {
-            config.headers.Authorization = `${authStore.token}`;
-        } else {
-            console.warn('Token is missing');
+    (config) => {
+      const authStore = useAuthStore();
+      const token = authStore.getToken(); // 调用 store 中的方法获取 token
+      
+      // 登录和注册接口不需要 token
+      const isAuthRequest = config.url === "generate_token" || config.url === "mysql_dan";
+      
+      if (!isAuthRequest) {
+        if (!token) {
+          return Promise.reject(new Error("No token available"));
         }
-        return config;
+        config.headers.Authorization = token;
+      }
+      
+      return config;
     },
-    error => {
-        // 对请求错误做些什么
-        return Promise.reject(error);
+    (error) => {
+      return Promise.reject(error);
     }
 );
 
 // 响应拦截器
 apiClient.interceptors.response.use(
-    response => {
-        // 对响应数据处理
-        // ElMessage({
-        //     duration: 2000,
-        //     message: '访问服务器失败',
-        //     type: 'warning'
-        // })
-        return response;
-    },
-    error => {
-        // 对响应错误处理
-        
-        if (error.response) {
-            if (error.response.status >= 500 && error.response.status < 600) {
-                ElMessage({
-                    duration: 2000,
-                    message: '服务器错误，请求失败',
-                    type: 'error'
-                })
-            } else if (error.response.status === 404) {
-                ElMessage({
-                    duration: 2000,
-                    message: '未找到请求资源',
-                    type: 'error'
-                })
-            } else if (error.response.status === 403) {
-                // const authStore = useAuthStore();
-                // authStore.logout();
-                ElMessage({
-                    duration: 2000,
-                    message: '无访问权限',
-                    type: 'error'
-                })
-            } else if (error.response.status === 401) {
-                ElMessage({
-                    duration: 2000,
-                    message: 'Token expired or invalid. Please log in again.',
-                    type: 'error'
-                });
-                const authStore = useAuthStore();
-                authStore.logout();
-                Router.push({path: '/login'})
-            } else {
-                ElMessage({
-                    duration: 2000,
-                    message: error.response.data,
-                    type: 'error'
-                })
-            }
-        }
-        return Promise.reject(error);
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response && error.response.data) {
+      const errorData = error.response.data;
+
+      // 检查是否存在具体的错误信息（如字段验证错误）
+      if (errorData.errors) {
+        errorData.errors.forEach((err) => {
+          showMessage(err.message); // 显示每个具体的错误信息
+        });
+      } else if (errorData.message) {
+        showMessage(errorData.message); // 显示通用的错误信息
+      } else {
+        showMessage("An unknown error occurred."); // 未知错误信息
+      }
+    } else {
+      showMessage("请求失败，请检查网络连接"); // 网络连接错误或其他未知错误
     }
+
+    if (error.response) {
+      const status = error.response.status;
+      const authStore = useAuthStore();
+
+      switch (status) {
+        case 401:
+          showMessage("登录过期，请重新登录");
+          authStore.logout();
+          Router.push({ path: "/login" });
+          break;
+        case 403:
+          showMessage("无访问权限");
+          break;
+        case 404:
+          showMessage("未找到请求资源");
+          break;
+        case 500:
+          showMessage("服务器错误，请求失败");
+          break;
+        default:
+          showMessage(error.response.data || "An unknown error occurred.");
+      }
+    }
+
+    return Promise.reject(error); // 将错误继续传递给调用者
+  },
 );
+
+function showMessage(message, type = "error", duration = 2000) {
+  ElMessage({
+    message,
+    type,
+    duration,
+  });
+}
 
 export default apiClient;

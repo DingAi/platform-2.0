@@ -1,204 +1,113 @@
-import apiClient from './axiosConfig'
-import axios from "axios";
-import {method} from "lodash";
+import apiClient from "./axiosConfig";
 
-const postInitRoll = (us, pwd, em, cap, sn, en) => {
-    let url = 'mysql_dan';
-    return apiClient({
-        url: url,
-        method: 'post',
-        data: {
-            'us':us,
-            'pwd':pwd,
-            'em':em,
-            'cap': cap,
-            'sn':sn,
-            'en':en
-        }
-    })
-}
+const apiEndpoints = {
+  initRoll: "mysql_dan",
+  login: "generate_token",
+  addSN: "interior_sn",
+  emailCaptcha: "you_x",
+  tokenTest: "analysis_token",
+  linkTest: "ceshi",
+  equipmentAdd: "add_equipments",
+  equipmentData: "register_data",
+  filesList: "files_list",
+  filesDownload: "files_download",
+  downloadComplete: "delete_zip_file",
+  logData: "log",
+  deleteEquipment: "equipment_delete",
+  userList: "user_profile",
+  snList: "background_sn",
+  userSN: "user_associated_device",
+  fileUpload: "remote_upgrade",
+};
 
-const postLogin= (username, password) => {
-    let url = 'generate_token';
-    return apiClient({
-        url: url,
-        method: 'post',
-        data: {
-            'username':username,
-            'password':password,
-        }
-    })
-}
+// 定义API请求函数
+const postInitRoll = (us, pwd, em, cap, sn, en) =>
+  apiClient.post(apiEndpoints.initRoll, {
+    us,
+    pwd,
+    em,
+    cap,
+    sn,
+    en,
+  });
 
-const postAddSN= (sn) => {
-    let url = 'interior_sn';
-    return apiClient({
-        url: url,
-        method: 'post',
-        data: {
-            'sn':sn,
-        }
-    })
-}
+const postLogin = (username, password) =>
+  apiClient.post(apiEndpoints.login, {
+    username,
+    password,
+  });
 
-const getEmailCaptcha = (email) => {
-    let url = 'you_x';
-    return apiClient({
-        url: url,
-        method: 'post',
-        data: {
-            email: email
-        }
-    })
-}
+const postAddSN = (sn) => apiClient.post(apiEndpoints.addSN, { sn });
 
-const getTokenTest = () => {
-    let url = 'analysis_token';
-    return apiClient({
-        url: url,
-        method: 'get'
-    })
-}
+const getEmailCaptcha = (email) =>
+  apiClient.post(apiEndpoints.emailCaptcha, { email });
 
-const linkTest = () => {
-    let url = 'ceshi';
-    return apiClient({
-        url: url,
-        method: 'get'
-    })
-}
+const getTokenTest = () => apiClient.get(apiEndpoints.tokenTest);
 
-const postEquipmentAdd = (sn, en) => {
-    let url = 'add_equipments';
-    return apiClient({
-        url: url,
-        method: 'post',
-        data: {
-            sn:sn,
-            en:en,
-        }
-    })
-}
+const linkTest = () => apiClient.get(apiEndpoints.linkTest);
 
-const getEquipmentData = () => {
-    let url = 'register_data';
-    return apiClient({
-        url: url,
-        method: 'get',
-    })
-}
+const postEquipmentAdd = (sn, en) =>
+  apiClient.post(apiEndpoints.equipmentAdd, { sn, en });
 
-const getFilesList = () => {
-    let url = 'files_list';
-    return apiClient({
-        url: url,
-        method: 'get',
-    })
-}
+const getEquipmentData = () => apiClient.get(apiEndpoints.equipmentData);
 
-const postFilesDownload = (folderName, filesList) => {
-    let url = 'files_download';
-    return apiClient({
-        url: url,
-        method: 'post',
-        data: {
-            'folderName':folderName,
-            'filesList':filesList
-        },
-        responseType: 'blob',
-    })
-}
+const getFilesList = () => apiClient.get(apiEndpoints.filesList);
 
-const postDownloadIsComplete = (sn) => {
-    let url = 'delete_zip_file';
-    return apiClient({
-        url: url,
-        method: 'post',
-        data: {
-            'sn' : sn
-        }
-    })
-}
+const postFilesDownload = (folderName, filesList) =>
+  apiClient.post(
+    apiEndpoints.filesDownload,
+    {
+      folderName,
+      filesList,
+    },
+    {
+      responseType: "blob",
+    },
+  );
 
-const getLogData = () =>{
-    let url = 'log';
-    return apiClient({
-        url: url,
-        method: "get",
-    });
-}
+const postDownloadIsComplete = (sn) =>
+  apiClient.post(apiEndpoints.downloadComplete, { sn });
 
-const postDeleteEquipment = (sn) => {
-    let url = 'equipment_delete';
-    return apiClient({
-        url: url,
-        method: 'post',
-        data: {
-            sn:sn,
-        }
-    })
-}
+const getLogData = () => apiClient.get(apiEndpoints.logData);
 
-const getUserList = () =>{
-    let url = 'user_profile';
-    return apiClient({
-        url: url,
-        method: "get",
-    });
-}
+const postDeleteEquipment = (sn) =>
+  apiClient.post(apiEndpoints.deleteEquipment, { sn });
 
-const getSNList = () =>{
-    let url = 'background_sn';
-    return apiClient({
-        url: url,
-        method: "get",
-    });
-}
+const getUserList = () => apiClient.get(apiEndpoints.userList);
 
-const postUserSN = (username) => {
-    let url = 'user_associated_device';
-    return apiClient({
-            url: url,
-            method: 'post',
-        data: {
-            username:username,
-        }
-    })
-}
+const getSNList = () => apiClient.get(apiEndpoints.snList);
+
+const postUserSN = (username) =>
+  apiClient.post(apiEndpoints.userSN, { username });
 
 const postFileUpload = (file) => {
-    let url = 'remote_upgrade';
-    
-    // 创建 FormData 对象并将文件添加到其中
-    let formData = new FormData();
-    formData.append('file', file);
-    
-    return apiClient({
-        url: url,
-        method: 'post',
-        data: formData,
-        headers: {
-            'Content-Type': 'multipart/form-data'  // 确保使用 multipart/form-data 作为 Content-Type
-        }
-    });
-}
+  const formData = new FormData();
+  formData.append("file", file);
 
+  return apiClient.post(apiEndpoints.fileUpload, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+// 导出所有的API函数
 export {
-    postInitRoll,
-    postLogin,
-    postAddSN,
-    getEmailCaptcha,
-    getTokenTest,
-    linkTest,
-    postEquipmentAdd,
-    getEquipmentData,
-    getFilesList,
-    postFilesDownload,
-    postDownloadIsComplete,
-    getLogData,
-    postDeleteEquipment,
-    getUserList,
-    getSNList,
-    postUserSN,
-    postFileUpload,
-}
+  postInitRoll,
+  postLogin,
+  postAddSN,
+  getEmailCaptcha,
+  getTokenTest,
+  linkTest,
+  postEquipmentAdd,
+  getEquipmentData,
+  getFilesList,
+  postFilesDownload,
+  postDownloadIsComplete,
+  getLogData,
+  postDeleteEquipment,
+  getUserList,
+  getSNList,
+  postUserSN,
+  postFileUpload,
+};

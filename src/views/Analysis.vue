@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="flex w-full analysis-div space-x-4">
-            <div class="w-1/4 bg-gray-900 rounded p-5">
+            <div class="w-1/4 bg-slate-800 rounded p-5">
                 <el-timeline style="max-width: 600px">
                     <el-timeline-item center timestamp="2018/4/12" placement="top">
                         <el-card>
@@ -38,12 +38,12 @@
                 </el-timeline>
             </div>
             <div class="w-3/4 h-full flex flex-col items-center space-y-4">
-                <div class="w-full h-1/2 bg-pink-600 rounded"></div>
-                <div class="w-full h-1/2 bg-pink-600 rounded"></div>
+                <div class="w-full h-1/2 bg-slate-800 rounded"></div>
+                <div class="w-full h-1/2 bg-slate-800 rounded"></div>
             </div>
         </div>
         <div
-            class="flex md:flex-row flex-col justify-between items-center bg-gray-700 pt-2 pb-2 h-40 rounded space-x-2">
+            class="flex md:flex-row flex-col justify-between items-center bg-slate-800 pt-2 pb-2 h-40 rounded space-x-2">
 
         </div>
     </div>
@@ -52,8 +52,8 @@
 <script setup lang="ts">
 
 import SubmitButton from "@/components/SubmitButton.vue";
-import TimeDatePicker from "@/components/TimeDatePicker.vue";
-import MultiSelect from "@/components/MultiSelect.vue";
+import TimeDatePicker from "@/components/ElementTimeDatePicker.vue";
+import MultiSelect from "@/components/ElementMultiSelect.vue";
 import {ref} from "vue";
 import {getTimeRange} from "@/utils/tools-functions";
 

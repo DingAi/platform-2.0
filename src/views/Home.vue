@@ -1,17 +1,22 @@
 <template>
-    <div class="space-y-4 text-center size-full">
-        <div class="flex md:flex-row flex-col justify-between items-center bg-gray-700 p-2 h-96 rounded">
-        </div>
-        <div class="flex md:flex-row flex-col justify-between items-center bg-gray-700 p-2 h-96 rounded">
-        </div>
+  <div class="space-y-4 text-center size-full">
+    <div class="flex items-center p-4 rounded h-h">
+      <p class="text-9xl text-green-500 font-bold m-auto">春眠不觉晓</p>
     </div>
+  </div>
 </template>
 
 <script setup>
-import SubmitButton from "@/components/SubmitButton.vue"
+import { onMounted } from "vue";
+import { getTokenTest } from "@/server/request-apis.js";
 
+onMounted(() => {
+  getTokenTest();
+});
 </script>
 
 <style scoped>
-
+.h-h {
+  height: 55rem;
+}
 </style>
