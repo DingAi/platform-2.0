@@ -1,12 +1,12 @@
 import axios from "axios";
-import { ElMessage } from "element-plus";
 import Router from "@/router/index.js";
 import { useAuthStore } from "@/stores/userStore.js";
+import {showMessage} from "@/utils/tools-functions.js";
+import {server} from "@/server/request-apis.js";
+
 
 // 创建axios实例
 const apiClient = axios.create({
-  // baseURL: "ylzs",
-  baseURL: 'xu',
   timeout: 60000, // 请求超时时间
   headers: {
     "Content-Type": "application/json",
@@ -20,7 +20,7 @@ apiClient.interceptors.request.use(
       const token = authStore.getToken(); // 调用 store 中的方法获取 token
       
       // 登录和注册接口不需要 token
-      const isAuthRequest = config.url === "generate_token" || config.url === "mysql_dan";
+      const isAuthRequest = config.url === `${server}generate_token` || config.url === `${server}mysql_dan`;
       
       if (!isAuthRequest) {
         if (!token) {
@@ -86,13 +86,5 @@ apiClient.interceptors.response.use(
     return Promise.reject(error); // 将错误继续传递给调用者
   },
 );
-
-function showMessage(message, type = "error", duration = 2000) {
-  ElMessage({
-    message,
-    type,
-    duration,
-  });
-}
 
 export default apiClient;

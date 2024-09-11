@@ -6,6 +6,8 @@ import Settings from '../views/Settings.vue'
 import Login from '../views/Login.vue'
 import Download from '../views/Download.vue'
 import InitEnroll from '../views/InitEnroll.vue'
+import Page404 from '../views/Page404.vue'
+import LocalAnalysis from '../views/LocalAnalysis.vue'
 import Cookies from 'js-cookie'
 import {ElMessage} from "element-plus";
 
@@ -26,6 +28,12 @@ const routes = [
         path: '/analysis',
         name: 'Analysis',
         component: Analysis,
+        meta: {requiresAuth: true}
+    },
+    {
+        path: '/file-analysis',
+        name: 'LocalAnalysis',
+        component: LocalAnalysis,
         meta: {requiresAuth: true}
     },
     {
@@ -66,6 +74,12 @@ const routes = [
         component: () => import('@/views/MultiChannel.vue'),
         meta: {requiresAuth: true}
     },
+    // 404界面
+    {
+        path: '/:pathMatch(.*)*',  // 捕获所有未匹配的路由
+        name: 'Page404',
+        component: Page404,
+    },
 ]
 
 const router = createRouter({
@@ -90,40 +104,10 @@ router.beforeEach((to, from, next) => {
     }
 })
 
-// router.beforeEach((to, from, next) => {
-//     if (to.matched.some(record => record.meta.requiresAuth)) {
-//         if (!isAuthenticated()) {
-//             next({ name: 'Login' })
-//             ElMessage({
-//                 showClose: true,
-//                 message: "请先完成登录！",
-//             });
-//         } else {
-//             const userRole = getUserRole() // 假设你有一个获取用户角色的函数
-//             if (to.meta.role && to.meta.role !== userRole) {
-//                 ElMessage({
-//                     showClose: true,
-//                     message: "无权访问此页面！",
-//                 });
-//                 next(false) // 阻止导航
-//             } else {
-//                 next() // 已认证并且有正确的角色，继续导航
-//             }
-//         }
-//     } else {
-//         next() // 不需要认证，继续导航
-//     }
-// })
-//
-// function getUserRole() {
-//     // 假设用户角色存储在 cookie 中
-//     return Cookies.get('userRole') || 'user' // 'admin' 或 'user'
-// }
-
 
 function isAuthenticated() {
     // 检查是否存在Token，假设Token名称为`authToken`
-    return !!Cookies.get('token')
+    return !!Cookies.get('platform_token')
 }
 
 export default router

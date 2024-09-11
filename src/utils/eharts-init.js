@@ -1,14 +1,13 @@
 import * as echarts from 'echarts';
 import 'echarts/theme/jazz.js'
 import 'echarts/theme/green.js'
-import 'echarts/theme/jazz'
 import 'echarts/theme/mint.js'
 import 'echarts/theme/dark-bold.js'
 
 
-const refInitEcharts = (ref,) => {
+const refInitEcharts = (ref, theme="mint") => {
     if (ref) {
-        let dom = echarts.init(ref, 'green');
+        let dom = echarts.init(ref, theme);
         return dom;
     }
     return null;
@@ -30,10 +29,10 @@ const setSeriesData = (option, data) => {
     return option;
 }
 
-function addSeriesData(data, name, option) {
+function addSeriesData(data, name, option, type='line') {
     option.series.push({
         data: data,
-        type: 'line',
+        type: type,
         name: name,
     });
     return option
@@ -70,6 +69,10 @@ function setChartType(option, type) {
     return option
 }
 
+function setChartTitle(option, title) {
+    option.title.text = title;
+}
+
 export {
     refInitEcharts,
     idInitEcharts,
@@ -78,5 +81,6 @@ export {
     addSeriesData,
     addDataZoomX,
     addDataZoomY,
-    setChartType
+    setChartType,
+    setChartTitle,
 }

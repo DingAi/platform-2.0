@@ -2,7 +2,6 @@
     <el-date-picker
         v-model="localTimeRange"
         type="datetimerange"
-        size="large"
         value-format="YYYY-MM-DD HH:mm:ss"
         start-placeholder="开始时间"
         end-placeholder="结束时间"

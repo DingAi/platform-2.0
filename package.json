@@ -22,8 +22,9 @@
     "pandas-js": "^0.2.4",
     "pinia": "^2.2.0",
     "pinia-plugin-persistedstate": "^3.2.1",
-    "vue": "^3.4.21",
-    "vue-router": "^4.4.0"
+    "vue": "^3.5.1",
+    "vue-router": "^4.4.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "^22.1.0",
@@ -35,7 +36,7 @@
     "sass": "^1.77.8",
     "tailwindcss": "^3.4.4",
     "typescript": "^5.2.2",
-    "vite": "^5.2.6",
+    "vite": "^5.4.3",
     "vue-tsc": "^2.0.6"
   }
 }

@@ -1,13 +1,14 @@
 <script setup lang="js">
 import Nav from "./components/Navbar.vue";
 import {useRoute} from "vue-router";
-import {computed} from "vue";
+import {computed, onMounted} from "vue";
+import {useAuthStore} from "@/stores/userStore.js";
 
 const route = useRoute();
 
 const mainMinHeight = computed(() => {
     const headerHeight = () => {
-        if (route.path === '/login' || route.path === '/init-roll') {
+        if (route.path === '/login' || route.path === '/init-roll' || route.path === '/:pathMatch(.*)*') {
             return 80;
         } else {
             return 152;
@@ -15,6 +16,17 @@ const mainMinHeight = computed(() => {
     };
     return `calc(100vh - ${headerHeight()}px)`;
 });
+
+const tokenExamine = () =>{
+	const userStore = useAuthStore()
+	if (!userStore.getToken()){
+		userStore.logout();
+	}
+}
+
+onMounted(()=>{
+	tokenExamine()
+})
 
 </script>
 

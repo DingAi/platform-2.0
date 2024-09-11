@@ -45,14 +45,16 @@
 						</div>
 						<hr class="my-6 border-gray-600"/>
 						<div class="mb-12 overflow-auto">
-							<TableTemplate
-								:header="header"
-								:column="column"
-								:showButton="true"
-								buttonLabel="Del"
-								:onButtonClick="deleteClick"
-								:isLoading="addLoading"
-							/>
+							<TransitionGroup name="list" tag="ul">
+								<TableTemplate
+									:header="header"
+									:column="column"
+									:showButton="true"
+									buttonLabel="Del"
+									:onButtonClick="deleteClick"
+									:isLoading="addLoading"
+								/>
+							</TransitionGroup>
 						</div>
 						
 						<el-dialog v-model="dialogVisible" title="确定要删除设备【xxx】?" width="500">
@@ -77,9 +79,15 @@
 						<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
 							<form class="space-y-2" @submit.prevent="addEquipment">
 								<div>
-									<label for="sn" class="block text-sm font-medium leading-6 text-white p-2">设备 SN 码</label>
+									<label for="sn" class="block text-sm font-medium leading-6 text-white p-2">设备 SN
+										码</label>
 									<div class="mt-1">
-										<input v-model="sn" id="sn" name="sn" type="text" required  @blur="validateSnFormat(sn)"
+										<input v-model="sn"
+										       id="sn"
+										       name="sn"
+										       type="text"
+										       required
+										       @blur="validateSnFormat(sn)"
 										       class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1
 											ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset
 											focus:ring-indigo-600 sm:text-sm sm:leading-6"
@@ -126,7 +134,7 @@
 					<div id="section4" class="section text-white rounded bg-gray-800">
 						<h1 class="text-4xl text-white mb-6">硬件驱动更新</h1>
 						<hr class="my-6 border-gray-600"/>
-						
+						<p class="text-sm">注意：文件拖拽上传之后，硬件会直接更新。</p>
 						<el-upload class="upload-demo" drag :http-request="fileUpload" :limit="1"
 						           :before-upload="beforeUpload">
 							<el-icon class="el-icon--upload">
@@ -137,11 +145,12 @@
 							</div>
 							<template #tip>
 								<div class="el-upload__tip">
-									files with a size less than 500kb
+									文件大小不超过 500kb
 								</div>
 							</template>
 						</el-upload>
 					</div>
+					
 					<!--          <div id="section5" class="section text-white rounded bg-gray-800">-->
 					<!--            <h1 class="text-4xl text-white mb-6">硬件驱动更新</h1>-->
 					<!--            <hr class="my-6 border-gray-600" />-->
@@ -198,11 +207,11 @@ const en = ref("");
 
 async function addEquipment() {
 	try {
-		if(validateSnFormat(sn.value)){
+		if (validateSnFormat(sn.value)) {
 			await postEquipmentAdd(sn.value, en.value);
 			await refreshEquipments();
 			await getLog();
-		}else {
+		} else {
 			ElMessage({
 				showClose: true,
 				message: 'SN码格式不正确',

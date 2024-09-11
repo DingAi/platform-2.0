@@ -1,110 +1,98 @@
 <template>
-  <div class="space-y-2 size-full">
-    <div class="mx-auto p-4 flex text-white">
-      <div class="flex flex-col space-y-4 border-r pr-4">
-        <button
-          v-for="(folder, index) in folders"
-          :key="index"
-          @click="activeTab = index"
-          :class="[
-            'flex justify-between items-center px-4 py-2 text-left transition-transform duration-300 transform',
-            {
-              'border-l-4 border-green-500': activeTab === index,
-              'hover:scale-105 hover:bg-gray-600': true,
-            },
-          ]"
-        >
-          <FolderSVG class="mr-2" />
-          {{ folder }}
-        </button>
-      </div>
-      <div class="ml-4 flex-1">
-        <!-- 文件列表 -->
-        <div class="table-min">
-          <!-- 加载状态 -->
-          <div
-            v-if="loading"
-            class="p-4 text-center text-gray-400 text-4xl mb-6"
-          >
-            <DataLoading />
-          </div>
-          <ul v-else>
-            <!-- 全选复选框 -->
-            <li
-              class="p-2 pl-6 pr-6 mb-2 flex justify-between items-center transition-transform duration-300 transform bg-gray-800"
-            >
-              <input
-                type="checkbox"
-                @change="toggleSelectAll"
-                :checked="isPageSelected"
-                class="checkbox ml-auto"
-              />
-              <span class="ml-2">全选该页</span>
-            </li>
-            <li
-              v-for="(file, fileIndex) in paginatedFiles"
-              :key="fileIndex"
-              :class="[
-                'p-2 pl-6 pr-6 mb-2 flex justify-between items-center transition-transform duration-300 ' +
-                  'transform bg-gray-800',
-                {
-                  'bg-gray-600': selectedFiles.includes(file),
-                  'hover:bg-gray-600': !selectedFiles.includes(file),
-                },
-              ]"
-            >
-              <span class="bg-pink-600 text-white p-1 rounded font-bold text-xs"
-                >.CSV</span
-              >
-              <span class="ml-6">{{ file.name }}</span>
-              <span class="ml-4 text-gray-500 text-sm font-bold">{{
-                file.size
-              }}</span>
-              <input
-                type="checkbox"
-                :value="file"
-                v-model="selectedFiles"
-                class="checkbox ml-auto"
-              />
-            </li>
-          </ul>
-        </div>
-
-        <!-- 分页 -->
-        <div class="pl-20 pr-20">
-          <el-pagination
-            v-model:currentPage="currentPage"
-            :page-size="itemsPerPage"
-            :total="currentFiles.length"
-            layout="prev, pager, next, jumper, ->, total"
-            class="mt-8 flex justify-center items-center space-x-3"
-            @current-change="handlePageChange"
-            :background="true"
-          />
-        </div>
-
-        <div class="flex justify-center items-center space-x-3 mt-4">
-          <button
-            @click="filesDownload"
-            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 glowing-button"
-          >
-            文件打包下载
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
+	<div class="space-y-2 size-full">
+		<div class="mx-auto p-4 flex text-white">
+			<div class="flex flex-col space-y-4 border-r pr-4">
+				<button
+					v-for="(folder, index) in folders"
+					:key="index"
+					@click="activeTab = index"
+					:class="['flex justify-between items-center px-4 py-2 text-left transition-transform duration-300 transform',
+                        {
+                            'border-l-4 border-green-500': activeTab === index,
+                            'hover:scale-105 hover:bg-gray-600': true,
+                        },
+                    ]">
+					<FolderSVG class="mr-2"/>
+					{{ folder }}
+				</button>
+			</div>
+			<div class="ml-4 flex-1">
+				<!-- 文件列表 -->
+				<div class="table-min">
+					<!-- 加载状态 -->
+					<div v-if="loading" class="flex flex-col justify-center items-center py-4 space-y-4">
+						<DataLoading/>
+					</div>
+					<ul v-else>
+						<!-- 全选复选框 -->
+						<li class="p-2 pl-6 pr-6 mb-2 flex justify-between items-center transition-transform duration-300 transform bg-gray-800">
+							<input
+								type="checkbox"
+								@change="toggleSelectAll"
+								:checked="isPageSelected"
+								class="checkbox ml-auto"
+							/>
+							<span class="ml-2">全选该页</span>
+						</li>
+						<li
+							v-for="(file, fileIndex) in paginatedFiles"
+							:key="fileIndex"
+							:class="['p-2 pl-6 pr-6 mb-2 flex justify-between items-center transition-transform duration-300 transform bg-gray-800',
+								 {
+									 'bg-gray-600': selectedFiles.includes(file),
+									 'hover:bg-gray-600': !selectedFiles.includes(file),
+								 },
+							]">
+							<span class="bg-pink-600 text-white p-1 rounded font-bold text-xs">.CSV</span>
+							<span class="ml-6">{{ file.name }}</span>
+							<span class="ml-4 text-gray-500 text-sm font-bold">
+								{{ file.size }}
+							</span>
+							<input
+								type="checkbox"
+								:value="file"
+								v-model="selectedFiles"
+								class="checkbox ml-auto"
+							/>
+						</li>
+					</ul>
+				</div>
+				
+				<!-- 分页 -->
+				<div class="pl-20 pr-20">
+					<el-pagination
+						v-model:currentPage="currentPage"
+						:page-size="itemsPerPage"
+						:total="currentFiles.length"
+						layout="prev, pager, next, jumper, ->, total"
+						class="mt-8 flex justify-center items-center space-x-3"
+						@current-change="handlePageChange"
+						:background="true"
+					/>
+				</div>
+				
+				<div class="flex justify-center items-center space-x-3 mt-4">
+					<button
+						@click="filesDownload"
+						class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 glowing-button"
+					>
+						文件打包下载
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import FolderSVG from "@/components/svg/FolderSVG.vue";
 import {
-  getFilesList,
-  postDownloadIsComplete,
-  postFilesDownload,
+	getFilesList,
+	postDownloadIsComplete,
+	postFilesDownload,
 } from "@/server/request-apis.js";
-import { ElMessage } from "element-plus";
+import {ElMessage} from "element-plus";
 import DataLoading from "@/components/DataLoading.vue";
 
 const loading = ref(true); // 初始状态为加载中
@@ -116,66 +104,66 @@ const folders = ref([]);
 const files = ref([]);
 
 const getFiles = async () => {
-  try {
-    const res = await getFilesList();
-    folders.value = res.data.folders;
-    files.value = res.data.files;
-  } catch (error) {
-    console.error("Failed to load files:", error);
-  } finally {
-    loading.value = false; // 数据加载完成后设置为false
-  }
+	try {
+		const res = await getFilesList();
+		folders.value = res.data.folders;
+		files.value = res.data.files;
+	} catch (error) {
+		console.error("Failed to load files:", error);
+	} finally {
+		loading.value = false; // 数据加载完成后设置为false
+	}
 };
 
 const filesDownload = async () => {
-  try {
-    if (selectedFiles.value.length === 0) {
-      ElMessage({
-        duration: 2000,
-        message: "请选择要下载的文件",
-        type: "info",
-      });
-    } else {
-      let folderName = folders.value[activeTab.value];
-      let fileNames = selectedFiles.value.map((file) => file.name);
-      ElMessage({
-        duration: 2000,
-        message: "文件开始下载，请不要关闭界面",
-        type: "info",
-      });
-      const res = await postFilesDownload(folderName, fileNames);
-      // 创建一个 URL 对象指向 Blob
-      const url = window.URL.createObjectURL(new Blob([res.data]));
-
-      // 创建一个临时的 <a> 标签
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "output.zip"); // 设置下载文件的名称
-
-      // 触发点击事件下载文件
-      document.body.appendChild(link);
-      link.click();
-
-      // 清理 URL 对象和 <a> 标签
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    }
-  } catch (error) {
-    console.log(error);
-  } finally {
-    if (selectedFiles.value.length > 0) {
-      await postDownloadIsComplete(folders.value[activeTab.value]);
-      ElMessage({
-        duration: 2000,
-        message: "下载完成！",
-        type: "info",
-      });
-    }
-  }
+	try {
+		if (selectedFiles.value.length === 0) {
+			ElMessage({
+				duration: 2000,
+				message: "请选择要下载的文件",
+				type: "info",
+			});
+		} else {
+			let folderName = folders.value[activeTab.value];
+			let fileNames = selectedFiles.value.map((file) => file.name);
+			ElMessage({
+				duration: 2000,
+				message: "文件开始下载，请不要关闭界面",
+				type: "info",
+			});
+			const res = await postFilesDownload(folderName, fileNames);
+			// 创建一个 URL 对象指向 Blob
+			const url = window.URL.createObjectURL(new Blob([res.data]));
+			
+			// 创建一个临时的 <a> 标签
+			const link = document.createElement("a");
+			link.href = url;
+			link.setAttribute("download", "output.zip"); // 设置下载文件的名称
+			
+			// 触发点击事件下载文件
+			document.body.appendChild(link);
+			link.click();
+			
+			// 清理 URL 对象和 <a> 标签
+			link.remove();
+			window.URL.revokeObjectURL(url);
+		}
+	} catch (error) {
+		console.log(error);
+	} finally {
+		if (selectedFiles.value.length > 0) {
+			await postDownloadIsComplete(folders.value[activeTab.value]);
+			ElMessage({
+				duration: 2000,
+				message: "下载完成！",
+				type: "info",
+			});
+		}
+	}
 };
 
 onMounted(() => {
-  getFiles();
+	getFiles();
 });
 
 // 活动标签页索引
@@ -191,63 +179,63 @@ const currentFiles = computed(() => files.value[activeTab.value] || []);
 
 // 分页后的文件列表
 const paginatedFiles = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  return currentFiles.value.slice(start, start + itemsPerPage);
+	const start = (currentPage.value - 1) * itemsPerPage;
+	return currentFiles.value.slice(start, start + itemsPerPage);
 });
 // 全选当前页的文件
 const isPageSelected = computed(() =>
-  paginatedFiles.value.every((file) => selectedFiles.value.includes(file)),
+	paginatedFiles.value.every((file) => selectedFiles.value.includes(file)),
 );
 
 const toggleSelectAll = () => {
-  if (isPageSelected.value) {
-    // 如果当前页全选，取消选择
-    paginatedFiles.value.forEach((file) => {
-      const index = selectedFiles.value.indexOf(file);
-      if (index !== -1) {
-        selectedFiles.value.splice(index, 1);
-      }
-    });
-  } else {
-    // 否则，选中当前页的所有文件
-    paginatedFiles.value.forEach((file) => {
-      if (!selectedFiles.value.includes(file)) {
-        selectedFiles.value.push(file);
-      }
-    });
-  }
+	if (isPageSelected.value) {
+		// 如果当前页全选，取消选择
+		paginatedFiles.value.forEach((file) => {
+			const index = selectedFiles.value.indexOf(file);
+			if (index !== -1) {
+				selectedFiles.value.splice(index, 1);
+			}
+		});
+	} else {
+		// 否则，选中当前页的所有文件
+		paginatedFiles.value.forEach((file) => {
+			if (!selectedFiles.value.includes(file)) {
+				selectedFiles.value.push(file);
+			}
+		});
+	}
 };
 
 // 监听activeTab变化，重置currentPage并清空selectedFiles
 watch(activeTab, () => {
-  currentPage.value = 1;
-  selectedFiles.value = []; // 清空选中的文件
+	currentPage.value = 1;
+	selectedFiles.value = []; // 清空选中的文件
 });
 
 // 处理分页的变化
 const handlePageChange = (page) => {
-  currentPage.value = page;
+	currentPage.value = page;
 };
 </script>
 
 <style>
 .checkbox {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  accent-color: #4caf50; /* 使用自定义颜色 */
-  margin-left: 8px; /* 添加一点间距 */
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+	accent-color: #4caf50; /* 使用自定义颜色 */
+	margin-left: 8px; /* 添加一点间距 */
 }
 
 .bg-gray-800 {
-  background-color: #2d3748; /* 使用深灰色背景 */
+	background-color: #2d3748; /* 使用深灰色背景 */
 }
 
 .bg-gray-600 {
-  background-color: #4a5568; /* 使用中灰色背景 */
+	background-color: #4a5568; /* 使用中灰色背景 */
 }
 
 .table-min {
-  min-height: 40rem;
+	min-height: 40rem;
 }
 </style>
