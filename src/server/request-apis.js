@@ -1,128 +1,116 @@
 import apiClient from "./axiosConfig";
 
-const server = '/xu/'
+const server = '/django/'
+const fastapiServer = '/fastapi/'
+const localServer = '/local/' //127.0.0.1:8000
+const xuServer = '/xu/' //192.168.28.228:
 
 const apiEndpoints = {
-    initRoll: server + "mysql_dan",
-    login: server + "generate_token",
-    addSN: server + "interior_sn",
-    emailCaptcha: server + "you_x",
-    tokenTest: server + "analysis_token",
-    linkTest: server + "ceshi",
-    equipmentAdd: server + "add_equipments",
-    equipmentData: server + "register_data",
-    filesList: server + "files_list",
-    filesDownload: server + "files_download",
-    downloadComplete: server + "delete_zip_file",
-    logData: server + "log",
-    deleteEquipment: server + "equipment_delete",
-    userList: server + "user_profile",
-    snList: server + "background_sn",
-    userSN: server + "user_associated_device",
-    fileUpload: server + "remote_upgrade",
-    SSE: server + 'sse',
-    RealData: server + "real_time_data",
-    ASwitch: server + "control_switch",
-    History: server + "past_records",
-    EquipmentVar: server + "history_table",
+    register: server + "register", //注册
+    login: server + "login",  //登录
+    interiorSN: server + "interior_sn",  //激活SN码设备
+    phoneCaptcha: server + "register_captcha",  //注册时的手机验证码
+    modifyPassword: server + "modify_password",  //修改密码
+    setTime: fastapiServer + "mqtt/set_time",  //单通道设置各种时间
+    activationEquipment: server + "activation_equipment",  //激活SN码设备
+    DetailedData: server + "detailed_data",  //获取设备列表数据
+    filesList: server + "files_list",  //文件列表数据
+    filesDownload: server + "files_download",  //文件下载
+    downloadComplete: server + "delete_zip_file",  //下载完成之后给后端信号
+    logData: server + "log",  //日志列表
+    deleteEquipment: server + "equipment_delete",  //删除设备
+    userList: server + "user_profile",  // 获取用户列表（Admin）
+    snList: server + "background_sn", // 获取所有SN列表（Admin）
+    userSN: server + "user_associated_device", // 获取用户拥有的所有SN码设备（Admin）
+    fileUpload: server + "remote_upgrade", // 文件上传
+    RealData: server + "real_time_data", //单通道获取实时数据
+    History: server + "history", //历史数据
+    singleChannelSwitch: fastapiServer + "mqtt/single_channel_switch", //单通道开关
+    upload: fastapiServer + "mqtt/upload", //OTA文件上传
+    modifyPasswordCaptcha: server + "modify_password_captcha", //修改密码时的手机验证
+    registerSnVerify: server + "verify_sn" //注册的时候先验证SN码有效
 };
 
 // 定义API请求函数
-const postInitRoll = (us, pwd, em, cap, sn, en) =>
-    apiClient.post(apiEndpoints.initRoll, {
-        us,
-        pwd,
-        em,
-        cap,
-        sn,
-        en,
-    });
+const postRegister = (us, pwd, phone, cap, sn, en) =>
+    apiClient.post(apiEndpoints.register, {us, pwd, phone, cap, sn, en,});
 
 const postLogin = (username, password) =>
     apiClient.post(apiEndpoints.login, {username, password,});
 
-const postAddSN = (sn) => apiClient.post(apiEndpoints.addSN, {sn});
+// 注册的时候获取手机验证码
+const getPhoneCaptcha = (phone) =>
+    apiClient.post(apiEndpoints.phoneCaptcha, {phone});
 
-const getEmailCaptcha = (email) =>
-    apiClient.post(apiEndpoints.emailCaptcha, {email});
-
-const getTokenTest = () => apiClient.get(apiEndpoints.tokenTest);
-
-const linkTest = () => apiClient.get(apiEndpoints.linkTest);
-
+// 激活SN码设备
 const postEquipmentAdd = (sn, en) =>
-    apiClient.post(apiEndpoints.equipmentAdd, {sn, en});
+    apiClient.post(apiEndpoints.activationEquipment, {sn, en});
 
-const getEquipmentData = () => apiClient.get(apiEndpoints.equipmentData);
+// 获取设备列表
+const getEquipmentData = () => apiClient.get(apiEndpoints.DetailedData);
 
-const getFilesList = () => apiClient.get(apiEndpoints.filesList);
+// 获取要下载的文件列表数据
+const getFilesList = (sn) => apiClient.post(apiEndpoints.filesList, {sn});
 
+// 获取要下载的文件流
 const postFilesDownload = (folderName, filesList) =>
-    apiClient.post(
-        apiEndpoints.filesDownload,
-        {
-            folderName,
-            filesList,
-        },
-        {
-            responseType: "blob",
-        },
-    );
+    apiClient.post(apiEndpoints.filesDownload, {folderName, filesList,}, {responseType: "blob",},);
 
 const postDownloadIsComplete = (sn) =>
     apiClient.post(apiEndpoints.downloadComplete, {sn});
 
+// 获取日志列表
 const getLogData = () => apiClient.get(apiEndpoints.logData);
 
 const postDeleteEquipment = (sn) =>
     apiClient.post(apiEndpoints.deleteEquipment, {sn});
 
-const getUserList = () => apiClient.get(apiEndpoints.userList);
-
-const getSNList = () => apiClient.get(apiEndpoints.snList);
-
-const postUserSN = (username) =>
-    apiClient.post(apiEndpoints.userSN, {username});
-
-const postFileUpload = (file) => {
+// OTA 文件上传
+const postFileUpload = (sn, file) => {
     const formData = new FormData();
     formData.append("file", file);
-    
-    return apiClient.post(apiEndpoints.fileUpload, formData, {
+    formData.append("sn", sn);
+    return apiClient.post(apiEndpoints.upload, formData, {
         headers: {
             "Content-Type": "multipart/form-data",
         },
     });
 };
 
-const postSSE = (sn) =>
-    apiClient.post(apiEndpoints.SSE, {sn});
-
-//单通道设备实时数据表
+// 单通道设备实时数据表
 const postRealData = (sn) =>
     apiClient.post(apiEndpoints.RealData, {sn});
 
-//单通道设备控制开关
-const postASwitch = (id, value) =>
-    apiClient.post(apiEndpoints.ASwitch, {id, value});
-
-//获取历史数据
-const postHistory = (sn, type, vars, time_frame) =>
+// 获取历史数据
+const postHistoryData = (sn, type, vars, time_frame) =>
     apiClient.post(apiEndpoints.History, {sn, type, vars, time_frame});
 
-//获取设备传感器数据点
-const getEquipmentVarArray = () =>
-    apiClient.get(apiEndpoints.EquipmentVar);
+// 获取设备传感器数据点
+const getEquipmentVarArray = () => apiClient.get(apiEndpoints.equipmentVar);
+
+const postSwitch = (sn, value, index) =>
+    apiClient.post(apiEndpoints.singleChannelSwitch, {sn, value, index});
+
+// 修改密码的手机验证码接口
+const postCaptcha = (phone) =>
+    apiClient.post(apiEndpoints.modifyPasswordCaptcha, {phone});
+
+// 修改密码的手机验证码接口
+const postModifyPassword = (phone, cap, pwd) =>
+    apiClient.post(apiEndpoints.forgetPassword, {phone, cap, pwd});
+
+// 注册时SN码验证
+const postRegisterSnVerify = (sn) => apiClient.post(apiEndpoints.registerSnVerify, {sn});
+
+const postSetTime = (value, index, sn) => apiClient.post(apiEndpoints.setTime, {sn, value, index});
 
 // 导出所有的API函数
 export {
     server,
-    postInitRoll,
+    xuServer,
+    postRegister,
     postLogin,
-    postAddSN,
-    getEmailCaptcha,
-    getTokenTest,
-    linkTest,
+    getPhoneCaptcha,
     postEquipmentAdd,
     getEquipmentData,
     getFilesList,
@@ -130,13 +118,12 @@ export {
     postDownloadIsComplete,
     getLogData,
     postDeleteEquipment,
-    getUserList,
-    getSNList,
-    postUserSN,
     postFileUpload,
-    postSSE,
     postRealData,
-    postASwitch,
-    postHistory,
-    getEquipmentVarArray
+    postHistoryData,
+    postSwitch,
+    postCaptcha,
+    postModifyPassword,
+    postRegisterSnVerify,
+    postSetTime,
 };

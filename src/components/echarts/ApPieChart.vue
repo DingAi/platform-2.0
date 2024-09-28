@@ -17,7 +17,10 @@ const apPie = ref(null);
 let option = JSON.parse(JSON.stringify(pieOptionTemplate));;
 
 const refresh = (dom, option) => {
-	option.series[0].data = [{ value: props.apData[0], name: '进气气压' }, { value: props.apData[1], name: '出气气压' }]
+	option.series[0].data = [
+		{ value: (props.apData[0]/1000).toFixed(2), name: '进气气压' },
+		{ value: (props.apData[1]/1000).toFixed(2), name: '出气气压' }
+	]
 	dom.setOption(option);
 	// dom.hideLoading();
 }

@@ -11,7 +11,7 @@
 		<!-- 显示表格内容 -->
 		<div v-else class="table-min">
 			<table
-				class="min-w-full text-gray-300 shadow-sm rounded-lg overflow-hidden bg-gray-900"
+				class="min-w-full text-gray-300 shadow-sm rounded-lg overflow-hidden bg-[#212121]"
 			>
 				<thead class="bg-green-600 text-white">
 				<tr>
@@ -27,7 +27,7 @@
 				</thead>
 				<tbody>
 				<tr
-					v-for="(row, rowIndex) in paginatedData" :key="rowIndex" class="border-t border-gray-500 hover:bg-slate-700
+					v-for="(row, rowIndex) in paginatedData" :key="rowIndex" class="border-t border-gray-500 hover:bg-[#3F3F3F]
 					hover:text-green-500 transition-colors duration-300 ease-in-out text-left">
 					<!-- 渲染序号 -->
 					<td class="px-6 py-3 text-sm">

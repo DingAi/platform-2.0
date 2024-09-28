@@ -1,7 +1,7 @@
 <template>
 	<div class="space-y-2 size-full">
-		<div class="mx-auto p-4 flex text-white">
-			<div class="flex flex-col space-y-4 border-r pr-4">
+		<div class="mx-auto p-4 flex flex-col md:flex-row text-white">
+			<div class="flex flex-col space-y-4 border-r pr-0 md:pr-4">
 				<button
 					v-for="(folder, index) in folders"
 					:key="index"
@@ -16,7 +16,7 @@
 					{{ folder }}
 				</button>
 			</div>
-			<div class="ml-4 flex-1">
+			<div class="ml-0 md:ml-4 flex-1">
 				<!-- 文件列表 -->
 				<div class="table-min">
 					<!-- 加载状态 -->
@@ -25,7 +25,7 @@
 					</div>
 					<ul v-else>
 						<!-- 全选复选框 -->
-						<li class="p-2 pl-6 pr-6 mb-2 flex justify-between items-center transition-transform duration-300 transform bg-gray-800">
+						<li class="p-2 pl-6 pr-6 mb-2 flex justify-between items-center transition-transform duration-300 transform">
 							<input
 								type="checkbox"
 								@change="toggleSelectAll"
@@ -37,17 +37,17 @@
 						<li
 							v-for="(file, fileIndex) in paginatedFiles"
 							:key="fileIndex"
-							:class="['p-2 pl-6 pr-6 mb-2 flex justify-between items-center transition-transform duration-300 transform bg-gray-800',
-								 {
-									 'bg-gray-600': selectedFiles.includes(file),
-									 'hover:bg-gray-600': !selectedFiles.includes(file),
-								 },
-							]">
+							:class="['p-2 pl-6 pr-6 mb-2 flex justify-between items-center transition-transform duration-300 transform bg-[#2f2f2f]',
+                                    {
+                                        'bg-gray-600': selectedFiles.includes(file),
+                                        'hover:bg-gray-600': !selectedFiles.includes(file),
+                                    },
+                            ]">
 							<span class="bg-pink-600 text-white p-1 rounded font-bold text-xs">.CSV</span>
 							<span class="ml-6">{{ file.name }}</span>
 							<span class="ml-4 text-gray-500 text-sm font-bold">
-								{{ file.size }}
-							</span>
+                                {{ file.size }}
+                            </span>
 							<input
 								type="checkbox"
 								:value="file"
@@ -59,7 +59,7 @@
 				</div>
 				
 				<!-- 分页 -->
-				<div class="pl-20 pr-20">
+				<div class="pl-0 md:pl-20 pr-0 md:pr-20">
 					<el-pagination
 						v-model:currentPage="currentPage"
 						:page-size="itemsPerPage"
@@ -95,6 +95,9 @@ import {
 import {ElMessage} from "element-plus";
 import DataLoading from "@/components/DataLoading.vue";
 
+
+const SCGData = JSON.parse(localStorage.getItem('auth')).SCGData;
+
 const loading = ref(true); // 初始状态为加载中
 
 // 文件夹名称
@@ -105,8 +108,8 @@ const files = ref([]);
 
 const getFiles = async () => {
 	try {
-		const res = await getFilesList();
-		folders.value = res.data.folders;
+		const res = await getFilesList(SCGData[0]);
+		folders.value = res.data.folders.sn;
 		files.value = res.data.files;
 	} catch (error) {
 		console.error("Failed to load files:", error);
@@ -223,19 +226,48 @@ const handlePageChange = (page) => {
 	width: 20px;
 	height: 20px;
 	cursor: pointer;
-	accent-color: #4caf50; /* 使用自定义颜色 */
-	margin-left: 8px; /* 添加一点间距 */
+	accent-color: #4caf50; /* Custom checkbox color */
+	margin-left: 8px; /* Space for checkbox */
 }
 
 .bg-gray-800 {
-	background-color: #2d3748; /* 使用深灰色背景 */
+	background-color: #2d3748; /* Dark gray background */
 }
 
 .bg-gray-600 {
-	background-color: #4a5568; /* 使用中灰色背景 */
+	background-color: #4a5568; /* Medium gray background */
 }
 
 .table-min {
 	min-height: 40rem;
+}
+
+/* Mobile Styles */
+@media (max-width: 767px) {
+	.flex {
+		flex-direction: column; /* Stack items vertically */
+		margin-left: 0; /* Remove left margin */
+	}
+	
+	.border-r {
+		border-right: none; /* Remove border on mobile */
+	}
+	
+	.p-4 {
+		padding: 1rem; /* Reduce padding for mobile */
+	}
+	
+	.ml-4 {
+		margin-left: 0; /* Reset margin for mobile */
+	}
+	
+	.checkbox {
+		width: 18px; /* Smaller checkbox for mobile */
+		height: 18px; /* Smaller checkbox for mobile */
+	}
+	
+	.table-min {
+		min-height: auto; /* Allow height to adjust on mobile */
+	}
 }
 </style>

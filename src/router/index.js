@@ -5,9 +5,10 @@ import Analysis from '../views/Analysis.vue'
 import Settings from '../views/Settings.vue'
 import Login from '../views/Login.vue'
 import Download from '../views/Download.vue'
-import InitEnroll from '../views/InitEnroll.vue'
+import Register from '../views/Register.vue'
 import Page404 from '../views/Page404.vue'
 import LocalAnalysis from '../views/LocalAnalysis.vue'
+import ModifyPassword from '../views/ModifyPassword.vue'
 import Cookies from 'js-cookie'
 import {ElMessage} from "element-plus";
 
@@ -48,6 +49,11 @@ const routes = [
         component: Login
     },
     {
+        path: '/modify-pwd',
+        name: 'ModifyPassword',
+        component: ModifyPassword
+    },
+    {
         path: '/download',
         name: 'Download',
         component: Download,
@@ -58,9 +64,9 @@ const routes = [
         },
     },
     {
-        path: '/init-roll',
-        name: 'InitEnroll',
-        component: InitEnroll
+        path: '/register',
+        name: 'Register',
+        component: Register
     },
     {
         path: '/type-a-equipment/:id',

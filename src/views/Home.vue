@@ -8,10 +8,9 @@
 
 <script setup>
 import {onMounted} from "vue";
-import {getTokenTest} from "@/server/request-apis.js";
 
 onMounted(() => {
-	getTokenTest();
+
 });
 </script>
 

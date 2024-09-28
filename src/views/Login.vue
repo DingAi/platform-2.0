@@ -12,7 +12,7 @@
                     <label for="username" class="block text-sm font-medium leading-6 text-white p-2">用户名</label>
                     <div class="mt-2">
                         <input v-model="username" id="username" name="username" type="text" required
-                               class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                               class="block w-full rounded-md border-0 p-2 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
                     </div>
                 </div>
 
@@ -20,15 +20,15 @@
                     <div class="flex items-center justify-between">
                         <label for="password" class="block text-sm font-medium leading-6 text-white p-2">密码</label>
                         <div class="text-sm">
-                            <a href="#" class="font-semibold text-green-600 hover:text-green-500">Forgot password?</a>
+                            <router-link to="/modify-pwd" class="font-semibold text-green-600 hover:text-green-500">忘记密码?</router-link>
                         </div>
                     </div>
                     <div class="mt-2 mb-2">
                         <input v-model="password" id="password" name="password" type="password" autocomplete="current-password" required
-                               class="block w-full rounded-md border-0 p-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                               class="block w-full rounded-md border-0 p-1.5 text-white shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
                     </div>
                     <div class="text-sm text-right">
-                        <a href="/init-roll" class="font-bold text-green-600 hover:text-green-500">注册</a>
+                        <router-link to="/register" class="font-bold text-green-600 hover:text-green-500">注册</router-link>
                     </div>
                 </div>
 

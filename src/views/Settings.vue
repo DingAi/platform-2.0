@@ -36,16 +36,13 @@
 			<div class="md:w-5/6">
 				<div class="content space-y-4 pr-4 pl-4">
 					<!--            Section01-->
-					<div id="section1" class="section rounded pl-20 pr-20 bg-gray-800">
+					<div id="section1" class="section rounded pl-20 pr-20 bg-[#2f2f2f]">
 						<div class="flex items-center">
 							<h1 class="text-4xl text-white mb-6">设备列表</h1>
-							<button class="ml-auto rounded hover:text-green-500">
-								清空日志
-							</button>
+							<button class="ml-auto rounded hover:text-green-500">清空日志</button>
 						</div>
 						<hr class="my-6 border-gray-600"/>
 						<div class="mb-12 overflow-auto">
-							<TransitionGroup name="list" tag="ul">
 								<TableTemplate
 									:header="header"
 									:column="column"
@@ -54,7 +51,6 @@
 									:onButtonClick="deleteClick"
 									:isLoading="addLoading"
 								/>
-							</TransitionGroup>
 						</div>
 						
 						<el-dialog v-model="dialogVisible" title="确定要删除设备【xxx】?" width="500">
@@ -65,15 +61,13 @@
 							<template #footer>
 								<div class="dialog-footer">
 									<el-button @click="dialogVisible = false">取消</el-button>
-									<el-button type="primary" @click="deleteEquipment">
-										删除
-									</el-button>
+									<el-button type="primary" @click="deleteEquipment">删除</el-button>
 								</div>
 							</template>
 						</el-dialog>
 					</div>
 					<!--            Section02-->
-					<div id="section2" class="section rounded p-20 bg-gray-800">
+					<div id="section2" class="section rounded p-20 bg-[#2f2f2f]">
 						<h1 class="text-4xl text-white mb-6 mt-4">SN 码激活</h1>
 						<hr class="my-6 border-gray-600"/>
 						<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -88,9 +82,9 @@
 										       type="text"
 										       required
 										       @blur="validateSnFormat(sn)"
-										       class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1
+										       class="block w-full rounded-md border-0 p-2 text-white shadow-sm ring-1
 											ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset
-											focus:ring-indigo-600 sm:text-sm sm:leading-6"
+											focus:ring-green-600 sm:text-sm sm:leading-6"
 										/>
 									</div>
 								</div>
@@ -100,9 +94,9 @@
 									       class="block text-sm font-medium leading-6 text-white p-2">设备名</label>
 									<div class="mt-1">
 										<input v-model="en" id="en" name="en" type="text" required
-										       class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1
+										       class="block w-full rounded-md border-0 p-2 text-white shadow-sm ring-1
 											ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset
-											focus:ring-indigo-600 sm:text-sm sm:leading-6"
+											focus:ring-green-600 sm:text-sm sm:leading-6"
 										/>
 									</div>
 								</div>
@@ -114,7 +108,7 @@
 						</div>
 					</div>
 					<!--            Section03-->
-					<div id="section3" class="section text-white rounded bg-gray-800">
+					<div id="section3" class="section text-white rounded bg-[#2f2f2f]">
 						<div class="flex items-center">
 							<h1 class="text-4xl text-white mb-6">日志</h1>
 							<button class="ml-auto rounded hover:text-green-500">
@@ -131,30 +125,46 @@
 						/>
 					</div>
 					<!--            Section04-->
-					<div id="section4" class="section text-white rounded bg-gray-800">
+					<div id="section4" class="section text-white rounded bg-[#2f2f2f]">
 						<h1 class="text-4xl text-white mb-6">硬件驱动更新</h1>
 						<hr class="my-6 border-gray-600"/>
-						<p class="text-sm">注意：文件拖拽上传之后，硬件会直接更新。</p>
-						<el-upload class="upload-demo" drag :http-request="fileUpload" :limit="1"
-						           :before-upload="beforeUpload">
-							<el-icon class="el-icon--upload">
-								<UpLoadSVG/>
-							</el-icon>
-							<div class="el-upload__text">
-								Drop file here or <em>click to upload</em>
+						<div class="flex justify-center w-full h-20">
+							<div class="flex w-1/3 p-2 items-start">
+								<el-upload ref="upload"
+								           :http-request="fileUpload"
+								           :limit="1"
+								           :auto-upload="false"
+								           @change="handleFileChange"
+								           :before-upload="beforeUpload"
+								>
+									<template #trigger>
+										<el-button type="primary">选择二进制更新文件</el-button>
+									</template>
+								</el-upload>
 							</div>
-							<template #tip>
-								<div class="el-upload__tip">
-									文件大小不超过 500kb
-								</div>
-							</template>
-						</el-upload>
+							<div class="flex w-1/3 p-2 justify-start">
+								<el-select v-model="uploadSelectValue"
+								           placeholder="选择要更新的设备"
+								           @change="handleSelectChange"
+								           style="width: 240px">
+									<el-option v-for="item in snOption"
+									           :key="item.value"
+									           :label="item.label"
+									           :value="item.value"
+									/>
+								</el-select>
+							</div>
+							<div class="flex w-1/3 p-2 justify-end">
+								<el-button
+									class="ml-3"
+									type="success"
+									:disabled="!fileSelected || !uploadSelectValue"
+									@click="submitUpload">
+									确定更新
+								</el-button>
+							</div>
+						</div>
 					</div>
-					
-					<!--          <div id="section5" class="section text-white rounded bg-gray-800">-->
-					<!--            <h1 class="text-4xl text-white mb-6">硬件驱动更新</h1>-->
-					<!--            <hr class="my-6 border-gray-600" />-->
-					<!--          </div>-->
 				</div>
 			</div>
 		</div>
@@ -162,37 +172,65 @@
 </template>
 
 <script setup lang="js">
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import {
 	getLogData,
 	postDeleteEquipment,
-	postEquipmentAdd,
+	postEquipmentAdd, postFileUpload,
 } from "@/server/request-apis.js";
 import TableTemplate from "@/components/TableTemplate.vue";
 import {useAuthStore} from "@/stores/userStore.js";
 import {storeToRefs} from "pinia";
-import {transposeMatrix} from "@/utils/tools-functions.js";
+import {showMessage, transposeMatrix} from "@/utils/tools-functions.js";
 import SubmitButton from "@/components/SubmitButton.vue";
 import {ElMessage} from "element-plus";
-import UpLoadSVG from "@/components/svg/UpLoadSVG.vue";
 
+// Loading状态
 const addLoading = ref(false);
 const logLoading = ref(false);
+const fileSelected = ref(false);
+const isSNValid = ref(false);
+const snError = ref(false);
+
+// 组件状态
 const activeSection = ref("section1");
 const dialogVisible = ref(false);
 const delText = ref("");
+const clickRowIndex = ref(null); // 行索引
 
+// 认证状态
 const authStore = useAuthStore();
 const {SCGData} = storeToRefs(authStore);
 
+// 表格头部
 const header = ref(["SN 码", "设备名称", "注册时间"]);
 const column = ref(
-	transposeMatrix([SCGData.value[0], SCGData.value[1], SCGData.value[2]]),
+	transposeMatrix([SCGData.value[0], SCGData.value[1], SCGData.value[2]])
 );
 
+// 日志表头
 const logHeader = ref(["信息", "时间"]);
 const logCol = ref([]);
 
+// 设备激活输入框
+const sn = ref(""); //SN码
+const en = ref(""); //设备名
+
+//设备上传选择的对象
+const upload = ref(null);
+const uploadSelectValue = ref("");
+const snOption = computed(() => {
+	let snList = []
+	for (let i = 0; i < SCGData.value[0].length; i++) {
+		snList.push({
+			value: SCGData.value[0][i],
+			label: SCGData.value[1][i]
+		})
+	}
+	return snList;
+})
+
+// 滚动到指定部分
 const scrollToSection = (sectionId) => {
 	const element = document.getElementById(sectionId);
 	if (element) {
@@ -202,27 +240,38 @@ const scrollToSection = (sectionId) => {
 	}
 };
 
-const sn = ref("");
-const en = ref("");
-
+// 添加设备
 async function addEquipment() {
+	addLoading.value = true;
+	if (!sn.value.match(/^[ABCD][A-Z0-9]{9}[A-Z]\d{10}$/)) {
+		isSNValid.value = false;
+		snError.value = true;
+		ElMessage({message: 'SN码格式错误', type: 'error'});
+		addLoading.value = false; // 结束加载状态
+		return; // 如果格式错误，直接返回，不执行后续的网络请求
+	}
+	let res; // 在函数作用域内声明 res
 	try {
 		if (validateSnFormat(sn.value)) {
-			await postEquipmentAdd(sn.value, en.value);
+			res = await postEquipmentAdd(sn.value, en.value);
 			await refreshEquipments();
 			await getLog();
 		} else {
-			ElMessage({
-				showClose: true,
-				message: 'SN码格式不正确',
-			});
+			showMessage('SN码格式不正确', 'error');
 		}
 	} catch (error) {
 		console.error("添加设备失败:", error);
 	} finally {
+		if (res) { // 确保 res 存在再访问
+			showMessage(res.data, 'info');
+			sn.value = '';
+			en.value = '';
+		}
+		addLoading.value = false; // 结束加载状态
 	}
 }
 
+// 刷新设备列表
 async function refreshEquipments() {
 	addLoading.value = true;
 	try {
@@ -239,28 +288,26 @@ async function refreshEquipments() {
 	}
 }
 
-//获取日志数据，更新列表
+// 获取日志数据
 async function getLog() {
 	logLoading.value = true;
 	try {
 		const res = await getLogData();
 		logCol.value = transposeMatrix(res.data["log"]);
 	} catch (error) {
-		console.log(error);
+		console.error("获取日志失败:", error);
 	} finally {
 		logLoading.value = false;
 	}
 }
 
-//弹窗按钮函数
-const clickRowIndex = ref(null);
-
+// 弹窗按钮函数
 function deleteClick(rowIndex) {
-	//在组件中已经声明了行索引所以可以直接在这里调用
 	dialogVisible.value = true;
 	clickRowIndex.value = rowIndex;
 }
 
+// 删除设备
 async function deleteEquipment() {
 	if (delText.value === "删除设备") {
 		try {
@@ -272,7 +319,7 @@ async function deleteEquipment() {
 				message: eqRes.data,
 			});
 		} catch (e) {
-			console.log(e);
+			console.error("删除设备失败:", e);
 		} finally {
 			await refreshEquipments();
 			delText.value = "";
@@ -280,14 +327,67 @@ async function deleteEquipment() {
 	}
 }
 
+// 验证 SN 码格式
 const validateSnFormat = (value) => {
-	// SN 码格式：前11位为随机字符，接下来的4位是数字日期，最后6位是设备数量的数字
 	const snPattern = /^[a-zA-Z0-9]{11}\d{4}\d{6}$/;
 	return snPattern.test(value);
 };
 
+// 校验上传文件类型和大小
+const beforeUpload = (file) => {
+	const isBin = file.name.endsWith('.bin');
+	const isLt500KB = file.size <= 500 * 1024;
+	
+	if (!isBin) {
+		showMessage('只允许上传 .bin 类型的文件!');
+		return false;
+	}
+	if (!isLt500KB) {
+		showMessage('文件大小不能超过 500 KB!');
+		return false;
+	}
+	return true;
+};
+
+// 处理文件选择事件
+const handleFileChange = (file) => {
+	if (file) {
+		fileSelected.value = true;
+	} else {
+		fileSelected.value = false;
+	}
+};
+
+// 处理设备选择事件
+const handleSelectChange = (value) => {
+	uploadSelectValue.value = value;
+};
+
+// 上传文件
+const submitUpload = () => {
+	if (!fileSelected.value || !uploadSelectValue.value) {
+		ElMessage.error('请选择文件和设备!');
+		return;
+	}
+	upload.value.submit();
+};
+
+// 自定义文件上传
+const fileUpload = async ({file}) => {
+	try {
+		await postFileUpload(uploadSelectValue.value, file);
+		upload.value.clearFiles();
+		fileSelected.value = false;
+	} catch (error) {
+		ElMessage.error('Upload error: ' + error.message);
+	} finally {
+		ElMessage.success('文件上传完成');
+	}
+};
+
+// 组件挂载后获取日志
 onMounted(async () => {
-	getLog();
+	await getLog();
 });
 </script>
 

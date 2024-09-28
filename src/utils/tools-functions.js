@@ -76,7 +76,6 @@ function selectProcessData(data) {
     
     // 将分类条目对象转换为数组，得到第二个数组
     const entriesArray = Object.values(categoriesMap);
-    
     // 返回结果
     return {
         categories: categoriesArray,  // 分类数组

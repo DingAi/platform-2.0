@@ -11,7 +11,7 @@ export default defineConfig({
     port: 5173, //自定义端口
     proxy: {
       "/xu": {
-        target: "http://192.168.28.33:8000",
+        target: "http://192.168.28.228:8000",
         changeOrigin: true,
         ws: true,
         rewrite: (path) => path.replace(/^\/xu/, ""),
@@ -19,14 +19,19 @@ export default defineConfig({
       "/local": {
         target: "http://127.0.0.1:8000",
         changeOrigin: true,
-        ws: true,
         rewrite: (path) => path.replace(/^\/local/, ""),
       },
       "/django": {
-        target: "http://47.121.29.85:7004",
+        target: "http://47.108.231.242:9002",
         changeOrigin: true,
         ws: true,
         rewrite: (path) => path.replace(/^\/django/, ""),
+      },
+      "/fastapi": {
+        target: "http://47.108.231.242:7005",
+        changeOrigin: true,
+        ws: true,
+        rewrite: (path) => path.replace(/^\/fastapi/, ""),
       },
       "/ylzs": {
         target: "http://47.108.231.242:7001",

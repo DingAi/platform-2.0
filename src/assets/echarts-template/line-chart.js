@@ -12,8 +12,6 @@ const lineOptionTemplate = {
         }
     },
     xAxis: {
-        type: 'category',
-        name: '',
         data: []
     },
     yAxis: {
@@ -32,13 +30,7 @@ const lineOptionTemplate = {
             end: 100,
         }
     ],
-    series: [
-        {
-            data: [],
-            type: 'line',
-            smooth: true, //平滑曲线
-        }
-    ]
+    series: []
 };
 
 export {

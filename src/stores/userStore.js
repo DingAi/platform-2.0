@@ -24,6 +24,10 @@ export const useAuthStore = defineStore('auth', () => {
     const SCGData = ref([]) // 单通道气体箱数据 Single Channel GasBox
     const MCGData = ref({}) // 多通道气体箱数据 Multi Channel GasBox
     
+    //设备的传感器结构
+    const sensorData = ref([])
+    
+    
     // 登录方法
     const login = async (username, password) => {
         try {
@@ -34,6 +38,9 @@ export const useAuthStore = defineStore('auth', () => {
                 user.value = response.data.user;
                 let expTime = response.data.time;
                 SCGData.value = response.data.ed;
+                sensorData.value = response.data.data_list;
+                localStorage.setItem('sensorData', JSON.stringify(sensorData.value))
+                localStorage.setItem('data_point', JSON.stringify(response.data.data_ser))
                 console.log(SCGData)
                 Cookies.set(`${PROJECT_NAME}_token`, token.value, {expires: expTime});
                 Cookies.set(`${PROJECT_NAME}_user`, username, {expires: COOKIE_EXPIRES_DAYS}); // 存储 username 到 Cookie
@@ -60,11 +67,6 @@ export const useAuthStore = defineStore('auth', () => {
         // 清除所有持久化的状态
         localStorage.clear();
         Router.push({path: '/login'})
-        ElMessage({
-            duration: 2000,
-            message: '用户已登出！',
-            type: 'info'
-        })
     };
     
     //数据获取方法
@@ -99,6 +101,6 @@ export const useAuthStore = defineStore('auth', () => {
 },{
     persist: {
         storage: localStorage, // 使用 localStorage 或 sessionStorage
-            paths: ['SCGData'], // 指定要持久化的状态属性
+        paths: ['SCGData'], // 指定要持久化的状态属性
     },
 });

@@ -3,6 +3,7 @@ import 'echarts/theme/jazz.js'
 import 'echarts/theme/green.js'
 import 'echarts/theme/mint.js'
 import 'echarts/theme/dark-bold.js'
+import 'echarts/theme/forest.js'
 
 
 const refInitEcharts = (ref, theme="mint") => {

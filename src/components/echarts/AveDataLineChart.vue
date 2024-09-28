@@ -15,11 +15,27 @@ const props = defineProps({
 
 const aveLine = ref(null);
 let option = JSON.parse(JSON.stringify(lineOptionTemplate));
-const seriesNameList = ['箱内温度', '箱内湿度', '箱外温度', '箱外湿度', '二氧化碳', '饱和水气压', '箱外饱和水气压', '水分绝对浓度', 'VPD', 'VPD-out',]
+const seriesNameList = [
+	'X',
+	'箱内温度',
+	'箱内湿度',
+	'箱外温度',
+	'箱外湿度',
+	'二氧化碳',
+	'饱和水气压',
+	'箱外饱和水气压',
+	'水分绝对浓度',
+	'VPD',
+	'VPD-out',
+	'二氧化碳_K值',
+	'二氧化碳_R²',
+	'水分绝对浓度_K值',
+	'水分绝对浓度_R²'
+]
 
 const refresh = (dom, option) => {
 	let seriesList = []
-	for (let i = 0; i < props.aveData.length - 1; i++) {
+	for (let i = 1; i < props.aveData.length; i++) {
 		seriesList.push({
 			data: props.aveData[i],
 			name: seriesNameList[i],
@@ -29,7 +45,7 @@ const refresh = (dom, option) => {
 			// areaStyle: {}, //面积图
 		})
 	}
-	option.xAxis.data = props.aveData[props.aveData.length -1];
+	option.xAxis.data = props.aveData[0];
 	option.series = seriesList
 	dom.setOption(option);
 	dom.hideLoading();

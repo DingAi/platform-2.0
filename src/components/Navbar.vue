@@ -1,5 +1,5 @@
 <template>
-	<nav class="top-0 z-50 sticky bg-gray-900 shadow py-4 text-white shadow-lg" v-if="showNavbar">
+	<nav class="top-0 z-50 sticky bg-[#121212] shadow py-4 text-white shadow-lg" v-if="showNavbar">
 		<div class="flex justify-between items-center border-green-100 mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 			<div class="flex items-center">
 				<router-link to="/" class="font-bold text-pink-500 text-xl">Platfrom</router-link>
@@ -37,6 +37,7 @@
 							</router-link>
 						</div>
 					</div>
+					
 				</div>
 			</div>
 			<!-- 用户头像和下拉菜单 -->
@@ -60,10 +61,6 @@
 					<router-link to='/file-analysis' class="block hover:bg-gray-700 px-4 py-2 text-white rounded mt-0.5"
 					             :class="{'bg-gray-700 text-green-500': $route.path === '/file-analysis',}">
 						文件分析
-					</router-link>
-					<router-link to="/init-roll" class="block hover:bg-gray-700 px-4 py-2 text-white rounded mt-0.5"
-					             :class="{'bg-gray-700 text-green-500': $route.path === '/init-roll',}">
-						初始注册
 					</router-link>
 					<router-link to="/settings" class="block hover:bg-gray-700 px-4 py-2 text-white rounded mt-0.5"
 					             :class="{'bg-gray-700 text-green-500': $route.path === '/settings',}">
@@ -108,7 +105,8 @@ const is404 = computed(() => {
 })
 
 const showNavbar = computed(() => {
-	return !(route.path === "/login" || route.path === "/init-roll");
+	return !(route.path === "/login" || route.path === "/register" || route.path === "//:pathMatch(.*)*"
+	 || route.path === "/modify-pwd");
 });
 
 // 根据设备编码的第一个字母生成不同的路由路径
@@ -195,12 +193,12 @@ const logout = () => {
 }
 
 .avatar-hover {
-	transform: scale(1.2); /* 放大效果 */
-	border: 2px solid #4caf50; /* 绿色边框 */
+	transform: scale(1.2); /* Scale effect */
+	border: 2px solid #4caf50; /* Green border */
 }
 
 .logo-hover {
-	transform: scale(1.2); /* 放大效果 */
+	transform: scale(1.2); /* Scale effect */
 }
 
 .animate-zoom-in-up {
@@ -220,30 +218,40 @@ const logout = () => {
 }
 
 @media (max-width: 767px) {
-	.top-0 {
-		position: relative;
+	/* Navbar styles for mobile */
+	.navbar {
+		flex-direction: column; /* Stack items vertically */
+		align-items: flex-start; /* Align items to the start */
+		padding: 1rem; /* Padding for mobile */
 	}
 	
-	.mx-auto {
-		margin-left: auto;
-		margin-right: auto;
+	.navbar .flex {
+		justify-content: space-between; /* Space out items */
+		width: 100%; /* Full width */
 	}
 	
-	.px-4 {
+	.navbar .px-4 {
 		padding-left: 1rem;
 		padding-right: 1rem;
 	}
 	
-	.flex-col {
-		flex-direction: column;
+	.navbar a {
+		width: 100%; /* Full width for links */
+		text-align: center; /* Center text */
+		margin: 0.5rem 0; /* Margin between links */
 	}
 	
-	.items-start {
-		align-items: flex-start;
+	.relative {
+		width: 100%; /* Full width for dropdowns */
 	}
 	
-	.space-y-4 > * + * {
-		margin-top: 1rem;
+	.hidden {
+		display: none; /* Hide by default */
+	}
+	
+	.avatar {
+		width: 40px; /* Smaller avatar */
+		height: 40px; /* Smaller avatar */
 	}
 }
 </style>
