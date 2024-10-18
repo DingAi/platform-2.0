@@ -28,7 +28,8 @@ const apiEndpoints = {
     singleChannelSwitch: fastapiServer + "mqtt/single_channel_switch", //单通道开关
     upload: fastapiServer + "mqtt/upload", //OTA文件上传
     modifyPasswordCaptcha: server + "modify_password_captcha", //修改密码时的手机验证
-    registerSnVerify: server + "verify_sn" //注册的时候先验证SN码有效
+    registerSnVerify: server + "verify_sn",  //注册的时候先验证SN码有效
+    clearLog: server + "clear_log" //清除所有日志
 };
 
 // 定义API请求函数
@@ -43,7 +44,7 @@ const getPhoneCaptcha = (phone) =>
     apiClient.post(apiEndpoints.phoneCaptcha, {phone});
 
 // 激活SN码设备
-const postEquipmentAdd = (sn, en) =>
+const postSnActivation = (sn, en) =>
     apiClient.post(apiEndpoints.activationEquipment, {sn, en});
 
 // 获取设备列表
@@ -62,6 +63,10 @@ const postDownloadIsComplete = (sn) =>
 // 获取日志列表
 const getLogData = () => apiClient.get(apiEndpoints.logData);
 
+// 清除所有日志
+const getClearLog= () => apiClient.get(apiEndpoints.clearLog);
+
+// 删除设备
 const postDeleteEquipment = (sn) =>
     apiClient.post(apiEndpoints.deleteEquipment, {sn});
 
@@ -77,7 +82,7 @@ const postFileUpload = (sn, file) => {
     });
 };
 
-// 单通道设备实时数据表
+// 单通道设备实时数据
 const postRealData = (sn) =>
     apiClient.post(apiEndpoints.RealData, {sn});
 
@@ -88,6 +93,7 @@ const postHistoryData = (sn, type, vars, time_frame) =>
 // 获取设备传感器数据点
 const getEquipmentVarArray = () => apiClient.get(apiEndpoints.equipmentVar);
 
+// 单通道开关
 const postSwitch = (sn, value, index) =>
     apiClient.post(apiEndpoints.singleChannelSwitch, {sn, value, index});
 
@@ -95,14 +101,18 @@ const postSwitch = (sn, value, index) =>
 const postCaptcha = (phone) =>
     apiClient.post(apiEndpoints.modifyPasswordCaptcha, {phone});
 
-// 修改密码的手机验证码接口
+// 修改密码
 const postModifyPassword = (phone, cap, pwd) =>
     apiClient.post(apiEndpoints.forgetPassword, {phone, cap, pwd});
 
 // 注册时SN码验证
 const postRegisterSnVerify = (sn) => apiClient.post(apiEndpoints.registerSnVerify, {sn});
 
+// 单通道设置时间
 const postSetTime = (value, index, sn) => apiClient.post(apiEndpoints.setTime, {sn, value, index});
+
+
+
 
 // 导出所有的API函数
 export {
@@ -111,7 +121,7 @@ export {
     postRegister,
     postLogin,
     getPhoneCaptcha,
-    postEquipmentAdd,
+    postSnActivation,
     getEquipmentData,
     getFilesList,
     postFilesDownload,
@@ -126,4 +136,5 @@ export {
     postModifyPassword,
     postRegisterSnVerify,
     postSetTime,
+    getClearLog,
 };

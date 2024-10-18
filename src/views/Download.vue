@@ -1,26 +1,27 @@
 <template>
-	<div class="space-y-2 size-full">
-		<div class="mx-auto p-4 flex flex-col md:flex-row text-white">
+	<div class="space-y-2 size-full rounded-2xl">
+		<div class="mx-auto p-4 flex flex-col md:flex-row">
 			<div class="flex flex-col space-y-4 border-r pr-0 md:pr-4">
-				<button
-					v-for="(folder, index) in folders"
-					:key="index"
-					@click="activeTab = index"
-					:class="['flex justify-between items-center px-4 py-2 text-left transition-transform duration-300 transform',
-                        {
-                            'border-l-4 border-green-500': activeTab === index,
-                            'hover:scale-105 hover:bg-gray-600': true,
-                        },
-                    ]">
+				<button v-for="(folder, index) in folders" :key="index" @click="activeTab = index"
+					:class="['flex justify-between items-center px-4 py-2 text-left transition-transform duration-300 transform rounded',
+						{
+							'border-l-4 border-[#3F51B5]': activeTab === index,
+							'hover:scale-105 hover:bg-[#dedeff]': true,
+						},
+					]">
 					<FolderSVG class="mr-2"/>
-					{{ folder }}
+					<div class="flex flex-col">
+						<span class="font-bold text-[#3F51B5]">{{ SCGData[1][index] }}</span>  <!-- 替换成你想要的主标题文本 -->
+						<span class="text-sm text-gray-500">{{ folder }}</span> <!-- 副标题样式 -->
+					</div>
 				</button>
 			</div>
+			
 			<div class="ml-0 md:ml-4 flex-1">
 				<!-- 文件列表 -->
 				<div class="table-min">
 					<!-- 加载状态 -->
-					<div v-if="loading" class="flex flex-col justify-center items-center py-4 space-y-4">
+					<div v-if="loading" class="flex flex-col justify-center items-center py-4 space-y-4 h-full">
 						<DataLoading/>
 					</div>
 					<ul v-else>
@@ -37,15 +38,15 @@
 						<li
 							v-for="(file, fileIndex) in paginatedFiles"
 							:key="fileIndex"
-							:class="['p-2 pl-6 pr-6 mb-2 flex justify-between items-center transition-transform duration-300 transform bg-[#2f2f2f]',
+							:class="['p-2 pl-6 pr-6 mb-2 flex justify-between items-center transition-transform duration-300 transform bg-[#f5f5f5] rounded',
                                     {
-                                        'bg-gray-600': selectedFiles.includes(file),
-                                        'hover:bg-gray-600': !selectedFiles.includes(file),
+                                        'bg-[#dedeff]' : selectedFiles.includes(file),
+                                        'hover:bg-[#dedeff]' : !selectedFiles.includes(file),
                                     },
                             ]">
 							<span class="bg-pink-600 text-white p-1 rounded font-bold text-xs">.CSV</span>
 							<span class="ml-6">{{ file.name }}</span>
-							<span class="ml-4 text-gray-500 text-sm font-bold">
+							<span class="ml-4 text-[#757de8] text-sm font-bold">
                                 {{ file.size }}
                             </span>
 							<input
@@ -74,7 +75,7 @@
 				<div class="flex justify-center items-center space-x-3 mt-4">
 					<button
 						@click="filesDownload"
-						class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 glowing-button"
+						class="px-4 py-2 bg-[#3F51B5] text-white rounded-xl hover:bg-[#757de8]"
 					>
 						文件打包下载
 					</button>
@@ -110,6 +111,7 @@ const getFiles = async () => {
 	try {
 		const res = await getFilesList(SCGData[0]);
 		folders.value = res.data.folders.sn;
+		console.log(folders.value)
 		files.value = res.data.files;
 	} catch (error) {
 		console.error("Failed to load files:", error);
@@ -172,7 +174,7 @@ onMounted(() => {
 // 活动标签页索引
 const activeTab = ref(0);
 // 每页显示的文件数
-const itemsPerPage = 12;
+const itemsPerPage = 20;
 // 当前页码
 const currentPage = ref(1);
 // 选中的文件名列表
@@ -226,7 +228,7 @@ const handlePageChange = (page) => {
 	width: 20px;
 	height: 20px;
 	cursor: pointer;
-	accent-color: #4caf50; /* Custom checkbox color */
+	accent-color: #3F51B5; /* Custom checkbox color */
 	margin-left: 8px; /* Space for checkbox */
 }
 

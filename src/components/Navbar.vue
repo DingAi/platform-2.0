@@ -1,78 +1,110 @@
 <template>
-	<nav class="top-0 z-50 sticky bg-[#121212] shadow py-4 text-white shadow-lg" v-if="showNavbar">
-		<div class="flex justify-between items-center border-green-100 mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-			<div class="flex items-center">
-				<router-link to="/" class="font-bold text-pink-500 text-xl">Platfrom</router-link>
+	<nav class="top-0 z-50 sticky bg-[#ffffff] shadow py-4 text-[#333333]" v-if="showNavbar">
+		<div class="flex flex-row justify-between items-center mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+			<!-- Platform Logo -->
+			<div class="flex pl-4">
+				<router-link to="/" class="font-bold text-pink-600 text-xl">Platfrom</router-link>
 			</div>
-			<div class="flex items-center">
-				<router-link to="/" class="hover:bg-gray-700 mx-2 px-4 py-2 rounded-md"
-				             :class="{ 'bg-gray-700 text-green-500': $route.path === '/' }">
-					Home
+			<!-- 汉堡菜单 -->
+			<div class="block px-4 sm:hidden items-center space-x-4">
+				<button @click="toggleMobileMenu" class="focus:outline-none flex justify-center">
+					<el-icon>
+						<Menu/>
+					</el-icon>
+				</button>
+			</div>
+			<!-- 移动菜单 -->
+			<div v-if="showMobileMenu" class="absolute top-16 left-0 right-0 bg-white shadow-lg z-50 p-2">
+				<router-link to="/"
+				             class="block px-4 py-4 hover:bg-[#f5f5f5] rounded-xl"
+				             :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path === '/'}"
+				             @click="toggleMobileMenu">Home
 				</router-link>
-				<router-link to="/history" class="hover:bg-gray-700 mx-2 px-4 py-2 rounded-md"
-				             :class="{ 'bg-gray-700 text-green-500': $route.path === '/history' }">
-					历史
+				<router-link to="/history"
+				             class="block px-4 py-2 hover:bg-[#f5f5f5] rounded-xl"
+				             :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/history')}"
+				             @click="toggleMobileMenu">历史
 				</router-link>
-				<router-link to="/analysis" class="hover:bg-gray-700 mx-2 px-4 py-2 rounded-md"
-				             :class="{ 'bg-gray-700 text-green-500': $route.path === '/analysis' }">
-					数据分析
+				<router-link to="/analysis"
+				             class="block px-4 py-2 hover:bg-[#f5f5f5] rounded-xl"
+				             :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/analysis')}"
+				             @click="toggleMobileMenu">数据分析
 				</router-link>
-				<router-link to="/download" class="hover:bg-gray-700 mx-2 px-4 py-2 rounded-md"
-				             :class="{ 'bg-gray-700 text-green-500': $route.path === '/download' }">
-					数据下载
+				<router-link to="/download"
+				             class="block px-4 py-2 hover:bg-[#f5f5f5] rounded-xl"
+				             :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/download')}"
+				             @click="toggleMobileMenu">数据下载
 				</router-link>
 				<div class="relative mx-2" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
-					<button :class="{'bg-gray-700 text-green-500':$route.path.startsWith('/type-a-equipment'),}"
-					        class="flex items-center hover:bg-gray-700 px-4 py-2 rounded-md">
-						我的设备
+					<button :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/type-a-equipment')}"
+					        class="flex hover:bg-[#f5f5f5] p-2 rounded-xl"
+					        @click="toggleMobileMenu">我的设备
 					</button>
 					<div v-if="showSubMenu"
-					     class="mt-2 z-10 absolute bg-gray-800 shadow-lg py-2 rounded-md w-48 origin-top-right animate-zoom-in-up
-						 max-h-64 overflow-auto" :class="{ 'avatar-hover': isAvatarHovering }">
+					     class="mt-2 z-10 absolute bg-[#ffffff] shadow py-2 rounded-xl w-48 origin-top-right animate-zoom-in-up">
 						<div v-for="(device, index) in devices" :key="index" class="pr-2 pl-2">
-							<router-link @click="toggleSubMenu" :to="getPath(device)"
-							             :class="{'bg-gray-700 text-green-500 rounded mt-0.5': isActiveRoute(getPath(device),),}"
-							             class="block hover:bg-gray-700 px-4 py-2 rounded mt-0.5">
-								{{ device.name }}
+							<router-link @click="toggleSubMenu"
+							             :to="getPath(device)"
+							             :class="{'bg-[#3F51B5] text-[#ffffff] rounded mt-0.5': isActiveRoute(getPath(device))}"
+							             class="block hover:bg-[#f5f5f5] px-4 py-2 rounded mt-0.5">{{ device.name }}
 							</router-link>
 						</div>
 					</div>
-					
+				</div>
+			</div>
+			
+			<!-- 桌面版 Menu -->
+			<div class="hidden sm:flex items-center space-x-2">
+				<router-link to="/"
+				             class="hover:bg-[#757de8] px-4 py-2 rounded-xl"
+				             :class="{ 'bg-[#3F51B5] text-[#ffffff]': $route.path === '/' }">Home
+				</router-link>
+				<router-link to="/history"
+				             class="hover:bg-[#f5f5f5] px-4 py-2 rounded-xl"
+				             :class="{ 'bg-[#3F51B5] text-[#ffffff]': $route.path === '/history' }">历史
+				</router-link>
+				<router-link to="/analysis"
+				             class="hover:bg-[#f5f5f5] px-4 py-2 rounded-xl"
+				             :class="{ 'bg-[#3F51B5] text-[#ffffff]': $route.path === '/analysis' }">数据分析
+				</router-link>
+				<router-link to="/download"
+				             class="hover:bg-[#f5f5f5] px-4 py-2 rounded-xl"
+				             :class="{ 'bg-[#3F51B5] text-[#ffffff]': $route.path === '/download' }">数据下载
+				</router-link>
+				<div class="relative mx-2" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
+					<button :class="{'bg-[#3F51B5] text-[#ffffff]':$route.path.startsWith('/type-a-equipment'),}"
+					        class="flex items-center hover:bg-[#f5f5f5] px-4 py-2 rounded-xl">我的设备
+					</button>
+					<div v-if="showSubMenu"
+					     class="mt-2 z-10 absolute bg-[#ffffff] shadow py-2 rounded-xl w-48 origin-top-right animate-zoom-in-up">
+						<div v-for="(device, index) in devices" :key="index" class="pr-2 pl-2">
+							<router-link @click="toggleSubMenu"
+							             :to="getPath(device)"
+							             :class="{'bg-[#3F51B5] text-[#ffffff] rounded mt-0.5': isActiveRoute(getPath(device))}"
+							             class="block hover:bg-[#f5f5f5] px-4 py-2 rounded mt-0.5">{{ device.name }}
+							</router-link>
+						</div>
+					</div>
 				</div>
 			</div>
 			<!-- 用户头像和下拉菜单 -->
-			<div class="relative mx-2" @mouseenter="handleAvatarMouseEnter" @mouseleave="handleAvatarMouseLeave">
-				<img
-					@click="toggleUserMenu"
-					src="@/assets/vue.svg"
-					alt="User Avatar"
-					class="w-10 h-10 rounded-full cursor-pointer avatar"
-					:class="{ 'avatar-hover': isAvatarHovering }"
-				/>
-				<div v-if="showUserMenu" class="mt-2 z-10 absolute right-0 mt-2 bg-gray-800 shadow-lg py-2 rounded-md
-				w-48 origin-top-right animate-zoom-in-up pr-2 pl-2">
-					<p class="px-4 py-2 text-white font-bold bg-green-500 rounded">
-						{{ Cookies.get("platform_user") }}
-					</p>
-					<router-link to="/" class="block hover:bg-gray-700 px-4 py-2 text-white rounded mt-0.5"
-					             :class="{ 'bg-gray-700 text-green-500': $route.path === '/' }">
-						用户主页
+			<div class="relative mx-2 rounded p-2"
+			     @mouseenter="handleAvatarMouseEnter"
+			     @mouseleave="handleAvatarMouseLeave">
+				<div class="flex flex-row justify-center items-center">
+					<el-avatar style="background: #3F51B5; color: #ffffff" class="font-bold"
+					           :class="{ 'avatar-hover': isAvatarHovering }">
+						{{ Cookies.get('platform_user').charAt(0).toUpperCase() }}
+					</el-avatar>
+					<span class="pl-4 font-bold text-[#333333]"> {{ Cookies.get('platform_user') }}</span>
+				</div>
+				<div v-if="showUserMenu"
+				     class="z-10 absolute right-0 mt-2 bg-[#ffffff] shadow-lg py-2 rounded-xl w-48 origin-top-right animate-zoom-in-up pr-2 pl-2">
+					<router-link to="/settings"
+					             class="block hover:bg-[#f5f5f5] px-4 py-2 rounded mt-0.5"
+					             :class="{'text-[#757de8]': $route.path === '/settings'}">设置
 					</router-link>
-					<router-link to='/file-analysis' class="block hover:bg-gray-700 px-4 py-2 text-white rounded mt-0.5"
-					             :class="{'bg-gray-700 text-green-500': $route.path === '/file-analysis',}">
-						文件分析
-					</router-link>
-					<router-link to="/settings" class="block hover:bg-gray-700 px-4 py-2 text-white rounded mt-0.5"
-					             :class="{'bg-gray-700 text-green-500': $route.path === '/settings',}">
-						设置
-					</router-link>
-					<router-link to="login"
-					             class="block w-full text-left hover:bg-gray-700 px-4 py-2 text-white rounded mt-0.5"
-					             :class="{ 'bg-gray-700 text-green-500': $route.path === '/login' }">
-						登录界面
-					</router-link>
-					<button @click="logout"
-					        class="block w-full text-left hover:bg-gray-700 px-4 py-2 text-white rounded mt-0.5">
+					<button @click="logout" class="block w-full text-left hover:bg-[#f5f5f5] px-4 py-2 rounded mt-0.5">
 						登出
 					</button>
 				</div>
@@ -106,7 +138,7 @@ const is404 = computed(() => {
 
 const showNavbar = computed(() => {
 	return !(route.path === "/login" || route.path === "/register" || route.path === "//:pathMatch(.*)*"
-	 || route.path === "/modify-pwd");
+		|| route.path === "/modify-pwd");
 });
 
 // 根据设备编码的第一个字母生成不同的路由路径
@@ -180,6 +212,12 @@ const toggleUserMenu = () => {
 	showUserMenu.value = !showUserMenu.value;
 };
 
+const showMobileMenu = ref(false);
+
+const toggleMobileMenu = () => {
+	showMobileMenu.value = !showMobileMenu.value;
+};
+
 const logout = () => {
 	// 处理注销逻辑
 	authStore.logout();
@@ -194,7 +232,7 @@ const logout = () => {
 
 .avatar-hover {
 	transform: scale(1.2); /* Scale effect */
-	border: 2px solid #4caf50; /* Green border */
+	border: 2px solid #3F51B5; /* Green border */
 }
 
 .logo-hover {
@@ -217,41 +255,20 @@ const logout = () => {
 	}
 }
 
-@media (max-width: 767px) {
-	/* Navbar styles for mobile */
-	.navbar {
-		flex-direction: column; /* Stack items vertically */
-		align-items: flex-start; /* Align items to the start */
-		padding: 1rem; /* Padding for mobile */
+@media (max-width: 640px) {
+	.flex.items-center.space-x-4 {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
 	}
 	
-	.navbar .flex {
-		justify-content: space-between; /* Space out items */
-		width: 100%; /* Full width */
+	.flex.items-center {
+		justify-content: space-between;
 	}
 	
-	.navbar .px-4 {
-		padding-left: 1rem;
-		padding-right: 1rem;
-	}
-	
-	.navbar a {
-		width: 100%; /* Full width for links */
-		text-align: center; /* Center text */
-		margin: 0.5rem 0; /* Margin between links */
-	}
-	
-	.relative {
-		width: 100%; /* Full width for dropdowns */
-	}
-	
-	.hidden {
-		display: none; /* Hide by default */
-	}
-	
-	.avatar {
-		width: 40px; /* Smaller avatar */
-		height: 40px; /* Smaller avatar */
+	nav .flex {
+		width: 100%;
 	}
 }
+
 </style>

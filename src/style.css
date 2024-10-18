@@ -16,7 +16,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --el-color-primary: #22c55e !important;
+  --el-color-primary: #3F51B5 !important;
+  --el-color-primary-light-3: #757de8 !important;
   --el-menu-text-color: #ffffff !important;
   /*--el-text-color-regular: #fafafa !important;*/
 }

@@ -2,13 +2,13 @@
 	<div class="flex min-h-full flex-col justify-center px-6 py-10 lg:px-8">
 		<div class="sm:mx-auto sm:w-full sm:max-w-sm mt-6">
 			<img class="mx-auto h-10 w-auto" src="@/assets/vue.svg" alt="Your Company">
-			<h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">修改密码</h2>
+			<h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight">修改密码</h2>
 		</div>
 		
 		<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
 			<form class="space-y-6" @submit.prevent="modifyPassword">
 				<div>
-					<label for="phone" class="block text-sm font-medium leading-6 text-white p-2">手机</label>
+					<label for="phone" class="block text-sm font-medium leading-6 p-2">手机</label>
 					<div class="mt-2 flex">
 						<input
 							v-model="phone"
@@ -24,7 +24,7 @@
 							:disabled="countdown > 0 || phoneError"
 							@click="handleButtonClick"
 							class="text-white rounded-r-md px-4 py-2 text-sm font-semibold focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
-							:class="countdown > 0 || phoneError ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-500'">
+							:class="countdown > 0 || phoneError ? 'bg-gray-500 cursor-not-allowed' : 'bg-[#3F51B5] hover:bg-[#757de8]'">
 							{{ countdown > 0 ? `${countdown}s` : '验证' }}
 						</button>
 					</div>
@@ -32,7 +32,7 @@
 				</div>
 				
 				<div>
-					<label for="captcha" class="block text-sm font-medium leading-6 text-white p-2">手机验证码</label>
+					<label for="captcha" class="block text-sm font-medium leading-6 p-2">手机验证码</label>
 					<div class="mt-2">
 						<input
 							v-model="cap"
@@ -40,14 +40,14 @@
 							name="captcha"
 							type="text"
 							required
-							class="block w-full rounded-md border-0 p-2 text-white shadow-sm ring-1 ring-inset ring-gray-300
+							class="block w-full rounded-md border-0 p-2 shadow-sm ring-1 ring-inset ring-gray-300
                             placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
 					</div>
 				</div>
 				
 				<div>
 					<div class="flex items-center justify-between">
-						<label for="pwd" class="block text-sm font-medium leading-6 text-white p-2">密码</label>
+						<label for="pwd" class="block text-sm font-medium leading-6 p-2">密码</label>
 					</div>
 					<div class="mt-2">
 						<input
@@ -57,7 +57,7 @@
 							type="password"
 							autocomplete="current-password"
 							required
-							class="block w-full rounded-md border-0 p-2 text-white shadow-sm ring-1 ring-inset ring-gray-300
+							class="block w-full rounded-md border-0 p-2 shadow-sm ring-1 ring-inset ring-gray-300
                             placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
 						<p v-if="passwordError" class="text-red-500 text-sm">密码长度至少6位。</p>
 					</div>
@@ -65,7 +65,7 @@
 				
 				<div>
 					<div class="flex items-center justify-between">
-						<label for="rePwd" class="block text-sm font-medium leading-6 text-white p-2">重复密码</label>
+						<label for="rePwd" class="block text-sm font-medium leading-6 p-2">重复密码</label>
 					</div>
 					<div class="mt-2">
 						<input
@@ -75,7 +75,7 @@
 							type="password"
 							autocomplete="current-password"
 							required
-							class="block w-full rounded-md border-0 p-2 text-white shadow-sm ring-1 ring-inset ring-gray-300
+							class="block w-full rounded-md border-0 p-2 shadow-sm ring-1 ring-inset ring-gray-300
                             placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
 						<p v-if="passwordMatchError" class="text-red-500 text-sm">两次输入的密码不匹配。</p>
 					</div>

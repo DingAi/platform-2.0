@@ -1,3 +1,4 @@
+<!--气压饼图-->
 <template>
 	<div class="size-full p-4" ref="apPie">
 	
@@ -14,19 +15,18 @@ const props = defineProps({
 })
 
 const apPie = ref(null);
-let option = JSON.parse(JSON.stringify(pieOptionTemplate));;
+let option = JSON.parse(JSON.stringify(pieOptionTemplate));
 
 const refresh = (dom, option) => {
 	option.series[0].data = [
-		{ value: (props.apData[0]/1000).toFixed(2), name: '进气气压' },
-		{ value: (props.apData[1]/1000).toFixed(2), name: '出气气压' }
+		{ value: Math.floor(props.apData[0]/1000), name: '进气气压' },
+		{ value: Math.floor(props.apData[1]/1000), name: '出气气压' }
 	]
 	dom.setOption(option);
-	// dom.hideLoading();
 }
 
 onMounted(() => {
-	const dom = refInitEcharts(apPie.value, 'green');
+	const dom = refInitEcharts(apPie.value, 'new-blue');
 	window.addEventListener('resize', function () {
 		dom.resize();
 	});

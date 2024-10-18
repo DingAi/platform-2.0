@@ -2,13 +2,13 @@
 	<div class="flex min-h-full flex-col justify-center px-6 lg:px-8">
 		<div class="sm:mx-auto sm:w-full sm:max-w-sm">
 			<img class="mx-auto h-10 w-auto" src="@/assets/vue.svg" alt="Your Company">
-			<h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">初始注册</h2>
+			<h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight">初始注册</h2>
 		</div>
 		
 		<div class="sm:mx-auto sm:w-full sm:max-w-sm">
 			<form class="space-y-4" @submit.prevent="initRoll">
 				<div>
-					<label for="username" class="block text-sm font-medium leading-6 text-white">用户名</label>
+					<label for="username" class="block text-sm font-medium leading-6 ">用户名</label>
 					<div class="mt-2">
 						<input
 							v-model="username"
@@ -17,14 +17,14 @@
 							type="text"
 							autocomplete="text"
 							required
-							class="block w-full rounded-md border-0 p-2 text-white shadow-sm ring-1 ring-inset ring-gray-300
-                            placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+							class="block w-full rounded-md border-0 p-2  shadow-sm ring-1 ring-inset ring-[#757de8]
+                            placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3F51B5] sm:text-sm sm:leading-6">
 						<p v-if="usernameError" class="text-red-500 text-sm">用户名只能包含字母、数字、下划线或连字符。</p>
 					</div>
 				</div>
 				
 				<div>
-					<label for="sn" class="block text-sm font-medium leading-6 text-white">SN码</label>
+					<label for="sn" class="block text-sm font-medium leading-6 ">SN码</label>
 					<div class="mt-2 flex">
 						<input
 							v-model="snCode"
@@ -32,12 +32,12 @@
 							name="sn"
 							type="text"
 							required
-							class="block w-full rounded-l-md border-0 p-2 text-white shadow-sm ring-1 ring-inset ring-gray-300
-                            placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+							class="block w-full rounded-l-md border-0 p-2 shadow-sm ring-1 ring-inset ring-[#757de8]
+                            placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3F51B5] sm:text-sm sm:leading-6">
 						<button
 							type="button"
 							@click="validateSNCode"
-							class="text-white bg-green-600 rounded-r-md px-4 py-2 text-sm font-semibold focus:ring-2 focus:ring-inset focus:ring-green-600 w-24"
+							class="text-white bg-[#3F51B5] rounded-r-md px-4 py-2 text-sm font-semibold focus:ring-2 focus:ring-inset focus:ring-[#3F51B5] w-24"
 						>
 							验证
 						</button>
@@ -46,7 +46,7 @@
 				</div>
 				
 				<div>
-					<label for="deviceName" class="block text-sm font-medium leading-6 text-white">设备名</label>
+					<label for="deviceName" class="block text-sm font-medium leading-6 ">设备名</label>
 					<div class="mt-2">
 						<input
 							v-model="deviceName"
@@ -54,13 +54,13 @@
 							name="deviceName"
 							type="text"
 							required
-							class="block w-full rounded-md border-0 p-2 text-white shadow-sm ring-1 ring-inset ring-gray-300
-                            placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+							class="block w-full rounded-md border-0 p-2  shadow-sm ring-1 ring-inset ring-[#757de8]
+                            placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3F51B5] sm:text-sm sm:leading-6">
 					</div>
 				</div>
 				
 				<div>
-					<label for="phone" class="block text-sm font-medium leading-6 text-white">手机号</label>
+					<label for="phone" class="block text-sm font-medium leading-6 ">手机号</label>
 					<div class="mt-2 flex">
 						<input
 							v-model="phone"
@@ -69,14 +69,14 @@
 							type="text"
 							autocomplete="phone"
 							required
-							class="block w-full rounded-l-md border-0 p-2 text-white shadow-sm ring-1 ring-inset ring-gray-300
-                            placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+							class="block w-full rounded-l-md border-0 p-2  shadow-sm ring-1 ring-inset ring-[#757de8]
+                            placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-[#3F51B5] sm:text-sm sm:leading-6">
 						<button
 							type="button"
 							:disabled="countdown > 0 || phoneError || !isSNValid"
 							@click="handleButtonClick"
-							class="text-white rounded-r-md px-4 py-2 text-sm font-semibold focus:z-10 focus:ring-2 focus:ring-inset focus:ring-green-600 w-24"
-							:class="countdown > 0 || phoneError || !isSNValid ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-500'">
+							class=" rounded-r-md px-4 py-2 text-sm font-semibold focus:z-10 focus:ring-2 focus:ring-inset focus:ring-[#3F51B5] w-24 text-white"
+							:class="countdown > 0 || phoneError || !isSNValid ? 'bg-gray-500 cursor-not-allowed' : 'bg-[#3F51B5] hover:bg-green-500'">
 							{{ countdown > 0 ? `${countdown}s` : '验证' }}
 						</button>
 					</div>
@@ -84,7 +84,7 @@
 				</div>
 				
 				<div>
-					<label for="captcha" class="block text-sm font-medium leading-6 text-white">手机验证码</label>
+					<label for="captcha" class="block text-sm font-medium leading-6 ">手机验证码</label>
 					<div class="mt-2">
 						<input
 							v-model="captcha"
@@ -92,13 +92,13 @@
 							name="captcha"
 							type="text"
 							required
-							class="block w-full rounded-md border-0 p-2 text-white shadow-sm ring-1 ring-inset ring-gray-300
-                            placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+							class="block w-full rounded-md border-0 p-2  shadow-sm ring-1 ring-inset ring-[#757de8]
+                            placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3F51B5] sm:text-sm sm:leading-6">
 					</div>
 				</div>
 				
 				<div>
-					<label for="password" class="block text-sm font-medium leading-6 text-white">密码</label>
+					<label for="password" class="block text-sm font-medium leading-6 ">密码</label>
 					<div class="mt-2">
 						<input
 							v-model="password"
@@ -107,14 +107,14 @@
 							type="password"
 							autocomplete="current-password"
 							required
-							class="block w-full rounded-md border-0 p-2 text-white shadow-sm ring-1 ring-inset ring-gray-300
-                            placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+							class="block w-full rounded-md border-0 p-2  shadow-sm ring-1 ring-inset ring-[#757de8]
+                            placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3F51B5] sm:text-sm sm:leading-6">
 						<p v-if="passwordError" class="text-red-500 text-sm">密码长度至少6位。</p>
 					</div>
 				</div>
 				
 				<div>
-					<label for="rePassword" class="block text-sm font-medium leading-6 text-white">重复密码</label>
+					<label for="rePassword" class="block text-sm font-medium leading-6 ">重复密码</label>
 					<div class="mt-2">
 						<input
 							v-model="rePassword"
@@ -123,8 +123,8 @@
 							type="password"
 							autocomplete="current-password"
 							required
-							class="block w-full rounded-md border-0 p-2 text-white shadow-sm ring-1 ring-inset ring-gray-300
-                            placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6">
+							class="block w-full rounded-md border-0 p-2 shadow-sm ring-1 ring-inset ring-[#757de8]
+                            placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-[#3F51B5] sm:text-sm sm:leading-6">
 						<p v-if="passwordMatchError" class="text-red-500 text-sm">两次输入的密码不匹配。</p>
 					</div>
 				</div>
@@ -262,22 +262,6 @@ async function initRoll() {
 </script>
 
 <style scoped>
-.cursor-not-allowed {
-	cursor: not-allowed;
-}
-
-.bg-gray-500 {
-	background-color: #6b7280;
-}
-
-.bg-green-600 {
-	background-color: #16a34a;
-}
-
-.hover\:bg-green-500:hover {
-	background-color: #22c55e;
-}
-
 .text-red-500 {
 	color: #ef4444;
 }

@@ -11,9 +11,9 @@
 		<!-- 显示表格内容 -->
 		<div v-else class="table-min">
 			<table
-				class="min-w-full text-gray-300 shadow-sm rounded-lg overflow-hidden bg-[#212121]"
+				class="min-w-full shadow-sm rounded-lg overflow-hidden bg-[#ffffff]"
 			>
-				<thead class="bg-green-600 text-white">
+				<thead class="bg-[#3F51B5] text-white">
 				<tr>
 					<!-- 添加序号列 -->
 					<th class="px-6 py-3.5 text-left text-sm font-bold">Index</th>
@@ -27,10 +27,10 @@
 				</thead>
 				<tbody>
 				<tr
-					v-for="(row, rowIndex) in paginatedData" :key="rowIndex" class="border-t border-gray-500 hover:bg-[#3F3F3F]
-					hover:text-green-500 transition-colors duration-300 ease-in-out text-left">
+					v-for="(row, rowIndex) in paginatedData" :key="rowIndex" class="border-t border-gray-500 hover:bg-[#f7f7f7]
+					hover:text-pink-600 transition-colors duration-300 ease-in-out text-left">
 					<!-- 渲染序号 -->
-					<td class="px-6 py-3 text-sm">
+					<td class="px-6 py-3 text-sm font-bold text-[#3F51B5]">
 						{{ (currentPage - 1) * pageSize + rowIndex + 1 }}
 					</td>
 					<td v-for="(cell, cellIndex) in row" :key="cellIndex"
@@ -40,7 +40,7 @@
 					<td v-if="showButton" class="px-6 py-3 text-sm">
 						<button
 							@click="handleButtonClick(rowIndex)"
-							class="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-500">
+							class="bg-[#3F51B5] text-white px-4 py-1 rounded hover:bg-[#757de8]">
 							{{ buttonLabel }}
 						</button>
 					</td>
@@ -61,7 +61,7 @@
 				:page-size="pageSize"
 				:total="column.length"
 				layout="prev, pager, next, jumper, ->, total"
-				class="mt-4"
+				class="my-4"
 				:background="true"
 				@current-change="handlePageChange"
 			/>

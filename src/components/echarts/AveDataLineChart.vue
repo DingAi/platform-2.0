@@ -52,7 +52,7 @@ const refresh = (dom, option) => {
 }
 
 onMounted(() => {
-	const dom = refInitEcharts(aveLine.value, 'dark-bold');
+	const dom = refInitEcharts(aveLine.value, 'new-blue');
 	window.addEventListener('resize', function () {
 		dom.resize();
 	});

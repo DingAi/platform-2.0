@@ -1,12 +1,7 @@
 import * as echarts from 'echarts';
-import 'echarts/theme/jazz.js'
-import 'echarts/theme/green.js'
-import 'echarts/theme/mint.js'
-import 'echarts/theme/dark-bold.js'
-import 'echarts/theme/forest.js'
+import 'echarts/theme/new-blue.js'
 
-
-const refInitEcharts = (ref, theme="mint") => {
+const refInitEcharts = (ref, theme="new-blue") => {
     if (ref) {
         let dom = echarts.init(ref, theme);
         return dom;
@@ -16,7 +11,7 @@ const refInitEcharts = (ref, theme="mint") => {
 
 const idInitEcharts = (id) => {
     let theDiv = document.getElementById(id);
-    const dom = echarts.init(theDiv, 'mint');
+    const dom = echarts.init(theDiv, 'new-blue');
     return dom;
 }
 

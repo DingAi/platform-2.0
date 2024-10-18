@@ -1,3 +1,4 @@
+<!--温湿度图表-->
 <template>
 	<div class="size-full" ref=thLine>
 	
@@ -11,7 +12,7 @@ import {onMounted, ref, watch} from "vue";
 import ThLineChart from "@/components/echarts/ThLineChart.vue";
 
 const props = defineProps({
-	thValue: Array,
+	thValue : Array,
 	currentTime: String,
 })
 
@@ -32,23 +33,34 @@ function chartDataFlow(value, dataList, xLength) {
 	return dataList;
 }
 
+// 保证其在更新单通道界面路由之后，清除之前的数据重新渲染
 const refresh = (dom) => {
-	dataList1 = chartDataFlow(props.thValue[0], dataList1, 20);
-	dataList2 = chartDataFlow(props.thValue[1], dataList2, 20);
-	dataList3 = chartDataFlow(props.thValue[2], dataList3, 20);
-	dataList4 = chartDataFlow(props.thValue[3], dataList4, 20);
-	option.series = [
-		{data: dataList1, name: nameList[0], type: 'line',},
-		{data: dataList2, name: nameList[1], type: 'line',},
-		{data: dataList3, name: nameList[2], type: 'line',},
-		{data: dataList4, name: nameList[3], type: 'line',}
-	]
-	option.xAxis.data = chartDataFlow(props.currentTime, timeList, 20)
+	if (props.thValue.length > 0){
+		dataList1 = chartDataFlow(props.thValue[0], dataList1, 20);
+		dataList2 = chartDataFlow(props.thValue[1], dataList2, 20);
+		dataList3 = chartDataFlow(props.thValue[2], dataList3, 20);
+		dataList4 = chartDataFlow(props.thValue[3], dataList4, 20);
+		option.series = [
+			{data: dataList1, name: nameList[0], type: 'line',},
+			{data: dataList2, name: nameList[1], type: 'line',},
+			{data: dataList3, name: nameList[2], type: 'line',},
+			{data: dataList4, name: nameList[3], type: 'line',}
+		]
+		option.xAxis.data = chartDataFlow(props.currentTime, timeList, 20)
+	} else {
+		option.series = [
+			{data: [], name: nameList[0], type: 'line',},
+			{data: [], name: nameList[1], type: 'line',},
+			{data: [], name: nameList[2], type: 'line',},
+			{data: [], name: nameList[3], type: 'line',}
+		]
+		option.xAxis.data = []; // 清空 x 轴数据
+	}
 	dom.setOption(option);
 }
 
 onMounted(() => {
-	const dom = refInitEcharts(thLine.value, 'green');
+	const dom = refInitEcharts(thLine.value, 'new-blue');
 	window.addEventListener('resize', function () {
 		dom.resize();
 	});
@@ -56,9 +68,14 @@ onMounted(() => {
 	watch(
 		() => props.thValue,
 		() => {
-			if (props.thValue) {
-				refresh(dom)
+			if (props.thValue.length === 0) {
+				dataList1 = [];
+				dataList2 = [];
+				dataList3 = [];
+				dataList4 = [];
+				timeList = [];
 			}
+			refresh(dom)
 		},
 		{deep: true}
 	)

@@ -1,7 +1,7 @@
 <template>
-	<div class="space-y-4 text-center size-full">
+	<div class="space-y-4 text-center size-full rounded-2xl inner-shadow bg-[#f5f5f5]">
 		<div class="flex items-center p-4 rounded h-h">
-			<p class="text-9xl text-green-500 font-bold m-auto">【春眠不觉晓】</p>
+			<p class="text-9xl text-[#3F51B5] font-bold m-auto">【春眠不觉晓】</p>
 		</div>
 	</div>
 </template>
@@ -16,7 +16,6 @@ onMounted(() => {
 
 <style scoped>
 .h-h {
-	height: 55rem;
-	height: calc(100vh - 370px);
+	height: calc(100vh - 272px);
 }
 </style>

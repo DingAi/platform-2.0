@@ -9,7 +9,7 @@ const route = useRoute();
 const mainMinHeight = computed(() => {
 	const headerHeight = () => {
 		const excludedPaths = ['/login', '/register', '/:pathMatch(.*)*', '/modify-pwd'];
-		return excludedPaths.includes(route.path) ? 80 : 152;
+		return excludedPaths.includes(route.path) ? 80 : 172;
 	};
 	return `calc(100vh - ${headerHeight()}px)`;
 });
@@ -29,13 +29,13 @@ onMounted(()=>{
 
 <template>
 	<Nav class="z-max"/>
-	<main :style="{ 'min-height': mainMinHeight }" class="bg-[#212121] pt-10 sm:pt-10">
+	<main :style="{ 'min-height': mainMinHeight }" class="bg-[#ffffff] sm:pt-10">
 		<div class="mx-auto container">
 			<router-view></router-view>
 		</div>
 	</main>
-	<footer class="flex justify-center items-center bg-[#212121] h-20">
-		<p class="text-center text-white">
+	<footer class="flex justify-center items-center bg-[#FFFFFF] h-20">
+		<p class="text-center text-gray-700">
 			杨陵子石科技有限公司
 			<a href="https://beian.miit.gov.cn/#/Integrated/index">陕ICP备2024044716号</a>
 			|
@@ -47,10 +47,6 @@ onMounted(()=>{
 <style scoped>
 .z-max {
 	z-index: 1999;
-}
-
-main {
-	min-height: calc(100vh - 152px);
 }
 
 /* Default styles for mobile (less than 768px) */
@@ -77,16 +73,16 @@ main {
 
 /* Style for <a> tags */
 a {
-	color: #459a66;
+	color: #003f8f;
 	text-decoration: none;
 	transition: color 0.3s;
 }
 
 a:hover {
-	color: #5bc963;
+	color: #2196F3;
 }
 
 a:active {
-	color: #3ae6aa;
+	color: #3F51B5;
 }
 </style>

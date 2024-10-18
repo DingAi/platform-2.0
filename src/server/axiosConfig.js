@@ -21,8 +21,8 @@ apiClient.interceptors.request.use(
         const token = authStore.getToken(); // 调用 store 中的方法获取 token
         
         // 登录和注册接口不需要 token
-        const isAuthRequest = config.url === `${server}login` || config.url === `${xuServer}register`
-            || config.url === `${server}you_x` || config.url === `${server}send_nont` || config.url === `${server}forget_password`
+        const isAuthRequest = config.url === `${server}login` || config.url === `${server}register`
+            || config.url === `${server}register_captcha` || config.url === `${server}modify_password_captcha` || config.url === `${server}modify_password`
             || config.url === `${server}verify_sn`;
         
         if (!isAuthRequest) {

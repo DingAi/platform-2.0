@@ -1,7 +1,7 @@
 <template>
 	<div class="space-y-4 text-center size-full">
-		<div class="flex flex-col md:flex-row justify-between items-center bg-gray-900 pt-2 pb-2 h-24 rounded space-x-2">
-			<div class="flex items-center justify-center h-full w-full md:w-1/4 rounded-tl rounded-bl pl-10 pr-2">
+		<div class="flex flex-col md:flex-row justify-between items-center bg-[#f5f5f5] pt-2 pb-2 h-24 rounded-2xl inner-shadow space-x-2">
+			<div class="flex items-center justify-center h-full w-full md:w-1/4 rounded-2xl pl-10 pr-2">
 				<el-cascader
 					v-model="selectedValues1"
 					:options="snOption"
@@ -11,7 +11,7 @@
 					class="w-full"
 				/>
 			</div>
-			<div class="flex items-center justify-center h-full w-full md:w-1/4 rounded-tl rounded-bl pl-6 pr-2">
+			<div class="flex items-center justify-center h-full w-full md:w-1/4 rounded-2xl rounded-bl pl-6 pr-2">
 				<el-cascader
 					v-model="selectedValues2"
 					:options="equipmentOption"
@@ -22,19 +22,19 @@
 					class="w-full"
 				/>
 			</div>
-			<div class="flex items-center justify-center h-full w-full md:w-2/5 rounded-tl rounded-bl pl-6 pr-2">
+			<div class="flex items-center justify-center h-full w-full md:w-2/5 rounded-2xl rounded-bl pl-6 pr-2">
 				<TimeDatePicker v-model="timeRange"/>
 			</div>
-			<div class="flex items-center justify-center h-full w-full md:w-1/5 rounded-tl rounded-bl p-4">
-				<el-button type="primary" @click="getHistoryData">获取历史数据</el-button>
+			<div class="flex items-center justify-center h-full w-full md:w-1/5 rounded-2xl rounded-bl p-4">
+				<el-button type="primary" @click="getHistoryData" round>获取历史数据</el-button>
 			</div>
 		</div>
 		
-		<div class="flex items-center p-4 rounded h-h" v-if="!isFileLoading1">
-			<p class="text-5xl text-green-500 font-bold m-auto">【选择数据范围或传入文件后加载数据】</p>
+		<div class="flex items-center p-4 rounded-2xl inner-shadow h-h" v-if="!isFileLoading1">
+			<p class="text-5xl text-[#757de8] font-bold m-auto">【选择数据范围或传入文件后加载数据】</p>
 		</div>
 		<div class="flex flex-col md:flex-row w-full analysis-div space-x-0 md:space-x-4" v-else>
-			<div class="w-full md:w-1/3 bg-slate-800 rounded p-4 overflow-auto h-h">
+			<div class="w-full md:w-1/3 bg-slate-800 rounded-2xl inner-shadow p-4 overflow-auto h-h">
 				<el-timeline v-if="isFileLoading1">
 					<el-timeline-item center
 					                  v-for="(item, index) in matParsedData"
@@ -77,40 +77,40 @@
 			</div>
 		</div>
 		
-		<div class="flex flex-col md:flex-row justify-between items-center bg-slate-800 pt-2 pb-2 h-28 rounded space-x-2">
-			<div class="flex items-center justify-center h-full w-full md:w-1/4 rounded-tl rounded-bl pl-20 pr-20">
+		<div class="flex flex-col md:flex-row justify-between items-center bg-[#f5f5f5] inner-shadow pt-2 pb-2 h-28 rounded-2xl space-x-2">
+			<div class="flex items-center justify-center h-full w-full md:w-1/4 rounded-2xl pl-20 pr-20">
 				<file-upload @fileParsed="handleFileParsed">上传数据分析文件</file-upload>
 			</div>
-			<div class="flex flex-col items-center justify-center h-full w-full md:w-1/4 rounded-tl rounded-bl pl-10 pr-10 space-y-4">
+			<div class="flex flex-col items-center justify-center h-full w-full md:w-1/4 rounded-2xl rounded-bl pl-10 pr-10 space-y-4">
 				<span class="font-semibold text-gray-100">箱体体积（V）</span>
 				<el-input-number v-model="boxVolume" :step="0.1"/>
 			</div>
-			<div class="flex flex-col items-center justify-center h-full w-full md:w-1/4 rounded-tl rounded-bl pl-10 pr-10 space-y-4">
+			<div class="flex flex-col items-center justify-center h-full w-full md:w-1/4 rounded-2xl rounded-bl pl-10 pr-10 space-y-4">
 				<span class="font-semibold text-gray-100">底面积（S）</span>
 				<el-input-number v-model="boxArea" :step="0.1"/>
 			</div>
-			<div class="flex flex-col items-center justify-center h-full w-full md:w-1/4 rounded-tl rounded-bl pl-10 pr-10">
+			<div class="flex flex-col items-center justify-center h-full w-full md:w-1/4 rounded-2xl rounded-bl pl-10 pr-10">
 				<submit-button>重新加载图像</submit-button>
 			</div>
 		</div>
 		
-		<div class="flex flex-col md:flex-row justify-between items-center bg-slate-800 pt-2 pb-2 h-28 rounded space-x-2">
-			<div class="flex flex-col items-center justify-center h-full w-full md:w-1/4 rounded-tl rounded-bl pl-10 pr-10">
-				<file-upload @fileParsed="handleHistoryFileParsed">上传历史文件</file-upload>
-			</div>
-		</div>
+<!--		<div class="flex flex-col md:flex-row justify-between items-center bg-slate-800 pt-2 pb-2 h-28 rounded space-x-2">-->
+<!--			<div class="flex flex-col items-center justify-center h-full w-full md:w-1/4 rounded-2xl rounded-bl pl-10 pr-10">-->
+<!--				<file-upload @fileParsed="handleHistoryFileParsed">上传历史文件</file-upload>-->
+<!--			</div>-->
+<!--		</div>-->
 		
-		<div class="flex flex-col md:flex-row justify-center items-center bg-slate-800 p-10 rounded" v-if="isFileLoading2">
-			<el-transfer
-				v-model="selectHistoryKeyList"
-				:data="historyKeyList"
-				filterable
-				:titles="['备份的数据', '要处理的数据']"
-			/>
-		</div>
-		<div class="flex items-center p-4 rounded h-96" v-if="!isFileLoading2">
-			<p class="text-5xl text-green-500 font-bold m-auto">【传入备份的本地文件后加载数据】</p>
-		</div>
+<!--		<div class="flex flex-col md:flex-row justify-center items-center bg-slate-800 p-10 rounded" v-if="isFileLoading2">-->
+<!--			<el-transfer-->
+<!--				v-model="selectHistoryKeyList"-->
+<!--				:data="historyKeyList"-->
+<!--				filterable-->
+<!--				:titles="['备份的数据', '要处理的数据']"-->
+<!--			/>-->
+<!--		</div>-->
+<!--		<div class="flex items-center p-4 rounded h-96" v-if="!isFileLoading2">-->
+<!--			<p class="text-5xl text-green-500 font-bold m-auto">【传入备份的本地文件后加载数据】</p>-->
+<!--		</div>-->
 	</div>
 </template>
 
@@ -121,6 +121,7 @@ import AveDataChart from "@/components/echarts/AveDataLineChart.vue";
 import FileUpload from "@/components/FileUpload.vue";
 import {excelTimestampToDate, showMessage, transposeMatrix} from "@/utils/tools-functions.js";
 import * as XLSX from 'xlsx';
+import SubmitButton from "@/components/SubmitButton.vue";
 
 
 // 用于存储解析后的数据

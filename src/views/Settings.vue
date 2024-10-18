@@ -3,31 +3,31 @@
 		<div class="flex md:flex-row flex-col justify-between">
 			<div class="md:w-1/6 sticky pr-6 border-r pt-6">
 				<!-- Sticky menu -->
-				<nav class="space-y-2 sticky top-52 text-white">
+				<nav class="space-y-2 sticky top-52 pb-4">
 					<ul class="space-y-2">
 						<li>
 							<button @click="scrollToSection('section1'); activeSection = 'section1';"
-							        :class="{ 'bg-green-600': activeSection === 'section1' }"
-							        class="w-full text-left p-2 hover:bg-green-600 rounded">设备管理
+							        :class="{ 'bg-[#3F51B5] text-white': activeSection === 'section1' }"
+							        class="w-full text-left p-2 hover:bg-[#3F51B5] hover:text-white rounded">设备管理
 							</button>
 						</li>
 						<li>
 							<button @click="scrollToSection('section2'); activeSection = 'section2';"
-							        :class="{ 'bg-green-600': activeSection === 'section2' }"
-							        class="w-full text-left p-2 hover:bg-green-600 rounded">SN码激活
+							        :class="{ 'bg-[#3F51B5] text-white': activeSection === 'section2' }"
+							        class="w-full text-left p-2 hover:bg-[#3F51B5] hover:text-white rounded">SN码激活
 							</button>
 						</li>
 						<hr class="my-6 border-gray-600"/>
 						<li>
 							<button @click="scrollToSection('section3'); activeSection = 'section3';"
-							        :class="{ 'bg-green-600': activeSection === 'section3' }"
-							        class="w-full text-left p-2 hover:bg-green-600 rounded">操作日志
+							        :class="{ 'bg-[#3F51B5] text-white': activeSection === 'section3' }"
+							        class="w-full text-left p-2 hover:bg-[#3F51B5] hover:text-white rounded">操作日志
 							</button>
 						</li>
 						<li>
 							<button @click="scrollToSection('section4');activeSection = 'section4';"
-							        :class="{ 'bg-green-600': activeSection === 'section4' }"
-							        class="w-full text-left p-2 hover:bg-green-600 rounded">硬件驱动更新
+							        :class="{ 'bg-[#3F51B5] text-white': activeSection === 'section4' }"
+							        class="w-full text-left p-2 hover:bg-[#3F51B5] hover:text-white rounded">硬件驱动更新
 							</button>
 						</li>
 					</ul>
@@ -35,22 +35,21 @@
 			</div>
 			<div class="md:w-5/6">
 				<div class="content space-y-4 pr-4 pl-4">
-					<!--            Section01-->
-					<div id="section1" class="section rounded pl-20 pr-20 bg-[#2f2f2f]">
+					<!--Section01-->
+					<div id="section1" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow h-auto">
 						<div class="flex items-center">
-							<h1 class="text-4xl text-white mb-6">设备列表</h1>
-							<button class="ml-auto rounded hover:text-green-500">清空日志</button>
+							<h1 class="text-4xl text-[#333333] mb-6 ">设备管理</h1>
 						</div>
 						<hr class="my-6 border-gray-600"/>
 						<div class="mb-12 overflow-auto">
-								<TableTemplate
-									:header="header"
-									:column="column"
-									:showButton="true"
-									buttonLabel="Del"
-									:onButtonClick="deleteClick"
-									:isLoading="addLoading"
-								/>
+							<TableTemplate
+								:header="header"
+								:column="column"
+								:showButton="true"
+								buttonLabel="Del"
+								:onButtonClick="deleteClick"
+								:isLoading="addLoading"
+							/>
 						</div>
 						
 						<el-dialog v-model="dialogVisible" title="确定要删除设备【xxx】?" width="500">
@@ -66,14 +65,14 @@
 							</template>
 						</el-dialog>
 					</div>
-					<!--            Section02-->
-					<div id="section2" class="section rounded p-20 bg-[#2f2f2f]">
-						<h1 class="text-4xl text-white mb-6 mt-4">SN 码激活</h1>
+					<!--Section02-->
+					<div id="section2" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow">
+						<h1 class="text-4xl mb-6 mt-4">SN 码激活</h1>
 						<hr class="my-6 border-gray-600"/>
 						<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
 							<form class="space-y-2" @submit.prevent="addEquipment">
 								<div>
-									<label for="sn" class="block text-sm font-medium leading-6 text-white p-2">设备 SN
+									<label for="sn" class="block text-sm font-medium leading-6 p-2">设备 SN
 										码</label>
 									<div class="mt-1">
 										<input v-model="sn"
@@ -82,21 +81,21 @@
 										       type="text"
 										       required
 										       @blur="validateSnFormat(sn)"
-										       class="block w-full rounded-md border-0 p-2 text-white shadow-sm ring-1
-											ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset
-											focus:ring-green-600 sm:text-sm sm:leading-6"
+										       class="block w-full rounded-md border-0 p-2 shadow-sm ring-1
+											ring-inset ring-[#757de8] placeholder:text-gray-400 focus:ring-2 focus:ring-inset
+											focus:ring-[#3F51B5] sm:text-sm sm:leading-6"
 										/>
 									</div>
 								</div>
 								
 								<div>
 									<label for="en"
-									       class="block text-sm font-medium leading-6 text-white p-2">设备名</label>
+									       class="block text-sm font-medium leading-6 p-2">设备名</label>
 									<div class="mt-1">
 										<input v-model="en" id="en" name="en" type="text" required
-										       class="block w-full rounded-md border-0 p-2 text-white shadow-sm ring-1
-											ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset
-											focus:ring-green-600 sm:text-sm sm:leading-6"
+										       class="block w-full rounded-md border-0 p-2 shadow-sm ring-1
+											ring-inset ring-[#757de8] placeholder:text-gray-400 focus:ring-2 focus:ring-inset
+											focus:ring-[#3F51B5] sm:text-sm sm:leading-6"
 										/>
 									</div>
 								</div>
@@ -107,11 +106,11 @@
 							</form>
 						</div>
 					</div>
-					<!--            Section03-->
-					<div id="section3" class="section text-white rounded bg-[#2f2f2f]">
+					<!--Section03-->
+					<div id="section3" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow h-auto">
 						<div class="flex items-center">
-							<h1 class="text-4xl text-white mb-6">日志</h1>
-							<button class="ml-auto rounded hover:text-green-500">
+							<h1 class="text-4xl mb-6">操作日志</h1>
+							<button class="ml-auto rounded hover:text-green-500" @click="clearLog">
 								清空日志
 							</button>
 						</div>
@@ -124,45 +123,44 @@
 							:page-row-number="10"
 						/>
 					</div>
-					<!--            Section04-->
-					<div id="section4" class="section text-white rounded bg-[#2f2f2f]">
-						<h1 class="text-4xl text-white mb-6">硬件驱动更新</h1>
+					<!--Section04-->
+					<div id="section4" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow h-auto">
+						<h1 class="text-4xl mb-6">硬件驱动更新</h1>
 						<hr class="my-6 border-gray-600"/>
-						<div class="flex justify-center w-full h-20">
-							<div class="flex w-1/3 p-2 items-start">
-								<el-upload ref="upload"
-								           :http-request="fileUpload"
-								           :limit="1"
-								           :auto-upload="false"
-								           @change="handleFileChange"
-								           :before-upload="beforeUpload"
-								>
-									<template #trigger>
-										<el-button type="primary">选择二进制更新文件</el-button>
-									</template>
-								</el-upload>
-							</div>
-							<div class="flex w-1/3 p-2 justify-start">
-								<el-select v-model="uploadSelectValue"
-								           placeholder="选择要更新的设备"
-								           @change="handleSelectChange"
-								           style="width: 240px">
-									<el-option v-for="item in snOption"
-									           :key="item.value"
-									           :label="item.label"
-									           :value="item.value"
-									/>
-								</el-select>
-							</div>
-							<div class="flex w-1/3 p-2 justify-end">
-								<el-button
-									class="ml-3"
-									type="success"
-									:disabled="!fileSelected || !uploadSelectValue"
-									@click="submitUpload">
-									确定更新
-								</el-button>
-							</div>
+						<div class="flex-col md:flex-row ">
+								<div class="flex justify-center p-8">
+									<el-upload ref="upload"
+									           :http-request="fileUpload"
+									           :limit="1"
+									           :auto-upload="false"
+									           @change="handleFileChange"
+									           :before-upload="beforeUpload"
+									>
+										<template #trigger>
+											<el-button type="primary">选择二进制更新文件</el-button>
+										</template>
+									</el-upload>
+								</div>
+								<div class="flex justify-center p-6">
+									<el-select v-model="uploadSelectValue"
+									           placeholder="选择要更新的设备"
+									           @change="handleSelectChange"
+									           style="width: 240px">
+										<el-option v-for="item in snOption"
+										           :key="item.value"
+										           :label="item.label"
+										           :value="item.value"
+										/>
+									</el-select>
+								</div>
+								<div class="flex justify-center p-4">
+									<el-button
+										class="ml-3"
+										:disabled="!fileSelected || !uploadSelectValue"
+										@click="submitUpload">
+										确定更新
+									</el-button>
+								</div>
 						</div>
 					</div>
 				</div>
@@ -173,11 +171,7 @@
 
 <script setup lang="js">
 import {computed, onMounted, ref} from "vue";
-import {
-	getLogData,
-	postDeleteEquipment,
-	postEquipmentAdd, postFileUpload,
-} from "@/server/request-apis.js";
+import {getClearLog, getLogData, postDeleteEquipment, postSnActivation, postFileUpload,} from "@/server/request-apis.js"
 import TableTemplate from "@/components/TableTemplate.vue";
 import {useAuthStore} from "@/stores/userStore.js";
 import {storeToRefs} from "pinia";
@@ -243,6 +237,7 @@ const scrollToSection = (sectionId) => {
 // 添加设备
 async function addEquipment() {
 	addLoading.value = true;
+	//正则判断
 	if (!sn.value.match(/^[ABCD][A-Z0-9]{9}[A-Z]\d{10}$/)) {
 		isSNValid.value = false;
 		snError.value = true;
@@ -253,7 +248,7 @@ async function addEquipment() {
 	let res; // 在函数作用域内声明 res
 	try {
 		if (validateSnFormat(sn.value)) {
-			res = await postEquipmentAdd(sn.value, en.value);
+			res = await postSnActivation(sn.value, en.value);
 			await refreshEquipments();
 			await getLog();
 		} else {
@@ -385,6 +380,19 @@ const fileUpload = async ({file}) => {
 	}
 };
 
+
+// 清除日志
+const clearLog = async () => {
+	try {
+		await getClearLog();
+	} catch (e) {
+		console.log(e)
+	} finally {
+		await getLog()
+		showMessage('日志已清除', 'success');
+	}
+}
+
 // 组件挂载后获取日志
 onMounted(async () => {
 	await getLog();
@@ -398,7 +406,6 @@ onMounted(async () => {
 
 .section {
 	height: 55rem;
-	padding: 5rem;
 }
 
 :deep(.el-menu) {
