@@ -19,6 +19,7 @@ let option = JSON.parse(JSON.stringify(fluxOption));;
 
 
 const refresh = (dom, ec, ew, timeRangeList) => {
+	console.log(props.fluxData)
 	option.series[0].data = ec;
 	option.series[1].data = ew;
 	option.xAxis.data = timeRangeList;
@@ -27,7 +28,7 @@ const refresh = (dom, ec, ew, timeRangeList) => {
 }
 
 onMounted(() => {
-	const dom = refInitEcharts(fluxDom.value, 'dark-bold');
+	const dom = refInitEcharts(fluxDom.value);
 	window.addEventListener('resize', function () {
 		dom.resize();
 	});

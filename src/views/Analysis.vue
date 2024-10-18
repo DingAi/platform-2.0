@@ -1,7 +1,7 @@
 <template>
 	<div class="space-y-4 text-center size-full">
-		<div class="flex flex-col md:flex-row justify-between items-center bg-[#f5f5f5] pt-2 pb-2 h-24 rounded-2xl inner-shadow space-x-2">
-			<div class="flex items-center justify-center h-full w-full md:w-1/4 rounded-2xl pl-10 pr-2">
+		<div class="flex flex-col md:flex-row justify-between items-stretch bg-[#f5f5f5] rounded-2xl py-2 space-y-4 md:space-y-0 md:space-x-2 inner-shadow">
+			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
 				<el-cascader
 					v-model="selectedValues1"
 					:options="snOption"
@@ -13,6 +13,7 @@
 			</div>
 			<div class="flex items-center justify-center h-full w-full md:w-1/4 rounded-2xl rounded-bl pl-6 pr-2">
 				<el-cascader
+					v-if="isMultiChannel"
 					v-model="selectedValues2"
 					:options="equipmentOption"
 					collapse-tags
@@ -22,62 +23,64 @@
 					class="w-full"
 				/>
 			</div>
-			<div class="flex items-center justify-center h-full w-full md:w-2/5 rounded-2xl rounded-bl pl-6 pr-2">
+			<!-- 时间选择器 -->
+			<div class="flex items-center justify-center w-full md:w-2/5 rounded-xl px-8">
 				<TimeDatePicker v-model="timeRange"/>
 			</div>
-			<div class="flex items-center justify-center h-full w-full md:w-1/5 rounded-2xl rounded-bl p-4">
-				<el-button type="primary" @click="getHistoryData" round>获取历史数据</el-button>
+			<div class="flex items-center justify-center h-full w-full md:w-1/5 rounded-2xl p-4">
+				<el-button type="primary" @click="singleAnalysisData" round>加载数据分析</el-button>
 			</div>
 		</div>
 		
-		<div class="flex items-center p-4 rounded-2xl inner-shadow h-h" v-if="!isFileLoading1">
-			<p class="text-5xl text-[#757de8] font-bold m-auto">【选择数据范围或传入文件后加载数据】</p>
-		</div>
-		<div class="flex flex-col md:flex-row w-full analysis-div space-x-0 md:space-x-4" v-else>
-			<div class="w-full md:w-1/3 bg-slate-800 rounded-2xl inner-shadow p-4 overflow-auto h-h">
+<!--		<div class="flex items-center p-4 rounded-2xl inner-shadow h-h" v-if="!isFileLoading1">-->
+<!--			<p class="text-5xl text-[#757de8] font-bold m-auto">【选择数据范围或传入文件后加载数据】</p>-->
+<!--		</div>-->
+		<div class="flex flex-col md:flex-row w-full analysis-div space-x-0 md:space-x-4">
+			<div class="w-full md:w-1/3 bg-[#f5f5f5] rounded-2xl inner-shadow p-4 overflow-auto h-h">
 				<el-timeline v-if="isFileLoading1">
-					<el-timeline-item center
-					                  v-for="(item, index) in matParsedData"
+					<el-timeline-item center v-for="(item, index) in matParsedData"
 					                  :key="index"
-					                  :timestamp="(excelTimestampToDate(item[0]) + ' - ' + excelTimestampToDate(item[1]))"
+					                  :timestamp="item[0] + ' - ' + item[1]"
 					                  placement="top">
 						<el-card>
-							<div style="width: 100%;">
-								<el-text type="success">INDEX：{{ index + 1 }}</el-text>
-							</div>
-							<div class="size-full space-y-2">
-								<p>
-                                    <span class="badge open-color-auto m-1 text-pink-600">
-                                        K<sub>(CO<sub>2</sub>)</sub>：{{ item[2].toFixed(6) }}
+							
+							<div class="size-full space-y-4 p-2">
+								<div class="w-full flex flex-row">
+									<span class="text-gray-500">Index：{{ index + 1 }}</span>
+								</div>
+								<div class="flex flex-row justify-between space-x-4 items-center px-4">
+                                    <span class="badge open-color-auto p-2 text-white bg-pink-500 rounded w-36">
+                                        K<sub>(CO<sub>2</sub>)</sub> ：{{ item[2]}}
                                     </span>
-									<span class="badge open-color-auto m-1">
-                                        R<sup>2</sup><sub>(CO<sub>2</sub>)</sub>：{{ item[3].toFixed(6) }}
+									<el-divider direction="vertical" />
+									<span class="badge open-color-auto text-gray-500">
+                                        R<sup>2</sup><sub>(CO<sub>2</sub>)</sub> ：{{ item[3] }}
                                     </span>
-								</p>
-								<p>
-                                    <span class="badge open-color-auto m-1 text-green-500">
-                                        K<sub>(H<sub>2</sub>O)</sub>：{{ item[4].toFixed(6) }}
+								</div>
+								<div class="flex flex-row justify-between space-x-4 items-center px-4">
+                                    <span class="badge open-color-auto p-2 text-white bg-[#757de8] rounded w-36">
+                                        K<sub>(H<sub>2</sub>O)</sub>  ：{{ item[4]}}
                                     </span>
-									<span class="badge open-color-auto m-1">
-                                        R<sup>2</sup><sub>(H<sub>2</sub>O)</sub>：{{ item[5].toFixed(6) }}
+									<el-divider direction="vertical" />
+									<span class="badge open-color-auto text-gray-500">
+                                        R<sup>2</sup><sub>(H<sub>2</sub>O)</sub> ：{{ item[5]}}
                                     </span>
-								</p>
+								</div>
 							</div>
 						</el-card>
 					</el-timeline-item>
 				</el-timeline>
 			</div>
-			<div class="w-full md:w-3/4 h-full flex flex-col items-center space-y-4">
-				<div class="w-full h-1/2 bg-slate-800 rounded">
-					<AveDataChart :aveData="aveDataList"/>
+			<div class="w-full md:w-3/4 h-auto md:h-full flex flex-col items-center space-y-4">
+				<div class="w-full h-96 md:h-1/2 bg-[#f5f5f5] rounded-2xl inner-shadow">
+					<AveDataChart :aveData="aveDataList" :x-axis="xAxisData" :type="typeIndex"/>
 				</div>
-				<div class="w-full h-1/2 bg-slate-800 rounded">
+				<div class="w-full h-96 md:h-1/2 bg-[#f5f5f5] rounded-2xl inner-shadow">
 					<FluxHistoryChart :flux-data="fluxList"/>
 				</div>
 			</div>
 		</div>
-		
-		<div class="flex flex-col md:flex-row justify-between items-center bg-[#f5f5f5] inner-shadow pt-2 pb-2 h-28 rounded-2xl space-x-2">
+		<div class="flex flex-col md:flex-row justify-between items-center bg-[#f5f5f5] inner-shadow pt-2 pb-2 h-96 md:h-28 rounded-2xl space-x-2">
 			<div class="flex items-center justify-center h-full w-full md:w-1/4 rounded-2xl pl-20 pr-20">
 				<file-upload @fileParsed="handleFileParsed">上传数据分析文件</file-upload>
 			</div>
@@ -94,35 +97,62 @@
 			</div>
 		</div>
 		
-<!--		<div class="flex flex-col md:flex-row justify-between items-center bg-slate-800 pt-2 pb-2 h-28 rounded space-x-2">-->
-<!--			<div class="flex flex-col items-center justify-center h-full w-full md:w-1/4 rounded-2xl rounded-bl pl-10 pr-10">-->
-<!--				<file-upload @fileParsed="handleHistoryFileParsed">上传历史文件</file-upload>-->
-<!--			</div>-->
-<!--		</div>-->
+		<!--		<div class="flex flex-col md:flex-row justify-between items-center bg-slate-800 pt-2 pb-2 h-28 rounded space-x-2">-->
+		<!--			<div class="flex flex-col items-center justify-center h-full w-full md:w-1/4 rounded-2xl rounded-bl pl-10 pr-10">-->
+		<!--				<file-upload @fileParsed="handleHistoryFileParsed">上传历史文件</file-upload>-->
+		<!--			</div>-->
+		<!--		</div>-->
 		
-<!--		<div class="flex flex-col md:flex-row justify-center items-center bg-slate-800 p-10 rounded" v-if="isFileLoading2">-->
-<!--			<el-transfer-->
-<!--				v-model="selectHistoryKeyList"-->
-<!--				:data="historyKeyList"-->
-<!--				filterable-->
-<!--				:titles="['备份的数据', '要处理的数据']"-->
-<!--			/>-->
-<!--		</div>-->
-<!--		<div class="flex items-center p-4 rounded h-96" v-if="!isFileLoading2">-->
-<!--			<p class="text-5xl text-green-500 font-bold m-auto">【传入备份的本地文件后加载数据】</p>-->
-<!--		</div>-->
+		<!--		<div class="flex flex-col md:flex-row justify-center items-center bg-slate-800 p-10 rounded" v-if="isFileLoading2">-->
+		<!--			<el-transfer-->
+		<!--				v-model="selectHistoryKeyList"-->
+		<!--				:data="historyKeyList"-->
+		<!--				filterable-->
+		<!--				:titles="['备份的数据', '要处理的数据']"-->
+		<!--			/>-->
+		<!--		</div>-->
+		<!--		<div class="flex items-center p-4 rounded h-96" v-if="!isFileLoading2">-->
+		<!--			<p class="text-5xl text-green-500 font-bold m-auto">【传入备份的本地文件后加载数据】</p>-->
+		<!--		</div>-->
 	</div>
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import FluxHistoryChart from "@/components/echarts/FluxChart.vue";
 import AveDataChart from "@/components/echarts/AveDataLineChart.vue";
 import FileUpload from "@/components/FileUpload.vue";
 import {excelTimestampToDate, showMessage, transposeMatrix} from "@/utils/tools-functions.js";
 import * as XLSX from 'xlsx';
 import SubmitButton from "@/components/SubmitButton.vue";
+import {useAuthStore} from "@/stores/userStore.js";
+import {storeToRefs} from "pinia";
+import TimeDatePicker from "@/components/ElementTimeDatePicker.vue";
+import {postSingleAnalysisData} from "@/server/request-apis.js";
 
+// Pinia数据
+const authStore = useAuthStore();
+const {SCGData} = storeToRefs(authStore);
+
+// 选择用数据
+const selectedValues1 = ref("AE0XAOJY18G2409000003");
+const selectedValues2 = ref([]);
+const snOption = computed(() => {
+	let option = []
+	for (let i = 0; i < SCGData.value[0].length; i++) {
+		option.push({
+			value: SCGData.value[0][i],
+			label: SCGData.value[1][i]
+		})
+	}
+	return option
+});
+// 判断选择的是否是多通道数据
+const isMultiChannel = computed(() => {
+	return selectedValues1.value[0] === 'B';
+})
+const timeRange = ref(["2024-10-18 05:38:40", "2024-10-18 10:20:40"])
+// const timeRange = ref(getTimeRange(6))
 
 // 用于存储解析后的数据
 const xlsxFileData1 = ref(null);
@@ -131,15 +161,42 @@ const xlsxFileData2 = ref(null);
 const matParsedData = ref([]);
 const isFileLoading1 = ref(false);
 const isFileLoading2 = ref(false);
+const typeIndex = ref(0);
+const xAxisData = ref([])  //X轴
 const fluxList = ref({})
 const aveDataList = ref([])
+
 const boxVolume = ref(1)
 const boxArea = ref(1)
+
 const historyKeyList = ref([])
 const selectedData = ref({})
-const selectHistoryKeyList = ref([])
 const timeRangeList = ref([])
 
+// 获取分析的数据
+const singleAnalysisData = async () => {
+	typeIndex.value = 0;
+	const res = await postSingleAnalysisData(selectedValues1.value, timeRange.value);
+	
+	for (let i = 0; i < res.data.analyze_data[0].length; i++) {
+		// 图标用X轴
+		xAxisData.value.push(res.data.analyze_data[8][i] + ' - ' + res.data.analyze_data[9][i]);
+		// 时间线用轴
+		timeRangeList.value.push([res.data.analyze_data[9][i], res.data.analyze_data[9][i]])
+	}
+	aveDataList.value = [res.data.analyze_data[6], res.data.analyze_data[7]]
+	fluxList.value = { ec: res.data.analyze_data[2], ew: res.data.analyze_data[5], time: xAxisData }
+	let timeLineData = [
+		res.data.analyze_data[8],
+		res.data.analyze_data[9],
+		res.data.analyze_data[0],
+		res.data.analyze_data[1],
+		res.data.analyze_data[3],
+		res.data.analyze_data[4],
+	]
+	matParsedData.value = transposeMatrix(timeLineData)
+	isFileLoading1.value = true;
+}
 
 // 处理传递过来的数据分析数据
 const handleFileParsed = (data) => {
@@ -176,11 +233,8 @@ const handleFileParsed = (data) => {
 	
 	//通量图表数据
 	fluxList.value = {ec: data['碳通量'], ew: data['水通量'], time: xAxisData}
-	console.log('时间范围数组数据:', timeRangeList.value);
-	
 	isFileLoading1.value = true;
 };
-
 
 //修改体积面积比值后对通量数值进行处理
 const modifyVSProportion = () => {
@@ -188,7 +242,6 @@ const modifyVSProportion = () => {
 	fluxList.value.ec = fluxList.value.ec.map(value => value * proportion)
 	fluxList.value.ew = fluxList.value.ew.map(value => value * proportion)
 }
-
 
 // 处理传递过来的历史数据（第二个Excel）
 const handleHistoryFileParsed = (data) => {
@@ -211,7 +264,6 @@ const handleHistoryFileParsed = (data) => {
 	}
 };
 
-
 // Element Plus穿梭框当数据从左侧移动到右侧时触发
 const handleTransferChange = (newTargetKeys, direction, moveKeys) => {
 	console.log('右侧的Key', moveKeys)
@@ -222,7 +274,6 @@ const handleTransferChange = (newTargetKeys, direction, moveKeys) => {
 	console.log('选中后的数据：' + selectedData)
 	
 };
-
 
 //最后的按钮用来生成xlsx文件
 const lastProcess = () => {
@@ -261,7 +312,6 @@ const lastProcess = () => {
 	}
 }
 
-
 //时间点对其时间段的处理函数
 function findNearestTimePoints(timeRanges, timePoints) {
 	let processedData = []
@@ -290,8 +340,9 @@ function findNearestTimePoints(timeRanges, timePoints) {
 	return transposeMatrix(processedData)
 }
 
+// 生成工作表
 const exportToExcel = (data, filename = 'PagePrecessed.xlsx') => {
-	// 生成工作表
+	
 	const worksheet = XLSX.utils.aoa_to_sheet(data);
 	const workbook = XLSX.utils.book_new();
 	XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
@@ -301,6 +352,9 @@ const exportToExcel = (data, filename = 'PagePrecessed.xlsx') => {
 	showMessage('数据已导出', 'success')
 }
 
+onMounted(() => {
+	singleAnalysisData();
+})
 </script>
 
 

@@ -1,5 +1,5 @@
 const fluxOption = {
-    color: ["#ec4899", "#22c55e",],
+    color: ["#db2777", "#3F51B5",],
     title: {
         text: '通量历史记录',
         left: 'center'

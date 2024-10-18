@@ -29,7 +29,8 @@ const apiEndpoints = {
     upload: fastapiServer + "mqtt/upload", //OTA文件上传
     modifyPasswordCaptcha: server + "modify_password_captcha", //修改密码时的手机验证
     registerSnVerify: server + "verify_sn",  //注册的时候先验证SN码有效
-    clearLog: server + "clear_log" //清除所有日志
+    clearLog: server + "clear_log", //清除所有日志
+    singleAnalysisData: server + "single_analysis_data" //清除所有日志
 };
 
 // 定义API请求函数
@@ -64,7 +65,7 @@ const postDownloadIsComplete = (sn) =>
 const getLogData = () => apiClient.get(apiEndpoints.logData);
 
 // 清除所有日志
-const getClearLog= () => apiClient.get(apiEndpoints.clearLog);
+const getClearLog = () => apiClient.get(apiEndpoints.clearLog);
 
 // 删除设备
 const postDeleteEquipment = (sn) =>
@@ -103,7 +104,7 @@ const postCaptcha = (phone) =>
 
 // 修改密码
 const postModifyPassword = (phone, cap, pwd) =>
-    apiClient.post(apiEndpoints.forgetPassword, {phone, cap, pwd});
+    apiClient.post(apiEndpoints.modifyPassword, {phone, cap, pwd});
 
 // 注册时SN码验证
 const postRegisterSnVerify = (sn) => apiClient.post(apiEndpoints.registerSnVerify, {sn});
@@ -111,7 +112,8 @@ const postRegisterSnVerify = (sn) => apiClient.post(apiEndpoints.registerSnVerif
 // 单通道设置时间
 const postSetTime = (value, index, sn) => apiClient.post(apiEndpoints.setTime, {sn, value, index});
 
-
+// 数据分析的数据
+const postSingleAnalysisData = (sn, time_frame) => apiClient.post(apiEndpoints.singleAnalysisData, {sn, time_frame});
 
 
 // 导出所有的API函数
@@ -137,4 +139,5 @@ export {
     postRegisterSnVerify,
     postSetTime,
     getClearLog,
+    postSingleAnalysisData,
 };

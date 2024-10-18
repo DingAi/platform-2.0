@@ -17,7 +17,7 @@
 			md:h-96 rounded-2xl bg-[#f5f5f5] inner-shadow p-4" v-show="!isConnectState">
 			<!-- 第一个图表 -->
 			<div class="rounded w-full md:w-3/12 h-96 md:h-full p-2">
-<!--				<ApPieChart :ap-data="apValue"/>-->
+				<!--				<ApPieChart :ap-data="apValue"/>-->
 				<ApGaugeChart :ap-data="apValue"/>
 			</div>
 			<!-- 第二个图表 -->
@@ -25,7 +25,7 @@
 				<ThLineChart :th-value="thValue" :current-time="currentTime"/>
 			</div>
 			<!-- 右侧操作区 -->
-			<div class="rounded w-full md:w-2/12 h-96 md:h-full space-y-4 flex flex-col overflow-hidden">
+			<div class="rounded w-full md:w-2/12 h-96 md:h-full space-y-4 flex flex-col overflow-hidden justify-start md:justify-center">
 				<div class="h-1/6 rounded overflow-hidden flex items-center p-6 justify-center">
 					<el-button type="primary" @click="dialogShow" round>时间设置</el-button>
 				</div>
@@ -33,7 +33,9 @@
 				<!-- 时间弹窗 -->
 				<el-dialog v-model="dialogVisible" title="时间间隔状态" :width="dialogWidth">
 					<div class="flex flex-col w-full space-y-4 justify-center items-center mb-12 overflow-auto bg-[#f5f5f5] p-4">
-						<div class="flex space-x-0 md:space-x-2 w-full" v-for="(item, index) in setTimeList" :key="index">
+						<div class="flex space-x-0 md:space-x-2 w-full"
+						     v-for="(item, index) in setTimeList"
+						     :key="index">
 							<div class="md:w-1/4 flex items-center justify-center">
 								<p class="text-sm text-center">{{ setTimeNameList[index] }}</p>
 							</div>
@@ -44,23 +46,24 @@
 								<span class="font-bold">秒</span>
 							</div>
 							<div class="md:w-1/4 flex justify-center px-8">
-								<el-button type="primary" @click="setTimeValue(setTimeList[index], index)" class="w-full" round>设置</el-button>
+								<el-button type="primary"
+								           @click="setTimeValue(setTimeList[index], index)"
+								           class="w-full"
+								           round>设置
+								</el-button>
 							</div>
 						</div>
 					</div>
 				</el-dialog>
-				
-				
-				<div v-for="(item, index) in switchList"
-				     :key="index"
-				     class="h-1/6 rounded overflow-hidden flex flex-row items-center justify-center p-6">
+				<!--手动开关-->
+				<div class="h-1/6 rounded overflow-hidden flex flex-row items-center justify-center md:justify-between p-5">
 					<el-switch
-						v-model="switchList[index]"
-						:active-value="1"
-						:inactive-value="0"
+						v-model="isManual"
+						:active-value="true"
+						:inactive-value="false"
 						size="large"
 						:loading="loadingList[index]"
-						@change="switchTrigger(index)"
+						@change="manualSwitchTrigger"
 					>
 						<template #active-action>
 							<span class="custom-active-action">T</span>
@@ -69,20 +72,43 @@
 							<span class="custom-inactive-action">F</span>
 						</template>
 					</el-switch>
-					<span class="text-sm p-2">-{{ switchNameList[index] }}</span>
+					<el-divider direction="vertical" />
+					<span class="text-sm p-2">手动控制</span>
+				</div>
+				<!--开关列表-->
+				<div v-for="(item, index) in switchList" :key="index"
+				     class="h-1/6 rounded overflow-hidden flex flex-row items-center md:justify-between p-5">
+					<el-switch
+						v-model="switchList[index]"
+						:active-value="1"
+						:inactive-value="0"
+						size="large"
+						:loading="loadingList[index]"
+						@change="switchTrigger(index)"
+						:disabled="isManual"
+					>
+						<template #active-action>
+							<span class="custom-active-action">T</span>
+						</template>
+						<template #inactive-action>
+							<span class="custom-inactive-action">F</span>
+						</template>
+					</el-switch>
+					<el-divider direction="vertical" />
+					<span class="text-sm p-2 text-whit w-20">{{ switchNameList[index] }}</span>
 				</div>
 			</div>
 		</div>
 		
 		<!-- 传感器数据列表 -->
-		<div class="justify-between items-center bg-[#f5f5f5] p-6 px-6 md:px-20 h-full rounded-2xl pb-10 inner-shadow" >
+		<div class="justify-between items-center bg-[#f5f5f5] p-6 px-6 md:px-20 h-full rounded-2xl pb-10 inner-shadow">
 			<div class="flex items-center flex-col md:flex-row">
 				<h1 class="text-2xl md:text-4xl mb-6">传感器数据列表</h1>
 			</div>
 			<table-template :column="sensorCol"
 			                :header="sensorHeader"
 			                :is-loading="sensorLoading"
-			                :page-row-number="20"/>
+			                :page-row-number="16"/>
 		</div>
 	</div>
 </template>
@@ -122,10 +148,10 @@ const loadingList = ref(Array(switchList.value.length).fill(false)); // 初始�
 const setTimeList = ref([])
 const setTimeNameList = ref(['转速', 'SD卡1写延时', 'SD卡2写延时', '熄屏时间', '开关箱时间', '风扇启动延时', '气体搅拌时间',
 	'读二氧化碳时间', '抽真空时间', '循环时间'])
-const switchValue = ref(0)
 
-// 弹窗
-const dialogVisible = ref(false);
+const isSwitch = ref(false) // 是否执行过开关动作
+const dialogVisible = ref(false); // 弹窗
+const isManual = ref(false); // 手动状态
 
 const dialogWidth = computed(() => {
 	return window.innerWidth < 768 ? '90%' : '30%';
@@ -136,20 +162,24 @@ function dialogShow(rowIndex) {
 }
 
 
-let pollingActive = true;  //是否接收到数据
+let pollingActive = true;  //是否接收到数
 const getRealData = async () => {
 	if (!pollingActive) return;
 	isLoading.value = true;
 	try {
 		const res = await postRealData(sn.value);
-		if (res.data.data_big.length > 0){
+		if (res.data.data_big.length > 0) {
 			isConnectState.value = false;
 			let all_data = res.data.data_big;
 			
 			//赋值给开关变量
-			switchValue.value = all_data[32];
-			
+			if (!isSwitch.value) {
+				await setInitSwitchState(all_data[32])
+				isSwitch.value = true;
+			}
 			currentTime.value = res.data.timest;
+			
+			//表格数据
 			sensorCol.value = transposeMatrix([dataPointNameList, all_data]);
 			subStationId.value = all_data[2];
 			
@@ -160,6 +190,7 @@ const getRealData = async () => {
 				all_data[55].toFixed(2),
 				all_data[56].toFixed(2)
 			];
+			
 			// 气压图表数据
 			apValue.value = [all_data[42].toFixed(2), all_data[43].toFixed(2)];
 			// 时间设置数据
@@ -187,7 +218,7 @@ const getRealData = async () => {
 }
 
 // 开关数据
-async function setInitSwitchState() {
+async function setInitSwitchState(value) {
 	function decimalToBinaryArray(decimal) {
 		if (decimal < 0 || decimal > 15) {
 			throw new Error('请输入0到15之间的正整数');
@@ -197,7 +228,9 @@ async function setInitSwitchState() {
 		// 将二进制字符串转为数组，并将每个字符转换为数字
 		return binaryString.split('').map(Number);
 	}
-	switchList.value = decimalToBinaryArray(switchValue.value);
+	
+	console.log('开关刷新函数的值：', value)
+	switchList.value = decimalToBinaryArray(value);
 }
 
 
@@ -213,7 +246,7 @@ const switchTrigger = async (index) => {
 			switchList.value[index] = switchList.value[index] === 1 ? 1 : 0; // 如果 res.data.state 为 true，则切换状态
 			loadingList.value[index] = false; // 动画停止加载
 			showMessage('【' + switchNameList.value[index] + '】开关执行成功', 'success')
-		}else {
+		} else {
 			switchList.value[index] = switchList.value[index] === 1 ? 0 : 1; // 如果 res.data.state 为 true，则切换状态
 			loadingList.value[index] = false; // 动画停止加载
 			console.log(res.data)
@@ -223,8 +256,12 @@ const switchTrigger = async (index) => {
 	} catch (e) {
 		console.error(e);
 	} finally {
-		getRealData()
+		// await getRealData()
 	}
+}
+
+const manualSwitchTrigger = () =>{
+	isManual.value = !isManual.value;
 }
 
 const setTimeValue = async (value, index) => {
@@ -232,7 +269,7 @@ const setTimeValue = async (value, index) => {
 	if (res.data.state) {
 		loadingList.value[index] = false; // 动画停止加载
 		showMessage('【' + setTimeList.value[index] + '】设置时间成功', 'success')
-	}else {
+	} else {
 		loadingList.value[index] = false; // 动画停止加载
 		showMessage('【' + setTimeList.value[index] + '】设置时间失败', 'error')
 	}
@@ -241,8 +278,6 @@ const setTimeValue = async (value, index) => {
 let intervalId;
 onMounted(async () => {
 	await getRealData()
-	await setInitSwitchState()
-	console.log('asdasddadsadasd')
 	intervalId = setInterval(getRealData, 5000)
 });
 
@@ -252,15 +287,18 @@ onBeforeUnmount(() => {
 });
 
 // 监听路由参数变化，更新设备ID
-watch(() => route.params.id, (newId) => {
-	sn.value = newId
-	let index = SCGData[0].indexOf(sn.value);
-	getRealData();
-	setInitSwitchState();
-	equipmentName.value = ref(SCGData[1][index]);
-	sensorCol.value = []
-	thValue.value = []
-})
+watch(
+	() => route.params.id,
+	(newId) => {
+		sn.value = newId;
+		isSwitch.value = false;
+		let index = SCGData[0].indexOf(sn.value);
+		getRealData();
+		equipmentName.value = ref(SCGData[1][index]);
+		sensorCol.value = [];
+		thValue.value = [];
+	}
+)
 </script>
 
 <style scoped>

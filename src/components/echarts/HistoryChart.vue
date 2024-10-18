@@ -48,7 +48,7 @@ const refresh = (dom) => {
 }
 
 onMounted(() => {
-	const dom = refInitEcharts(historyLine.value, 'new-blue');
+	const dom = refInitEcharts(historyLine.value);
 	window.addEventListener('resize', function () {
 		dom.resize();
 	});

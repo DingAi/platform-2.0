@@ -56,24 +56,24 @@
 			<!-- 桌面版 Menu -->
 			<div class="hidden sm:flex items-center space-x-2">
 				<router-link to="/"
-				             class="hover:bg-[#757de8] px-4 py-2 rounded-xl"
+				             class="hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded-xl"
 				             :class="{ 'bg-[#3F51B5] text-[#ffffff]': $route.path === '/' }">Home
 				</router-link>
 				<router-link to="/history"
-				             class="hover:bg-[#f5f5f5] px-4 py-2 rounded-xl"
+				             class="hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded-xl"
 				             :class="{ 'bg-[#3F51B5] text-[#ffffff]': $route.path === '/history' }">历史
 				</router-link>
 				<router-link to="/analysis"
-				             class="hover:bg-[#f5f5f5] px-4 py-2 rounded-xl"
+				             class="hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded-xl"
 				             :class="{ 'bg-[#3F51B5] text-[#ffffff]': $route.path === '/analysis' }">数据分析
 				</router-link>
 				<router-link to="/download"
-				             class="hover:bg-[#f5f5f5] px-4 py-2 rounded-xl"
+				             class="hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded-xl"
 				             :class="{ 'bg-[#3F51B5] text-[#ffffff]': $route.path === '/download' }">数据下载
 				</router-link>
 				<div class="relative mx-2" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
 					<button :class="{'bg-[#3F51B5] text-[#ffffff]':$route.path.startsWith('/type-a-equipment'),}"
-					        class="flex items-center hover:bg-[#f5f5f5] px-4 py-2 rounded-xl">我的设备
+					        class="flex items-center hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded-xl">我的设备
 					</button>
 					<div v-if="showSubMenu"
 					     class="mt-2 z-10 absolute bg-[#ffffff] shadow py-2 rounded-xl w-48 origin-top-right animate-zoom-in-up">
@@ -81,7 +81,7 @@
 							<router-link @click="toggleSubMenu"
 							             :to="getPath(device)"
 							             :class="{'bg-[#3F51B5] text-[#ffffff] rounded mt-0.5': isActiveRoute(getPath(device))}"
-							             class="block hover:bg-[#f5f5f5] px-4 py-2 rounded mt-0.5">{{ device.name }}
+							             class="block hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded mt-0.5">{{ device.name }}
 							</router-link>
 						</div>
 					</div>

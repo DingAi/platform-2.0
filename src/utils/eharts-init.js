@@ -1,7 +1,8 @@
 import * as echarts from 'echarts';
-import 'echarts/theme/new-blue.js'
+import 'echarts/theme/macarons.js'
 
-const refInitEcharts = (ref, theme="new-blue") => {
+
+const refInitEcharts = (ref, theme="macarons") => {
     if (ref) {
         let dom = echarts.init(ref, theme);
         return dom;

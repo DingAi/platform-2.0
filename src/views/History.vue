@@ -61,10 +61,10 @@ import DataLoading from "@/components/DataLoading.vue";
 const authStore = useAuthStore();
 const {SCGData} = storeToRefs(authStore);
 
-const timeRange = ref(["2024-09-29 18:00:00", "2024-09-30 11:00:00"])
-// const timeRange = ref(getTimeRange(6))
-const selectedValues1 = ref([]);
-const selectedValues2 = ref([]);
+// const timeRange = ref(["2024-09-29 18:00:00", "2024-09-30 11:00:00"])
+const timeRange = ref(getTimeRange(3))
+const selectedValues1 = ref(["AE0XAOJY18G2409000003"]);
+const selectedValues2 = ref([["sensors", "co2_conc_during_meas"],["sensors", "co2_concentration"]]);
 const selectedLabels = ref([])
 const historyData = ref([]);
 const historyLoading = ref(false);
@@ -87,12 +87,12 @@ const equipmentOption = ref(JSON.parse(localStorage.getItem("sensorData")));
 //获取历史数据
 const getHistoryData = async () => {
 	historyLoading.value = true;
+	console.log(selectedValues2.value)
 	try {
 		let typeData = selectProcessData(selectedValues2.value)
 		const res = await postHistoryData(selectedValues1.value[0], typeData.categories, typeData.entries, timeRange.value)
 		historyData.value = res.data.history_data;
 		xAxisData.value = res.data.timest;
-		console.log('历史数据：', res.data)
 	} catch (e){
 		console.log(e);
 	} finally {
@@ -107,6 +107,10 @@ const cascaderProps = {
 	label: 'label', // 选项的标签字段
 	children: 'children' // 子级字段
 }
+
+onMounted(()=>{
+	getHistoryData();
+})
 </script>
 
 <style scoped lang="less">

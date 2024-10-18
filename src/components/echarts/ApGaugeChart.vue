@@ -20,7 +20,7 @@ const refresh = (dom) => {
 }
 
 onMounted(() => {
-	let dom = refInitEcharts(apGauge.value, 'new-blue');
+	let dom = refInitEcharts(apGauge.value);
 	window.addEventListener('resize', function () {
 		dom.resize();
 	});

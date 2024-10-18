@@ -7,10 +7,12 @@
 <script setup>
 import {refInitEcharts} from "@/utils/eharts-init.js";
 import {lineOptionTemplate} from "@/assets/echarts-template/line-chart.js";
-import {onMounted, ref, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 
 const props = defineProps({
 	aveData: Array,
+	xAxis: Array,
+	type: Number,
 })
 
 const aveLine = ref(null);
@@ -33,26 +35,37 @@ const seriesNameList = [
 	'水分绝对浓度_R²'
 ]
 
+const backUpNameList = ['平均箱内温度','平均箱内湿度'];
+
+const indexNameList = computed(() => {
+	if (props.type === 0){
+		return backUpNameList;
+	} else {
+		return seriesNameList;
+	}
+})
+
 const refresh = (dom, option) => {
 	let seriesList = []
-	for (let i = 1; i < props.aveData.length; i++) {
+	for (let i = 0; i < props.aveData.length; i++) {
 		seriesList.push({
 			data: props.aveData[i],
-			name: seriesNameList[i],
+			name: indexNameList.value[i],
 			type: 'line',
 			smooth: false,  //曲线平滑
-			symbol: 'none', // 隐藏数据点
+			// symbol: 'none', // 隐藏数据点
 			// areaStyle: {}, //面积图
 		})
 	}
-	option.xAxis.data = props.aveData[0];
+	option.xAxis.data = props.xAxis;
+	console.log(props.aveData)
 	option.series = seriesList
 	dom.setOption(option);
 	dom.hideLoading();
 }
 
 onMounted(() => {
-	const dom = refInitEcharts(aveLine.value, 'new-blue');
+	const dom = refInitEcharts(aveLine.value);
 	window.addEventListener('resize', function () {
 		dom.resize();
 	});

@@ -60,7 +60,7 @@ const refresh = (dom) => {
 }
 
 onMounted(() => {
-	const dom = refInitEcharts(thLine.value, 'new-blue');
+	const dom = refInitEcharts(thLine.value);
 	window.addEventListener('resize', function () {
 		dom.resize();
 	});
