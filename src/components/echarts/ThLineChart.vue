@@ -19,6 +19,7 @@ const props = defineProps({
 const thLine = ref(null);
 const nameList = ['箱内温度', '箱内湿度', '箱外温度', '箱外湿度']
 let option = JSON.parse(JSON.stringify(lineOptionTemplate));
+option.color = ["#db2777", "#3F51B5",];
 let dataList1 = []
 let dataList2 = []
 let dataList3 = []

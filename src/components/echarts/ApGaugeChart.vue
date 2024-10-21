@@ -16,6 +16,7 @@ const refresh = (dom) => {
 		'进气气压',
 		'出气气压'
 	);
+	option.color = ["#db2777", "#3F51B5",];
 	dom.setOption(option)
 }
 

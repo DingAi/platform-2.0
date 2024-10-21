@@ -367,8 +367,4 @@ onMounted(() => {
 .h-h {
 	height: calc(100vh - 370px);
 }
-
-.transfer-h {
-	height: 40rem;
-}
 </style>

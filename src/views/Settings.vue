@@ -27,6 +27,12 @@
 						<li>
 							<button @click="scrollToSection('section4');activeSection = 'section4';"
 							        :class="{ 'bg-[#3F51B5] text-white': activeSection === 'section4' }"
+							        class="w-full text-left p-2 hover:bg-[#3F51B5] hover:text-white rounded">报警
+							</button>
+						</li>
+						<li>
+							<button @click="scrollToSection('section5');activeSection = 'section5';"
+							        :class="{ 'bg-[#3F51B5] text-white': activeSection === 'section5' }"
 							        class="w-full text-left p-2 hover:bg-[#3F51B5] hover:text-white rounded">硬件驱动更新
 							</button>
 						</li>
@@ -125,6 +131,18 @@
 					</div>
 					<!--Section04-->
 					<div id="section4" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow h-auto">
+						<div class="flex items-center">
+							<h1 class="text-4xl mb-6">报警</h1>
+							<button class="ml-auto rounded hover:text-green-500" @click="clearLog">
+								清空报警
+							</button>
+						</div>
+						
+						<hr class="my-6 border-gray-600"/>
+						
+					</div>
+					<!--Section05-->
+					<div id="section5" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow h-auto">
 						<h1 class="text-4xl mb-6">硬件驱动更新</h1>
 						<hr class="my-6 border-gray-600"/>
 						<div class="flex-col md:flex-row ">

@@ -63,7 +63,6 @@
 						:inactive-value="false"
 						size="large"
 						:loading="loadingList[index]"
-						@change="manualSwitchTrigger"
 					>
 						<template #active-action>
 							<span class="custom-active-action">T</span>
@@ -85,7 +84,7 @@
 						size="large"
 						:loading="loadingList[index]"
 						@change="switchTrigger(index)"
-						:disabled="isManual"
+						:disabled="!isManual"
 					>
 						<template #active-action>
 							<span class="custom-active-action">T</span>
@@ -258,10 +257,6 @@ const switchTrigger = async (index) => {
 	} finally {
 		// await getRealData()
 	}
-}
-
-const manualSwitchTrigger = () =>{
-	isManual.value = !isManual.value;
 }
 
 const setTimeValue = async (value, index) => {

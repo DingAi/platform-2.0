@@ -17,6 +17,7 @@ const props = defineProps({
 
 const aveLine = ref(null);
 let option = JSON.parse(JSON.stringify(lineOptionTemplate));
+option.color = ["#db2777", "#3F51B5",];
 const seriesNameList = [
 	'X',
 	'箱内温度',
