@@ -10,7 +10,7 @@ import {refInitEcharts} from "@/utils/eharts-init.js";
 import {onMounted, ref, watch} from "vue";
 import {pieOptionTemplate} from "@/assets/echarts-template/pie-chart.js";
 
-const props = defineProps({
+const { apData } = defineProps({
 	apData: Array,
 })
 
@@ -19,8 +19,8 @@ let option = JSON.parse(JSON.stringify(pieOptionTemplate));
 
 const refresh = (dom, option) => {
 	option.series[0].data = [
-		{ value: Math.floor(props.apData[0]/1000), name: '进气气压' },
-		{ value: Math.floor(props.apData[1]/1000), name: '出气气压' }
+		{ value: Math.floor(apData[0]/1000), name: '进气气压' },
+		{ value: Math.floor(apData[1]/1000), name: '出气气压' }
 	]
 	dom.setOption(option);
 }
@@ -32,15 +32,15 @@ onMounted(() => {
 	});
 	
 	// dom.showLoading();
-	if (props.apData) {
+	if (apData) {
 		refresh(dom, option);
 	}
 	
 	watch(
-		() => props.apData,
+		() => apData,
 		() => {
-			if (props.apData) {
-				refresh(dom, option, props.apData)
+			if (apData) {
+				refresh(dom, option, apData)
 			}
 		},
 		{deep: true}

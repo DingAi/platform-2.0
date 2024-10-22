@@ -174,7 +174,7 @@ onMounted(() => {
 // 活动标签页索引
 const activeTab = ref(0);
 // 每页显示的文件数
-const itemsPerPage = 20;
+const itemsPerPage = 18;
 // 当前页码
 const currentPage = ref(1);
 // 选中的文件名列表

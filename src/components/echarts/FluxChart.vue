@@ -10,7 +10,7 @@ import {fluxOption} from "@/assets/echarts-template/flux-chart.js";
 import {refInitEcharts} from "@/utils/eharts-init.js";
 
 
-const props = defineProps({
+const {fluxData} = defineProps({
 	fluxData: Object,
 })
 
@@ -19,7 +19,7 @@ let option = JSON.parse(JSON.stringify(fluxOption));;
 
 
 const refresh = (dom, ec, ew, timeRangeList) => {
-	console.log(props.fluxData)
+	console.log(fluxData)
 	option.series[0].data = ec;
 	option.series[1].data = ew;
 	option.xAxis.data = timeRangeList;
@@ -34,15 +34,15 @@ onMounted(() => {
 	});
 	
 	dom.showLoading();
-	if (props.fluxData) {
-		refresh(dom, props.fluxData.ec, props.fluxData.ew, props.fluxData.time);
+	if (fluxData) {
+		refresh(dom, fluxData.ec, fluxData.ew, fluxData.time);
 	}
 	
 	watch(
-		() => props.fluxData,
+		() => fluxData,
 		() => {
-			if (props.fluxData) {
-				refresh(dom, props.fluxData.ec, props.fluxData.ew, props.fluxData.time);
+			if (fluxData) {
+				refresh(dom, fluxData.ec, fluxData.ew, fluxData.time);
 			}
 		},
 		{deep: true}

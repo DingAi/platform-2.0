@@ -30,20 +30,18 @@
 				             :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/analysis')}"
 				             @click="toggleMobileMenu">数据分析
 				</router-link>
-				<router-link to="/download"
-				             class="block px-4 py-2 hover:bg-[#f5f5f5] rounded-xl"
-				             :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/download')}"
-				             @click="toggleMobileMenu">数据下载
+				<router-link @click="toggleMobileMenu" to="/download" class="block px-4 py-2 hover:bg-[#f5f5f5] rounded-xl"
+				             :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/download')}">
+					数据下载
 				</router-link>
 				<div class="relative mx-2" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
 					<button :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/type-a-equipment')}"
 					        class="flex hover:bg-[#f5f5f5] p-2 rounded-xl"
 					        @click="toggleMobileMenu">我的设备
 					</button>
-					<div v-if="showSubMenu"
-					     class="mt-2 z-10 absolute bg-[#ffffff] shadow py-2 rounded-xl w-48 origin-top-right animate-zoom-in-up">
+					<div class="mt-2 z-10 absolute bg-[#ffffff] shadow py-2 rounded-xl w-48 origin-top-right animate-zoom-in-up">
 						<div v-for="(device, index) in devices" :key="index" class="pr-2 pl-2">
-							<router-link @click="toggleSubMenu"
+							<router-link @click="toggleMobileMenu"
 							             :to="getPath(device)"
 							             :class="{'bg-[#3F51B5] text-[#ffffff] rounded mt-0.5': isActiveRoute(getPath(device))}"
 							             class="block hover:bg-[#f5f5f5] px-4 py-2 rounded mt-0.5">{{ device.name }}

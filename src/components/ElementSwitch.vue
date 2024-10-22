@@ -19,7 +19,7 @@
 <script setup>
 import { watch } from 'vue';
 
-const props = defineProps({
+const {modelValue, switchName} = defineProps({
 	modelValue: {
 		type: Boolean,
 		default: 0,
@@ -38,7 +38,7 @@ const handleSwitchChange = (value) => {
 	emit('update:modelValue', value);  // 更新父组件中的值
 };
 
-watch(() => props.modelValue, (newValue) => {
+watch(() => modelValue, (newValue) => {
 	emit('update:modelValue', newValue);  // 确保modelValue的变化能够更新父组件
 });
 </script>

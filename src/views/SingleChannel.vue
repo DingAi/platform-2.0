@@ -76,7 +76,7 @@
 				</div>
 				<!--开关列表-->
 				<div v-for="(item, index) in switchList" :key="index"
-				     class="h-1/6 rounded overflow-hidden flex flex-row items-center md:justify-between p-5">
+				     class="h-1/6 rounded overflow-hidden flex flex-row items-center justify-center md:justify-between p-5">
 					<el-switch
 						v-model="switchList[index]"
 						:active-value="1"

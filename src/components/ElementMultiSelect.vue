@@ -14,7 +14,7 @@
 import { ref, watch, onMounted } from 'vue'
 
 // 接收外部传入的数据
-const props = defineProps({
+const {options} = defineProps({
 	options: {
 		type: Array,
 		required: true
@@ -45,13 +45,13 @@ watch(selectedValues, (newValues) => {
 })
 
 // 监听外部数据变化
-watch(() => props.options, (newData) => {
+watch(() => options, (newData) => {
 	cascaderOptions.value = newData
 }, { immediate: true })
 
 onMounted(() => {
 	// 初次加载时使用传入的数据初始化选项
-	cascaderOptions.value = props.options
+	cascaderOptions.value = options
 })
 
 // 处理选中值变化

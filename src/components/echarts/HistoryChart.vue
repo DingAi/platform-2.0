@@ -12,7 +12,7 @@ import { onMounted, ref, watch } from "vue";
 import { refInitEcharts } from "@/utils/eharts-init.js";
 import { lineOptionTemplate } from "@/assets/echarts-template/line-chart.js";
 
-const props = defineProps({
+const {historyData, xAxisData, historyLoading} = defineProps({
 	historyData: Array,
 	xAxisData: Array,
 	historyLoading: Boolean
@@ -22,20 +22,21 @@ const historyLine = ref(null);
 const loading = ref(false);
 
 const refresh = (dom) => {
-	if (props.historyData.length > 0){
+	if (historyData.length > 0){
 		let option = JSON.parse(JSON.stringify(lineOptionTemplate));
+		option.color = ["#db2777", "#3F51B5",];
 		try {
-			option.xAxis.data = props.xAxisData;
+			option.xAxis.data = xAxisData;
 			let data = JSON.parse(localStorage.getItem("sensorData"));
 			let dataList = [...data[0].children, ...data[1].children];
 			const result = dataList.reduce((acc, item) => {
 				acc[item.value] = item.label;
 				return acc;
 			}, {});
-			for (let i = 0; i < props.historyData[1].length; i++) {
+			for (let i = 0; i < historyData[1].length; i++) {
 				option.series.push({
-					data: props.historyData[1][i],
-					name: result[props.historyData[0][0][i]],
+					data: historyData[1][i],
+					name: result[historyData[0][0][i]],
 					type: 'line',
 					symbol: 'none', // 隐藏数据点
 				});

@@ -11,14 +11,15 @@ import {lineOptionTemplate} from "@/assets/echarts-template/line-chart.js";
 import {onMounted, ref, watch} from "vue";
 import ThLineChart from "@/components/echarts/ThLineChart.vue";
 
-const props = defineProps({
+const { thValue, currentTime } = defineProps({
 	thValue : Array,
 	currentTime: String,
 })
 
 const thLine = ref(null);
 const nameList = ['箱内温度', '箱内湿度', '箱外温度', '箱外湿度']
-let option = JSON.parse(JSON.stringify(lineOptionTemplate));
+
+let option = JSON.parse(JSON.stringify(lineOptionTemplate)); //这里的option需要建立一个新的对象
 option.color = ["#db2777", "#3F51B5",];
 let dataList1 = []
 let dataList2 = []
@@ -36,18 +37,18 @@ function chartDataFlow(value, dataList, xLength) {
 
 // 保证其在更新单通道界面路由之后，清除之前的数据重新渲染
 const refresh = (dom) => {
-	if (props.thValue.length > 0){
-		dataList1 = chartDataFlow(props.thValue[0], dataList1, 20);
-		dataList2 = chartDataFlow(props.thValue[1], dataList2, 20);
-		dataList3 = chartDataFlow(props.thValue[2], dataList3, 20);
-		dataList4 = chartDataFlow(props.thValue[3], dataList4, 20);
+	if (thValue.length > 0){
+		dataList1 = chartDataFlow(thValue[0], dataList1, 20);
+		dataList2 = chartDataFlow(thValue[1], dataList2, 20);
+		dataList3 = chartDataFlow(thValue[2], dataList3, 20);
+		dataList4 = chartDataFlow(thValue[3], dataList4, 20);
 		option.series = [
 			{data: dataList1, name: nameList[0], type: 'line',},
 			{data: dataList2, name: nameList[1], type: 'line',},
 			{data: dataList3, name: nameList[2], type: 'line',},
 			{data: dataList4, name: nameList[3], type: 'line',}
 		]
-		option.xAxis.data = chartDataFlow(props.currentTime, timeList, 20)
+		option.xAxis.data = chartDataFlow(currentTime, timeList, 20)
 	} else {
 		option.series = [
 			{data: [], name: nameList[0], type: 'line',},
@@ -67,9 +68,9 @@ onMounted(() => {
 	});
 	
 	watch(
-		() => props.thValue,
+		() => thValue,
 		() => {
-			if (props.thValue.length === 0) {
+			if (thValue.length === 0) {
 				dataList1 = [];
 				dataList2 = [];
 				dataList3 = [];

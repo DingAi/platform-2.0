@@ -1,7 +1,7 @@
 <template>
-	<div class="space-y-4 text-center size-full">
-		<div class="flex flex-col md:flex-row justify-between items-stretch bg-[#f5f5f5] rounded-2xl py-2 space-y-4 md:space-y-0 md:space-x-2 inner-shadow">
-			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
+	<div class="space-y-4 text-center w-full h-[1000px] md:h-full">
+		<div class="flex flex-col md:flex-row justify-between items-center bg-[#f5f5f5] p-2 rounded-2xl inner-shadow">
+			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl p-2 mt-6 sm:mt-0">
 				<el-cascader
 					v-model="selectedValues1"
 					:options="snOption"
@@ -11,7 +11,7 @@
 					class="w-full"
 				/>
 			</div>
-			<div class="flex items-center justify-center h-full w-full md:w-1/4 rounded-2xl rounded-bl pl-6 pr-2">
+			<div class="flex items-center justify-center h-full w-full md:w-1/4 rounded-2xl rounded-bl p-2">
 				<el-cascader
 					v-if="isMultiChannel"
 					v-model="selectedValues2"
@@ -27,16 +27,15 @@
 			<div class="flex items-center justify-center w-full md:w-2/5 rounded-xl px-8">
 				<TimeDatePicker v-model="timeRange"/>
 			</div>
-			<div class="flex items-center justify-center h-full w-full md:w-1/5 rounded-2xl p-4">
+			<div class="flex items-center justify-center h-full w-full md:w-1/5 rounded-2xl p-2">
 				<el-button type="primary" @click="singleAnalysisData" round>加载数据分析</el-button>
 			</div>
 		</div>
-		
-<!--		<div class="flex items-center p-4 rounded-2xl inner-shadow h-h" v-if="!isFileLoading1">-->
-<!--			<p class="text-5xl text-[#757de8] font-bold m-auto">【选择数据范围或传入文件后加载数据】</p>-->
-<!--		</div>-->
-		<div class="flex flex-col md:flex-row w-full analysis-div space-x-0 md:space-x-4">
-			<div class="w-full md:w-1/3 bg-[#f5f5f5] rounded-2xl inner-shadow p-4 overflow-auto h-h">
+		<div class="flex items-center p-4 rounded-2xl inner-shadow h-h" v-if="!isFileLoading1">
+			<p class="text-5xl text-[#757de8] font-bold m-auto">【选择数据范围或传入文件后加载数据】</p>
+		</div>
+		<div class="flex flex-col md:flex-row w-full analysis-div space-x-0 md:space-x-4 overflow-auto">
+			<div class="w-full md:w-1/3 h-auto min-h-[300px] sm:min-h-[420px] md:min-h-[400px] flex flex-col items-center space-y-4 overflow-auto p-6">
 				<el-timeline v-if="isFileLoading1">
 					<el-timeline-item center v-for="(item, index) in matParsedData"
 					                  :key="index"
@@ -72,31 +71,30 @@
 				</el-timeline>
 			</div>
 			<div class="w-full md:w-3/4 h-auto md:h-full flex flex-col items-center space-y-4">
-				<div class="w-full h-96 md:h-1/2 bg-[#f5f5f5] rounded-2xl inner-shadow">
+				<div class="w-full h-[450px] md:h-1/2 bg-[#f5f5f5] rounded-2xl inner-shadow">
 					<AveDataChart :aveData="aveDataList" :x-axis="xAxisData" :type="typeIndex"/>
 				</div>
-				<div class="w-full h-96 md:h-1/2 bg-[#f5f5f5] rounded-2xl inner-shadow">
+				<div class="w-full h-[450px] md:h-1/2 bg-[#f5f5f5] rounded-2xl inner-shadow">
 					<FluxHistoryChart :flux-data="fluxList"/>
 				</div>
 			</div>
 		</div>
-		<div class="flex flex-col md:flex-row justify-between items-center bg-[#f5f5f5] inner-shadow pt-2 pb-2 h-96 md:h-28 rounded-2xl space-x-2">
-			<div class="flex items-center justify-center h-full w-full md:w-1/4 rounded-2xl pl-20 pr-20">
+		<div class="flex flex-col md:flex-row justify-between items-center bg-[#f5f5f5] p-3 h-auto rounded-2xl inner-shadow">
+			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
 				<file-upload @fileParsed="handleFileParsed">上传数据分析文件</file-upload>
 			</div>
-			<div class="flex flex-col items-center justify-center h-full w-full md:w-1/4 rounded-2xl rounded-bl pl-10 pr-10 space-y-4">
+			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
 				<span class="font-semibold text-gray-100">箱体体积（V）</span>
 				<el-input-number v-model="boxVolume" :step="0.1"/>
 			</div>
-			<div class="flex flex-col items-center justify-center h-full w-full md:w-1/4 rounded-2xl rounded-bl pl-10 pr-10 space-y-4">
+			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
 				<span class="font-semibold text-gray-100">底面积（S）</span>
 				<el-input-number v-model="boxArea" :step="0.1"/>
 			</div>
-			<div class="flex flex-col items-center justify-center h-full w-full md:w-1/4 rounded-2xl rounded-bl pl-10 pr-10">
+			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
 				<submit-button>重新加载图像</submit-button>
 			</div>
 		</div>
-		
 		<!--		<div class="flex flex-col md:flex-row justify-between items-center bg-slate-800 pt-2 pb-2 h-28 rounded space-x-2">-->
 		<!--			<div class="flex flex-col items-center justify-center h-full w-full md:w-1/4 rounded-2xl rounded-bl pl-10 pr-10">-->
 		<!--				<file-upload @fileParsed="handleHistoryFileParsed">上传历史文件</file-upload>-->

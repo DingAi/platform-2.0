@@ -9,7 +9,7 @@ import {refInitEcharts} from "@/utils/eharts-init.js";
 import {lineOptionTemplate} from "@/assets/echarts-template/line-chart.js";
 import {computed, onMounted, ref, watch} from "vue";
 
-const props = defineProps({
+const { aveData, xAxis, type } = defineProps({
 	aveData: Array,
 	xAxis: Array,
 	type: Number,
@@ -39,7 +39,7 @@ const seriesNameList = [
 const backUpNameList = ['平均箱内温度','平均箱内湿度'];
 
 const indexNameList = computed(() => {
-	if (props.type === 0){
+	if (type === 0){
 		return backUpNameList;
 	} else {
 		return seriesNameList;
@@ -48,9 +48,9 @@ const indexNameList = computed(() => {
 
 const refresh = (dom, option) => {
 	let seriesList = []
-	for (let i = 0; i < props.aveData.length; i++) {
+	for (let i = 0; i < aveData.length; i++) {
 		seriesList.push({
-			data: props.aveData[i],
+			data: aveData[i],
 			name: indexNameList.value[i],
 			type: 'line',
 			smooth: false,  //曲线平滑
@@ -58,8 +58,8 @@ const refresh = (dom, option) => {
 			// areaStyle: {}, //面积图
 		})
 	}
-	option.xAxis.data = props.xAxis;
-	console.log(props.aveData)
+	option.xAxis.data = xAxis;
+	console.log(aveData)
 	option.series = seriesList
 	dom.setOption(option);
 	dom.hideLoading();
@@ -72,15 +72,15 @@ onMounted(() => {
 	});
 	
 	// dom.showLoading();
-	if (props.aveData) {
+	if (aveData) {
 		refresh(dom, option);
 	}
 	
 	watch(
-		() => props.aveData,
+		() => aveData,
 		() => {
-			if (props.aveData) {
-				refresh(dom, option, props.aveData)
+			if (aveData) {
+				refresh(dom, option, aveData)
 			}
 		},
 		{deep: true}

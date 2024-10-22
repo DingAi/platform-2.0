@@ -115,6 +115,9 @@ const postSetTime = (value, index, sn) => apiClient.post(apiEndpoints.setTime, {
 // 数据分析的数据
 const postSingleAnalysisData = (sn, time_frame) => apiClient.post(apiEndpoints.singleAnalysisData, {sn, time_frame});
 
+// Test
+const postTest01 = (sn, time_frame) => apiClient.post(apiEndpoints.singleAnalysisData, {sn, time_frame});
+
 
 // 导出所有的API函数
 export {

@@ -3,7 +3,7 @@ import {setGaugeData} from "@/assets/echarts-template/gauges-chart.js";
 import {onMounted, ref, watch} from "vue";
 import {refInitEcharts} from "@/utils/eharts-init.js";
 
-const props = defineProps({
+const { apData } = defineProps({
 	apData: Array,
 })
 
@@ -11,8 +11,8 @@ const apGauge = ref(null)
 
 const refresh = (dom) => {
 	let option = setGaugeData(
-		Number((props.apData[0] / 1000).toPrecision(3)),
-		Number((props.apData[1] / 1000).toPrecision(3)),
+		Number((apData[0] / 1000).toPrecision(3)),
+		Number((apData[1] / 1000).toPrecision(3)),
 		'进气气压',
 		'出气气压'
 	);
@@ -28,7 +28,7 @@ onMounted(() => {
 	
 	
 	watch(
-		() => props.apData,
+		() => apData,
 		() => {
 			refresh(dom);
 		}

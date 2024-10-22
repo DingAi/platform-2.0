@@ -145,8 +145,8 @@
 					<div id="section5" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow h-auto">
 						<h1 class="text-4xl mb-6">硬件驱动更新</h1>
 						<hr class="my-6 border-gray-600"/>
-						<div class="flex-col md:flex-row ">
-								<div class="flex justify-center p-8">
+						<div class="flex flex-col md:flex-row justify-between">
+								<div class="flex justify-center items-center p-2 w-full md:w-1/3">
 									<el-upload ref="upload"
 									           :http-request="fileUpload"
 									           :limit="1"
@@ -159,7 +159,7 @@
 										</template>
 									</el-upload>
 								</div>
-								<div class="flex justify-center p-6">
+								<div class="flex justify-center items-center p-2 w-full md:w-1/3">
 									<el-select v-model="uploadSelectValue"
 									           placeholder="选择要更新的设备"
 									           @change="handleSelectChange"
@@ -171,7 +171,7 @@
 										/>
 									</el-select>
 								</div>
-								<div class="flex justify-center p-4">
+								<div class="flex justify-center p-2 w-full md:w-1/3">
 									<el-button
 										class="ml-3"
 										:disabled="!fileSelected || !uploadSelectValue"
@@ -424,14 +424,5 @@ onMounted(async () => {
 
 .section {
 	height: 55rem;
-}
-
-:deep(.el-menu) {
-	background: transparent !important;
-	border-right: 0;
-}
-
-.table-min {
-	min-height: 37rem;
 }
 </style>
