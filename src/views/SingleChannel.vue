@@ -71,7 +71,7 @@
 							<span class="custom-inactive-action">F</span>
 						</template>
 					</el-switch>
-					<el-divider direction="vertical" />
+					<el-divider direction="vertical"/>
 					<span class="text-sm p-2">手动控制</span>
 				</div>
 				<!--开关列表-->
@@ -93,7 +93,7 @@
 							<span class="custom-inactive-action">F</span>
 						</template>
 					</el-switch>
-					<el-divider direction="vertical" />
+					<el-divider direction="vertical"/>
 					<span class="text-sm p-2 text-whit w-20">{{ switchNameList[index] }}</span>
 				</div>
 			</div>
@@ -109,6 +109,20 @@
 			                :is-loading="sensorLoading"
 			                :page-row-number="16"/>
 		</div>
+		
+		
+		<!-- 报警列表 -->
+		<div class="justify-between items-center bg-[#f5f5f5] p-6 px-6 md:px-20 h-full rounded-2xl pb-10 inner-shadow">
+			<div class="flex items-center">
+				<h1 class="text-4xl mb-6">报警</h1>
+				<el-button class="ml-auto" round @click="clearAlarm">
+					清空报警
+				</el-button>
+			</div>
+			<div class="mb-12 overflow-auto">
+				<ElementTable :sn="sn" :table-data="alarmTableData" :header-data="alarmHeaderData" v-if="alarmLoading"/>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -116,14 +130,22 @@
 <script setup>
 import {computed, onBeforeUnmount, onMounted, ref, watch} from 'vue'
 import {useRoute} from 'vue-router'
-import {showMessage, transposeMatrix} from "@/utils/tools-functions.js";
+import {elementTableDataConversion, showMessage, transposeMatrix} from "@/utils/tools-functions.js";
 import TableTemplate from "@/components/TableTemplate.vue";
-import {postRealData, postSetTime, postSwitch} from "@/server/request-apis.js";
+import {
+	postAlarmLog,
+	postClearAlarm,
+	postRealData,
+	postSetTime,
+	postSwitch
+} from "@/server/request-apis.js";
 import ThLineChart from "@/components/echarts/ThLineChart.vue";
 import ApGaugeChart from "@/components/echarts/ApGaugeChart.vue";
+import Cookies from "js-cookie";
+import ElementTable from "@/components/ElementAlarmTable.vue";
 
 const route = useRoute()
-
+const userName = Cookies.get('platform_user')
 const sn = ref(route.params.id);
 const isConnectState = ref(false)
 const thValue = ref([])
@@ -152,6 +174,17 @@ const isSwitch = ref(false) // 是否执行过开关动作
 const dialogVisible = ref(false); // 弹窗
 const isManual = ref(false); // 手动状态
 
+// 报警表格
+const alarmLoading = ref(false);
+const alarmHeaderList = ref(["alarmEquipment", "alarmContent", "alarmTime", "alarmState"]);
+const alarmHeaderData = ref([
+	{property: 'alarmEquipment', label: '报警设备'},
+	{property: 'alarmContent', label: '报警内容'},
+	{property: 'alarmTime', label: '时间'},
+	{property: 'alarmState', label: '状态'},
+]);
+const alarmTableData = ref([]);
+
 const dialogWidth = computed(() => {
 	return window.innerWidth < 768 ? '90%' : '30%';
 });
@@ -161,7 +194,7 @@ function dialogShow(rowIndex) {
 }
 
 
-let pollingActive = true;  //是否接收到数
+let pollingActive = true;  //是否接收到数据
 const getRealData = async () => {
 	if (!pollingActive) return;
 	isLoading.value = true;
@@ -212,7 +245,7 @@ const getRealData = async () => {
 		pollingActive = false; // Stop polling on error
 		showMessage('请求数据失败！')
 	} finally {
-		isLoading.value = true;
+		isLoading.value = false;
 	}
 }
 
@@ -228,7 +261,6 @@ async function setInitSwitchState(value) {
 		return binaryString.split('').map(Number);
 	}
 	
-	console.log('开关刷新函数的值：', value)
 	switchList.value = decimalToBinaryArray(value);
 }
 
@@ -240,7 +272,7 @@ const switchTrigger = async (index) => {
 		strValue += item.toString()
 	}
 	try {
-		const res = await postSwitch(sn.value, strValue, '0a')
+		const res = await postSwitch(userName, sn.value, strValue, '0a')
 		if (res.data.state) {
 			switchList.value[index] = switchList.value[index] === 1 ? 1 : 0; // 如果 res.data.state 为 true，则切换状态
 			loadingList.value[index] = false; // 动画停止加载
@@ -248,7 +280,6 @@ const switchTrigger = async (index) => {
 		} else {
 			switchList.value[index] = switchList.value[index] === 1 ? 0 : 1; // 如果 res.data.state 为 true，则切换状态
 			loadingList.value[index] = false; // 动画停止加载
-			console.log(res.data)
 			showMessage('【' + switchNameList.value[index] + '】开关执行失败：' + res.data.message, 'error')
 		}
 		
@@ -259,6 +290,7 @@ const switchTrigger = async (index) => {
 	}
 }
 
+// 设置时间（类似开关)
 const setTimeValue = async (value, index) => {
 	const res = await postSetTime(value, index, sn.value)
 	if (res.data.state) {
@@ -270,10 +302,43 @@ const setTimeValue = async (value, index) => {
 	}
 }
 
+// 获取全部报警
+const getAlarmLog = async () => {
+	alarmLoading.value = false;
+	try {
+		const res = await postAlarmLog(sn.value);
+		let tempAlarmData = transposeMatrix(res.data.value);
+		tempAlarmData[2] = tempAlarmData[2].map(item => item.replace('T', ' '));
+		alarmTableData.value = elementTableDataConversion(alarmHeaderList.value, transposeMatrix(tempAlarmData));
+	} catch (e) {
+		showMessage('报警数据获取失败')
+		console.log(e)
+	} finally {
+		alarmLoading.value = true;
+	}
+}
+
+// 设置已读报警
+const clearAlarm = async () => {
+	try {
+		await postClearAlarm(sn.value);
+	} catch (e) {
+		console.log(e)
+	} finally {
+		await getAlarmLog();
+		showMessage('日志已清空', 'success')
+	}
+}
+// 设置循环对象，切换界面的时候关闭这个界面的轮询
 let intervalId;
+
 onMounted(async () => {
-	await getRealData()
-	intervalId = setInterval(getRealData, 5000)
+	await getAlarmLog();
+	await getRealData();
+	
+	intervalId = setInterval(() => {
+		getRealData();
+	}, 20000);
 });
 
 // 切换界面后停止轮询
@@ -287,8 +352,10 @@ watch(
 	(newId) => {
 		sn.value = newId;
 		isSwitch.value = false;
+		alarmTableData.value = []
 		let index = SCGData[0].indexOf(sn.value);
 		getRealData();
+		getAlarmLog();
 		equipmentName.value = ref(SCGData[1][index]);
 		sensorCol.value = [];
 		thValue.value = [];

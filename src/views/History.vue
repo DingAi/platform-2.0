@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import {getTimeRange, selectProcessData} from '@/utils/tools-functions.js'
+import {getTimeRange, selectProcessData, showMessage} from '@/utils/tools-functions.js'
 import {computed, onMounted, ref} from "vue";
 import TimeDatePicker from "@/components/ElementTimeDatePicker.vue";
 import {useAuthStore} from "@/stores/userStore.js";
@@ -95,6 +95,7 @@ const getHistoryData = async () => {
 		xAxisData.value = res.data.timest;
 	} catch (e){
 		console.log(e);
+		showMessage('获取历史数据错误');
 	} finally {
 		historyLoading.value = false;
 	}

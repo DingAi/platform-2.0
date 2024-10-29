@@ -91,13 +91,14 @@
 
 <script setup lang="js">
 import {ref} from "vue";
-import {useAuthStore} from "@/stores/userStore.js";
 import SubmitButton from "@/components/SubmitButton.vue";
 import {showMessage} from "@/utils/tools-functions.js";
 import {postCaptcha, postModifyPassword} from "@/server/request-apis.js";
+import {useRouter} from "vue-router";
 
+
+const router = useRouter();
 const isLoading = ref(false);
-const authStore = useAuthStore();
 
 const us = ref('');
 const phone = ref('');
@@ -160,6 +161,10 @@ const modifyPassword = async () => {
 		console.error(error);
 	} finally {
 		isLoading.value = false;
+		await router.push({
+			path: '/login',
+			query: { us: us.value, pwd: pwd.value }
+		});
 	}
 };
 </script>

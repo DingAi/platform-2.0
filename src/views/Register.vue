@@ -141,10 +141,11 @@
 import {getPhoneCaptcha, postRegister, postRegisterSnVerify} from '@/server/request-apis';
 import {ref} from 'vue';
 import {ElMessage} from 'element-plus';
-import Router from "@/router/index.js";
 import SubmitButton from "@/components/SubmitButton.vue";
 import {showMessage} from "@/utils/tools-functions.js";
+import {useRoute} from "vue-router";
 
+const route = useRoute();
 const isLoading = ref(false);
 const username = ref('');
 const password = ref('');
@@ -187,7 +188,6 @@ const validateSNCode = async () => {
 	
 	try {
 		const res = await postRegisterSnVerify(snCode.value);
-		console.log(res.data.state);
 		if (res.data.state) {
 			isSNValid.value = true;
 			snError.value = false; // 清除错误
@@ -257,6 +257,10 @@ async function initRoll() {
 		console.log(e);
 	} finally {
 		isLoading.value = false;
+		await router.push({
+			path: '/login',
+			query: { us: username.value, pwd: password.value }
+		});
 	}
 }
 </script>

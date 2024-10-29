@@ -33,7 +33,9 @@ const refresh = (dom) => {
 				acc[item.value] = item.label;
 				return acc;
 			}, {});
+			console.log('数据名：',historyData[0])
 			for (let i = 0; i < historyData[1].length; i++) {
+				console.log(historyData[0][i]);
 				option.series.push({
 					data: historyData[1][i],
 					name: result[historyData[0][0][i]],

@@ -15,11 +15,10 @@ const {fluxData} = defineProps({
 })
 
 const fluxDom = ref(null)
-let option = JSON.parse(JSON.stringify(fluxOption));;
+let option = JSON.parse(JSON.stringify(fluxOption));
 
 
 const refresh = (dom, ec, ew, timeRangeList) => {
-	console.log(fluxData)
 	option.series[0].data = ec;
 	option.series[1].data = ew;
 	option.xAxis.data = timeRangeList;
@@ -45,7 +44,7 @@ onMounted(() => {
 				refresh(dom, fluxData.ec, fluxData.ew, fluxData.time);
 			}
 		},
-		{deep: true}
+		{deep:true}
 	)
 })
 </script>

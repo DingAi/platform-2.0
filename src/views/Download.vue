@@ -87,7 +87,7 @@
 
 <script setup>
 import {computed, onMounted, ref, watch} from "vue";
-import FolderSVG from "@/components/svg/FolderSVG.vue";
+import FolderSVG from "@/components/FolderSVG.vue";
 import {
 	getFilesList,
 	postDownloadIsComplete,
@@ -95,6 +95,7 @@ import {
 } from "@/server/request-apis.js";
 import {ElMessage} from "element-plus";
 import DataLoading from "@/components/DataLoading.vue";
+import {showMessage} from "@/utils/tools-functions.js";
 
 
 const SCGData = JSON.parse(localStorage.getItem('auth')).SCGData;
@@ -111,10 +112,10 @@ const getFiles = async () => {
 	try {
 		const res = await getFilesList(SCGData[0]);
 		folders.value = res.data.folders.sn;
-		console.log(folders.value)
 		files.value = res.data.files;
 	} catch (error) {
-		console.error("Failed to load files:", error);
+		console.error("加载文件列表失败:", error);
+		showMessage('获取文件列表失败')
 	} finally {
 		loading.value = false; // 数据加载完成后设置为false
 	}
@@ -123,19 +124,12 @@ const getFiles = async () => {
 const filesDownload = async () => {
 	try {
 		if (selectedFiles.value.length === 0) {
-			ElMessage({
-				duration: 2000,
-				message: "请选择要下载的文件",
-				type: "info",
-			});
+			showMessage('请选择要下载的文件', 'info')
 		} else {
 			let folderName = folders.value[activeTab.value];
 			let fileNames = selectedFiles.value.map((file) => file.name);
-			ElMessage({
-				duration: 2000,
-				message: "文件开始下载，请不要关闭界面",
-				type: "info",
-			});
+			showMessage('文件开始下载，请不要关闭界面', 'info')
+			
 			const res = await postFilesDownload(folderName, fileNames);
 			// 创建一个 URL 对象指向 Blob
 			const url = window.URL.createObjectURL(new Blob([res.data]));
@@ -158,11 +152,7 @@ const filesDownload = async () => {
 	} finally {
 		if (selectedFiles.value.length > 0) {
 			await postDownloadIsComplete(folders.value[activeTab.value]);
-			ElMessage({
-				duration: 2000,
-				message: "下载完成！",
-				type: "info",
-			});
+			showMessage('下载完成', 'success')
 		}
 	}
 };

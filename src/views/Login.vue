@@ -44,14 +44,16 @@
 import { ref } from "vue";
 import {useAuthStore} from "@/stores/userStore.js";
 import SubmitButton from "@/components/SubmitButton.vue";
+import {useRoute} from "vue-router";
+import {showMessage} from "@/utils/tools-functions.js";
 
 
 const isLoading = ref(false);
 
 const authStore = useAuthStore();
-
-const username = ref('');
-const password = ref('');
+const route = useRoute();
+const username = ref(route.query.us ||'');
+const password = ref(route.query.pwd ||'');
 
 async function login() {
     isLoading.value = true;

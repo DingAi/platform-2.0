@@ -11,6 +11,15 @@ const lineOptionTemplate = {
             align:'left'  // 文字左对齐
         }
     },
+    toolbox: {
+        show: true,
+        feature: {
+            dataView: {readOnly: true},
+            magicType: { type: ['bar', 'line'] },
+            saveAsImage: {},
+            restore: {},
+        }
+    },
     xAxis: {
         data: []
     },

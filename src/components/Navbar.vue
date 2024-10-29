@@ -1,5 +1,5 @@
 <template>
-	<nav class="top-0 z-50 sticky bg-[#ffffff] shadow py-4 text-[#333333]" v-if="showNavbar">
+	<nav class="top-0 z-50 sticky bg-[#ffffff] shadow py-4 text-[#333333]">
 		<div class="flex flex-row justify-between items-center mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 			<!-- Platform Logo -->
 			<div class="flex pl-4">
@@ -14,30 +14,52 @@
 				</button>
 			</div>
 			<!-- 移动菜单 -->
-			<div v-if="showMobileMenu" class="absolute top-16 left-0 right-0 bg-white shadow-lg z-50 p-2">
+			<div v-if="showMobileMenu"
+			     class="absolute top-16 left-0 right-0 bg-white text-sm font-bold shadow-lg z-50 p-2">
 				<router-link to="/"
-				             class="block px-4 py-4 hover:bg-[#f5f5f5] rounded-xl"
+				             class="flex px-4 py-1 hover:bg-[#f5f5f5] rounded-xl items-center justify-center"
 				             :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path === '/'}"
-				             @click="toggleMobileMenu">Home
+				             @click="toggleMobileMenu">
+					<el-icon>
+						<House/>
+					</el-icon>
+					Home
 				</router-link>
 				<router-link to="/history"
-				             class="block px-4 py-2 hover:bg-[#f5f5f5] rounded-xl"
+				             class="flex px-4 py-1 hover:bg-[#f5f5f5] rounded-xl items-center justify-center"
 				             :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/history')}"
-				             @click="toggleMobileMenu">历史
+				             @click="toggleMobileMenu">
+					<el-icon>
+						<Clock/>
+					</el-icon>
+					历史
 				</router-link>
 				<router-link to="/analysis"
-				             class="block px-4 py-2 hover:bg-[#f5f5f5] rounded-xl"
+				             class="flex px-4 py-1 hover:bg-[#f5f5f5] rounded-xl items-center justify-center"
 				             :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/analysis')}"
-				             @click="toggleMobileMenu">数据分析
+				             @click="toggleMobileMenu">
+					<el-icon>
+						<Histogram/>
+					</el-icon>
+					数据分析
 				</router-link>
-				<router-link @click="toggleMobileMenu" to="/download" class="block px-4 py-2 hover:bg-[#f5f5f5] rounded-xl"
+				<router-link @click="toggleMobileMenu"
+				             to="/download"
+				             class="flex px-4 py-1 hover:bg-[#f5f5f5] rounded-xl items-center justify-center"
 				             :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/download')}">
+					<el-icon>
+						<Download/>
+					</el-icon>
 					数据下载
 				</router-link>
 				<div class="relative mx-2" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
 					<button :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/type-a-equipment')}"
-					        class="flex hover:bg-[#f5f5f5] p-2 rounded-xl"
-					        @click="toggleMobileMenu">我的设备
+					        class="flex hover:bg-[#f5f5f5] p-2 rounded-xl items-center justify-center"
+					        @click="toggleMobileMenu">
+						<el-icon>
+							<ArrowDownBold/>
+						</el-icon>
+						我的设备
 					</button>
 					<div class="mt-2 z-10 absolute bg-[#ffffff] shadow py-2 rounded-xl w-48 origin-top-right animate-zoom-in-up">
 						<div v-for="(device, index) in devices" :key="index" class="pr-2 pl-2">
@@ -54,7 +76,7 @@
 			<!-- 桌面版 Menu -->
 			<div class="hidden sm:flex items-center space-x-2">
 				<router-link to="/"
-				             class="hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded-xl"
+				             class="hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded-xl font-bold"
 				             :class="{ 'bg-[#3F51B5] text-[#ffffff]': $route.path === '/' }">Home
 				</router-link>
 				<router-link to="/history"
@@ -79,7 +101,8 @@
 							<router-link @click="toggleSubMenu"
 							             :to="getPath(device)"
 							             :class="{'bg-[#3F51B5] text-[#ffffff] rounded mt-0.5': isActiveRoute(getPath(device))}"
-							             class="block hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded mt-0.5">{{ device.name }}
+							             class="block hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded mt-0.5">
+								{{ device.name }}
 							</router-link>
 						</div>
 					</div>
@@ -90,9 +113,12 @@
 			     @mouseenter="handleAvatarMouseEnter"
 			     @mouseleave="handleAvatarMouseLeave">
 				<div class="flex flex-row justify-center items-center">
-					<el-avatar style="background: #3F51B5; color: #ffffff" class="font-bold"
-					           :class="{ 'avatar-hover': isAvatarHovering }">
-						{{ Cookies.get('platform_user').charAt(0).toUpperCase() }}
+					<el-avatar
+						style="background: #3F51B5; color: #ffffff"
+						class="font-bold"
+						:class="{ 'avatar-hover': isAvatarHovering }"
+					>
+						{{ avatarInitial }}
 					</el-avatar>
 					<span class="pl-4 font-bold text-[#333333]"> {{ Cookies.get('platform_user') }}</span>
 				</div>
@@ -117,6 +143,7 @@ import {useAuthStore} from "@/stores/userStore";
 import {storeToRefs} from "pinia";
 import {useRoute} from "vue-router";
 import Cookies from "js-cookie";
+import {ArrowDownBold, Clock, Histogram, House} from "@element-plus/icons";
 
 const authStore = useAuthStore();
 const {SCGData, user} = storeToRefs(authStore);
@@ -134,22 +161,18 @@ const is404 = computed(() => {
 	return route.path === '/:pathMatch(.*)*'
 })
 
-const showNavbar = computed(() => {
-	return !(route.path === "/login" || route.path === "/register" || route.path === "//:pathMatch(.*)*"
-		|| route.path === "/modify-pwd");
-});
-
 // 根据设备编码的第一个字母生成不同的路由路径
 const devices = computed(() => {
 	return SCGData.value[1].map((name, index) => {
 		const id = SCGData.value[0][index];
 		const type = id.startsWith("A") ? "type-a-equipment" : "type-b-equipment";
-		return {
-			id,
-			name,
-			path: `/${type}/${id}`,
-		};
+		return {id, name, path: `/${type}/${id}`,};
 	});
+});
+
+const avatarInitial = computed(() => {
+	const user = Cookies.get('platform_user');
+	return user ? user.charAt(0).toUpperCase() : 'Null';
 });
 
 const getPath = (device) => {
@@ -219,7 +242,7 @@ const toggleMobileMenu = () => {
 const logout = () => {
 	// 处理注销逻辑
 	authStore.logout();
-	console.log("User logged out");
+	console.log("用户登出");
 };
 </script>
 

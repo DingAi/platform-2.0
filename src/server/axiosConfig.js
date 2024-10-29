@@ -24,7 +24,7 @@ apiClient.interceptors.request.use(
         const isAuthRequest = config.url === `${server}login` || config.url === `${server}register`
             || config.url === `${server}register_captcha` || config.url === `${server}modify_password_captcha` || config.url === `${server}modify_password`
             || config.url === `${server}verify_sn`;
-        
+
         if (!isAuthRequest) {
             if (!token) {
                 return Promise.reject(new Error("No token available"));
@@ -55,8 +55,6 @@ apiClient.interceptors.response.use(
                 });
             } else if (errorData.message) {
                 showMessage(errorData.message); // 显示通用的错误信息
-            } else {
-                showMessage("An unknown error occurred."); // 未知错误信息
             }
         } else {
             showMessage("请求失败，请检查网络连接"); // 网络连接错误或其他未知错误
@@ -79,7 +77,7 @@ apiClient.interceptors.response.use(
                     showMessage("未找到请求资源");
                     break;
                 case 500:
-                    showMessage("服务器错误，请求失败");
+                    // showMessage("服务器错误，请求失败");
                     break;
                 default:
                     showMessage(error.response.data || "An unknown error occurred.");

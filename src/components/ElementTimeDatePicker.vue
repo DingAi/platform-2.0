@@ -158,5 +158,37 @@ const shortcuts = [
 </script>
 
 <style scoped>
+:deep(.el-cascader-node.in-active-path, .el-cascader-node.is-active, .el-cascader-node.is-selectable.in-checked-path){
+	color: #3F51B5;
+}
 
+:deep(.el-date-range-picker .el-picker-panel__body ){
+	@media (max-width: 768px) {
+		width: 323px !important;
+	}
+}
+
+:deep(.el-date-range-picker__editors-wrap) {
+	@media (max-width: 768px) {
+		display: flex !important;
+	}
+}
+
+:deep(.el-date-range-picker__content) {
+	@media (max-width: 768px) {
+		width: 100% !important;
+	}
+}
+
+:deep(.el-picker-panel [slot=sidebar], .el-picker-panel__sidebar) {
+	width: 70px !important;
+}
+
+:deep(.el-picker-panel [slot=sidebar]+.el-picker-panel__body, .el-picker-panel__sidebar+.el-picker-panel__body) {
+	margin-left: 70px !important;
+}
+
+:deep(.el-date-range-picker) {
+	width: 393px !important;
+}
 </style>

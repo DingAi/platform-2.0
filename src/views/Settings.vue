@@ -17,7 +17,7 @@
 							        class="w-full text-left p-2 hover:bg-[#3F51B5] hover:text-white rounded">SN码激活
 							</button>
 						</li>
-						<hr class="my-6 border-gray-600"/>
+						<el-divider/>
 						<li>
 							<button @click="scrollToSection('section3'); activeSection = 'section3';"
 							        :class="{ 'bg-[#3F51B5] text-white': activeSection === 'section3' }"
@@ -27,12 +27,6 @@
 						<li>
 							<button @click="scrollToSection('section4');activeSection = 'section4';"
 							        :class="{ 'bg-[#3F51B5] text-white': activeSection === 'section4' }"
-							        class="w-full text-left p-2 hover:bg-[#3F51B5] hover:text-white rounded">报警
-							</button>
-						</li>
-						<li>
-							<button @click="scrollToSection('section5');activeSection = 'section5';"
-							        :class="{ 'bg-[#3F51B5] text-white': activeSection === 'section5' }"
 							        class="w-full text-left p-2 hover:bg-[#3F51B5] hover:text-white rounded">硬件驱动更新
 							</button>
 						</li>
@@ -78,8 +72,7 @@
 						<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
 							<form class="space-y-2" @submit.prevent="addEquipment">
 								<div>
-									<label for="sn" class="block text-sm font-medium leading-6 p-2">设备 SN
-										码</label>
+									<label for="sn" class="block text-sm font-medium leading-6 p-2">设备 SN 码</label>
 									<div class="mt-1">
 										<input v-model="sn"
 										       id="sn"
@@ -116,9 +109,9 @@
 					<div id="section3" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow h-auto">
 						<div class="flex items-center">
 							<h1 class="text-4xl mb-6">操作日志</h1>
-							<button class="ml-auto rounded hover:text-green-500" @click="clearLog">
+							<el-button class="ml-auto" @click="clearLog" round>
 								清空日志
-							</button>
+							</el-button>
 						</div>
 						
 						<hr class="my-6 border-gray-600"/>
@@ -131,18 +124,6 @@
 					</div>
 					<!--Section04-->
 					<div id="section4" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow h-auto">
-						<div class="flex items-center">
-							<h1 class="text-4xl mb-6">报警</h1>
-							<button class="ml-auto rounded hover:text-green-500" @click="clearLog">
-								清空报警
-							</button>
-						</div>
-						
-						<hr class="my-6 border-gray-600"/>
-						
-					</div>
-					<!--Section05-->
-					<div id="section5" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow h-auto">
 						<h1 class="text-4xl mb-6">硬件驱动更新</h1>
 						<hr class="my-6 border-gray-600"/>
 						<div class="flex flex-col md:flex-row justify-between">
@@ -189,7 +170,14 @@
 
 <script setup lang="js">
 import {computed, onMounted, ref} from "vue";
-import {getClearLog, getLogData, postDeleteEquipment, postSnActivation, postFileUpload,} from "@/server/request-apis.js"
+import {
+	getClearLog,
+	getLogData,
+	postDeleteEquipment,
+	postSnActivation,
+	postFileUpload,
+	postAlarmLog, postAlarmAlreadyRead,
+} from "@/server/request-apis.js"
 import TableTemplate from "@/components/TableTemplate.vue";
 import {useAuthStore} from "@/stores/userStore.js";
 import {storeToRefs} from "pinia";
@@ -220,7 +208,7 @@ const column = ref(
 	transposeMatrix([SCGData.value[0], SCGData.value[1], SCGData.value[2]])
 );
 
-// 日志表头
+// 日志列表
 const logHeader = ref(["信息", "时间"]);
 const logCol = ref([]);
 
@@ -340,11 +328,13 @@ async function deleteEquipment() {
 	}
 }
 
+
 // 验证 SN 码格式
 const validateSnFormat = (value) => {
 	const snPattern = /^[a-zA-Z0-9]{11}\d{4}\d{6}$/;
 	return snPattern.test(value);
 };
+
 
 // 校验上传文件类型和大小
 const beforeUpload = (file) => {

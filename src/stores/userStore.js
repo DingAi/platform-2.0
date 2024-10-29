@@ -1,11 +1,12 @@
 // src/stores/userStore.js
 
-import { defineStore } from 'pinia';
+import {defineStore} from 'pinia';
 import Cookies from 'js-cookie';
-import {getEquipmentData, postLogin} from '@/server/request-apis.js';
+import {getEquipmentData, postAlarmLog, postLogin} from '@/server/request-apis.js';
 import {ref} from 'vue';
 import Router from "@/router/index.js";
-import {ElMessage} from "element-plus";
+import {showMessage, transposeMatrix} from "@/utils/tools-functions.js";
+import {ElNotification} from "element-plus";
 
 export const useAuthStore = defineStore('auth', () => {
     
@@ -27,29 +28,29 @@ export const useAuthStore = defineStore('auth', () => {
     //设备的传感器结构
     const sensorData = ref([])
     
-    
     // 登录方法
     const login = async (username, password) => {
         try {
             const response = await postLogin(username, password);
             if (response.status === 200) {
-                console.log(response)
                 token.value = response.data.token;
                 user.value = response.data.user;
-                let expTime = response.data.time;
-                SCGData.value = response.data.ed;
+                let expTime = response.data.time; // token超时时间
+                SCGData.value = response.data.ed; // 用户已经拥有的设备信息
+                
+                //将传感器的详细数据放到本地
                 sensorData.value = response.data.data_list;
                 localStorage.setItem('sensorData', JSON.stringify(sensorData.value))
                 localStorage.setItem('data_point', JSON.stringify(response.data.data_ser))
-                console.log(SCGData)
+                
+                // 存储 username和token 到 Cookie
                 Cookies.set(`${PROJECT_NAME}_token`, token.value, {expires: expTime});
-                Cookies.set(`${PROJECT_NAME}_user`, username, {expires: COOKIE_EXPIRES_DAYS}); // 存储 username 到 Cookie
-                ElMessage({
-                    showClose: true,
-                    duration: 2000,
-                    message: '登录成功！',
-                    type: 'success'
-                });
+                Cookies.set(`${PROJECT_NAME}_user`, username, {expires: COOKIE_EXPIRES_DAYS});
+                
+                // 检测是否有报警
+                await isExistenceAlarm(SCGData.value);
+                
+                showMessage('登录成功', 'success')
                 await Router.push({path: '/'})
             }
         } catch (error) {
@@ -73,13 +74,33 @@ export const useAuthStore = defineStore('auth', () => {
     const getEquipments = async () => {
         try {
             const res = await getEquipmentData();
-            // if(res.data.length === 0){
-            //
-            // }
             SCGData.value = res.data['ed'];
             return SCGData;
         } catch (error) {
             console.log(error)
+        }
+    }
+    
+    async function isExistenceAlarm(SCGData) {
+        for (let i = 0; i < SCGData[0].length; i++) {
+            const item = SCGData[0][i];
+            try {
+                const res = await postAlarmLog(item); // 使用 await
+                let alarmList = transposeMatrix(res.data['value']);
+
+                // 检查 alarmList 中是否包含 0
+                if (alarmList[3].includes(0)) {
+                    ElNotification({
+                        title: '报警统治',
+                        message: '设备 【' + SCGData[1][i] + '】' + ' 有报警！',
+                        type: 'warning',
+                        offset: 100
+                    })
+                    // showMessage('设备 【' + SCGData[1][i] + '】' + ' 有报警！', 'error', 4000);
+                }
+            } catch (error) {
+                console.error(`设备 【${SCGData[1][i]}】 报警请求失败:`, error);
+            }
         }
     }
     
@@ -98,7 +119,7 @@ export const useAuthStore = defineStore('auth', () => {
         getToken,
         getEquipments
     };
-},{
+}, {
     persist: {
         storage: localStorage, // 使用 localStorage 或 sessionStorage
         paths: ['SCGData'], // 指定要持久化的状态属性

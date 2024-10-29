@@ -1,34 +1,44 @@
 <script setup lang="js">
-import Nav from "./components/Navbar.vue";
-import {useRoute} from "vue-router";
-import {computed, onMounted} from "vue";
-import {useAuthStore} from "@/stores/userStore.js";
+import { useRoute } from "vue-router";
+import { computed, onMounted } from "vue";
+import { useAuthStore } from "@/stores/userStore.js";
+import { getInitTokenDetect } from "@/server/request-apis.js";
+import Navbar from "@/components/Navbar.vue";
 
 const route = useRoute();
 
 const mainMinHeight = computed(() => {
-	const headerHeight = () => {
-		const excludedPaths = ['/login', '/register', '/:pathMatch(.*)*', '/modify-pwd'];
-		return excludedPaths.includes(route.path) ? 80 : 172;
-	};
-	return `calc(100vh - ${headerHeight()}px)`;
+	const excludedPaths = ['/login', '/register', '/:pathMatch(.*)*', '/modify-pwd'];
+	const headerHeight = excludedPaths.includes(route.path) ? 80 : 172;
+	return `calc(100vh - ${headerHeight}px)`;
 });
 
-const tokenExamine = () =>{
-	const userStore = useAuthStore()
-	if (!userStore.getToken()){
+const tokenExamine = async () => {
+	const userStore = useAuthStore();
+	if (!userStore.getToken()) {
 		userStore.logout();
+		return; // 确保在登出时不继续执行
+	}
+	try {
+		await getInitTokenDetect(); // 确保处理异步调用
+	} catch (error) {
+		console.error("Token detection error:", error);
 	}
 }
 
-onMounted(()=>{
-	tokenExamine()
-})
 
+const showNavbar = computed(() => {
+	return !(route.path === "/login" || route.path === "/register" || route.path === "//:pathMatch(.*)*"
+		|| route.path === "/modify-pwd");
+});
+
+onMounted(() => {
+	tokenExamine();
+});
 </script>
 
 <template>
-	<Nav class="z-max"/>
+	<Navbar class="z-max" v-if="showNavbar"/>
 	<main :style="{ 'min-height': mainMinHeight }" class="bg-[#ffffff] sm:pt-10">
 		<div class="mx-auto container">
 			<router-view></router-view>

@@ -17,8 +17,7 @@ function getTimeRange(hour) {
         "YYYY-MM-DD HH:mm:ss",
     );
     // 构建时间范围数组
-    const timeRange = [formattedTwentyFourHoursAgo, formattedCurrentTime];
-    return timeRange;
+    return [formattedTwentyFourHoursAgo, formattedCurrentTime];
 }
 
 //表格的数据转换
@@ -108,6 +107,22 @@ function excelTimestampToDate(excelTimestamp) {
     return exactDate.toISOString().replace('T', ' ').substring(0, 19);
 }
 
+function elementTableDataConversion(headList, lineDataList){
+    let outcome = []
+    for (let item of lineDataList){
+        let aLine = {
+            alarmEquipment: item[0],
+            alarmContent: item[1],
+            alarmTime: item[2],
+            alarmState: item[3]
+        }
+        outcome.push(aLine);
+    }
+    return outcome;
+}
+
+
+
 export {
     transposeMatrix,
     getTimeRange,
@@ -116,5 +131,6 @@ export {
     showMessage,
     getCurrentTime,
     selectProcessData,
-    excelTimestampToDate
+    excelTimestampToDate,
+    elementTableDataConversion,
 };

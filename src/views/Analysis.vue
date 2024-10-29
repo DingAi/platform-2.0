@@ -42,13 +42,14 @@
 					                  :timestamp="item[0] + ' - ' + item[1]"
 					                  placement="top">
 						<el-card>
-							
 							<div class="size-full space-y-4 p-2">
 								<div class="w-full flex flex-row">
-									<span class="text-gray-500">Index：{{ index + 1 }}</span>
+									<span class="text-gray-400 font-bold">
+										Index：<span class="text-[#2196F3]">{{ index + 1 }}</span>/{{matParsedData.length}}
+									</span>
 								</div>
 								<div class="flex flex-row justify-between space-x-4 items-center px-4">
-                                    <span class="badge open-color-auto p-2 text-white bg-pink-500 rounded w-36">
+                                    <span class="badge open-color-auto p-2 text-white bg-pink-600 rounded w-36">
                                         K<sub>(CO<sub>2</sub>)</sub> ：{{ item[2]}}
                                     </span>
 									<el-divider direction="vertical" />
@@ -57,11 +58,11 @@
                                     </span>
 								</div>
 								<div class="flex flex-row justify-between space-x-4 items-center px-4">
-                                    <span class="badge open-color-auto p-2 text-white bg-[#757de8] rounded w-36">
+                                    <span class="badge open-color-auto p-2 text-white bg-[#3f51b5] rounded w-36">
                                         K<sub>(H<sub>2</sub>O)</sub>  ：{{ item[4]}}
                                     </span>
 									<el-divider direction="vertical" />
-									<span class="badge open-color-auto text-gray-500">
+									<span class="badge open-color-auto text-gray-600">
                                         R<sup>2</sup><sub>(H<sub>2</sub>O)</sub> ：{{ item[5]}}
                                     </span>
 								</div>
@@ -81,18 +82,20 @@
 		</div>
 		<div class="flex flex-col md:flex-row justify-between items-center bg-[#f5f5f5] p-3 h-auto rounded-2xl inner-shadow">
 			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
-				<file-upload @fileParsed="handleFileParsed">上传数据分析文件</file-upload>
+<!--				<file-upload @fileParsed="handleFileParsed">上传数据分析文件</file-upload>-->
 			</div>
-			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
-				<span class="font-semibold text-gray-100">箱体体积（V）</span>
-				<el-input-number v-model="boxVolume" :step="0.1"/>
+			<div class="flex flex-row items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
+				<span class="font-semibold">箱体体积(m³)：</span>
+				<div>
+					<el-input-number v-model="boxVolume" :step="0.1"/>
+				</div>
 			</div>
-			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
-				<span class="font-semibold text-gray-100">底面积（S）</span>
+			<div class="flex flex-row items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
+				<span class="font-semibold">底面积(㎡)：</span>
 				<el-input-number v-model="boxArea" :step="0.1"/>
 			</div>
 			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
-				<submit-button>重新加载图像</submit-button>
+				<el-button round @click="analysisDataDownload">下载数据</el-button>
 			</div>
 		</div>
 		<!--		<div class="flex flex-col md:flex-row justify-between items-center bg-slate-800 pt-2 pb-2 h-28 rounded space-x-2">-->
@@ -120,13 +123,13 @@ import {computed, onMounted, ref} from 'vue';
 import FluxHistoryChart from "@/components/echarts/FluxChart.vue";
 import AveDataChart from "@/components/echarts/AveDataLineChart.vue";
 import FileUpload from "@/components/FileUpload.vue";
-import {excelTimestampToDate, showMessage, transposeMatrix} from "@/utils/tools-functions.js";
+import {excelTimestampToDate, getTimeRange, showMessage, transposeMatrix} from "@/utils/tools-functions.js";
 import * as XLSX from 'xlsx';
 import SubmitButton from "@/components/SubmitButton.vue";
 import {useAuthStore} from "@/stores/userStore.js";
 import {storeToRefs} from "pinia";
 import TimeDatePicker from "@/components/ElementTimeDatePicker.vue";
-import {postSingleAnalysisData} from "@/server/request-apis.js";
+import {postAnalysisDataDownload, postSingleAnalysisData} from "@/server/request-apis.js";
 
 // Pinia数据
 const authStore = useAuthStore();
@@ -149,8 +152,9 @@ const snOption = computed(() => {
 const isMultiChannel = computed(() => {
 	return selectedValues1.value[0] === 'B';
 })
-const timeRange = ref(["2024-10-18 05:38:40", "2024-10-18 10:20:40"])
-// const timeRange = ref(getTimeRange(6))
+// const timeRange = ref(["2024-10-18 05:38:40", "2024-10-18 10:20:40"])
+// 时间范围
+const timeRange = ref(getTimeRange(24))
 
 // 用于存储解析后的数据
 const xlsxFileData1 = ref(null);
@@ -159,11 +163,16 @@ const xlsxFileData2 = ref(null);
 const matParsedData = ref([]);
 const isFileLoading1 = ref(false);
 const isFileLoading2 = ref(false);
+
+// 用来区分是来自接口的数据还是本地文件的数据
 const typeIndex = ref(0);
-const xAxisData = ref([])  //X轴
+
+//X轴以及通量数据、平均温湿度数据
+const xAxisData = ref([])
 const fluxList = ref({})
 const aveDataList = ref([])
 
+// 箱子的体积和底面积
 const boxVolume = ref(1)
 const boxArea = ref(1)
 
@@ -171,11 +180,12 @@ const historyKeyList = ref([])
 const selectedData = ref({})
 const timeRangeList = ref([])
 
-// 获取分析的数据
+// 获取分析的数据并处理
 const singleAnalysisData = async () => {
 	typeIndex.value = 0;
-	const res = await postSingleAnalysisData(selectedValues1.value, timeRange.value);
-	
+	const res = await postSingleAnalysisData(selectedValues1.value, boxVolume.value / boxArea.value, timeRange.value);
+	xAxisData.value = []
+	timeRangeList.value = []
 	for (let i = 0; i < res.data.analyze_data[0].length; i++) {
 		// 图标用X轴
 		xAxisData.value.push(res.data.analyze_data[8][i] + ' - ' + res.data.analyze_data[9][i]);
@@ -199,10 +209,8 @@ const singleAnalysisData = async () => {
 // 处理传递过来的数据分析数据
 const handleFileParsed = (data) => {
 	xlsxFileData1.value = data
-	console.log('从子组件接收到的数据:', data);
 	//用于时间线列表解析的数据
 	let timeLineData = [data['开始时间'], data['结束时间'], data['二氧化碳_K值'], data['二氧化碳_R²'], data['水分绝对浓度_K值'], data['水分绝对浓度_R²'],]
-	console.log('timeline:', timeLineData)
 	matParsedData.value = transposeMatrix(timeLineData)
 	
 	//平均值图表使用的数据
@@ -350,6 +358,31 @@ const exportToExcel = (data, filename = 'PagePrecessed.xlsx') => {
 	showMessage('数据已导出', 'success')
 }
 
+// 数据下载
+const analysisDataDownload = async () =>{
+	try {
+		showMessage('数据开始下载', 'info')
+		const res = await postAnalysisDataDownload(selectedValues1.value, boxVolume.value / boxArea.value, timeRange.value);
+		// 创建一个 Blob URL
+		const url = window.URL.createObjectURL(new Blob([res.data]));
+		
+		// 创建一个链接元素
+		const link = document.createElement('a');
+		link.href = url;
+		link.setAttribute('download', 'data.xlsx'); // 指定下载的文件名
+		
+		// 添加链接到 DOM
+		document.body.appendChild(link);
+		link.click(); // 模拟点击下载
+		link.parentNode.removeChild(link); // 下载后移除链接
+	} catch (e) {
+		console.log('数据下载错误：',e)
+	} finally {
+		showMessage('数据下载完成', 'success')
+	}
+	
+}
+
 onMounted(() => {
 	singleAnalysisData();
 })
@@ -364,5 +397,39 @@ onMounted(() => {
 
 .h-h {
 	height: calc(100vh - 370px);
+}
+
+:deep(.el-cascader-node.in-active-path, .el-cascader-node.is-active, .el-cascader-node.is-selectable.in-checked-path){
+	color: #3F51B5;
+}
+
+:deep(.el-date-range-picker .el-picker-panel__body ){
+	@media (max-width: 768px) {
+		width: 323px !important;
+	}
+}
+
+:deep(.el-date-range-picker__editors-wrap) {
+	@media (max-width: 768px) {
+		display: flex !important;
+	}
+}
+
+:deep(.el-date-range-picker__content) {
+	@media (max-width: 768px) {
+		width: 100% !important;
+	}
+}
+
+:deep(.el-picker-panel [slot=sidebar], .el-picker-panel__sidebar) {
+	width: 70px !important;
+}
+
+:deep(.el-picker-panel [slot=sidebar]+.el-picker-panel__body, .el-picker-panel__sidebar+.el-picker-panel__body) {
+	margin-left: 70px !important;
+}
+
+:deep(.el-date-range-picker) {
+	width: 393px !important;
 }
 </style>
