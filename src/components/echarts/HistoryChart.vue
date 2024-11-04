@@ -15,7 +15,7 @@ import { lineOptionTemplate } from "@/assets/echarts-template/line-chart.js";
 const {historyData, xAxisData, historyLoading} = defineProps({
 	historyData: Array,
 	xAxisData: Array,
-	historyLoading: Boolean
+	historyLoading: Boolean,
 });
 
 const historyLine = ref(null);
@@ -27,15 +27,19 @@ const refresh = (dom) => {
 		option.color = ["#db2777", "#3F51B5",];
 		try {
 			option.xAxis.data = xAxisData;
-			let data = JSON.parse(localStorage.getItem("sensorData"));
-			let dataList = [...data[0].children, ...data[1].children];
+			let singleHistoryOption = JSON.parse(localStorage.getItem("single_history_option"));
+			let multiHistoryOption = JSON.parse(localStorage.getItem("multi_history_option"));
+			//把是所有历史数据结构组合在一起，用于将英文变量翻译为汉字
+			let dataList = [
+				...singleHistoryOption.flatMap(option => option.children),
+				...multiHistoryOption.flatMap(option => option.children)
+			];
+			
 			const result = dataList.reduce((acc, item) => {
 				acc[item.value] = item.label;
 				return acc;
 			}, {});
-			console.log('数据名：',historyData[0])
 			for (let i = 0; i < historyData[1].length; i++) {
-				console.log(historyData[0][i]);
 				option.series.push({
 					data: historyData[1][i],
 					name: result[historyData[0][0][i]],

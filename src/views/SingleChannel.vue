@@ -1,5 +1,5 @@
 <template>
-	<div class="space-y-4 text-center size-full">
+	<div class="space-y-4 text-center size-full smiley-sans">
 		<!-- 顶栏 -->
 		<div class="flex flex-col md:flex-row justify-between items-center bg-[#f5f5f5] p-4 h-auto rounded-2xl inner-shadow">
 			<span class="text-xl text-[#5c5c5c] px-2 mt-2 md:mt-0 font-bold">{{ equipmentName }}</span>
@@ -9,7 +9,7 @@
 		<!-- 通信异常内容 -->
 		<div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 h-auto
 			md:h-96 rounded-2xl bg-[#f5f5f5] inner-shadow p-4" v-show="isConnectState">
-			<span class="text-8xl text-[#757de8]">设备通信异常</span>
+			<span class="text-8xl text-[#757de8]">设备离线</span>
 		</div>
 		
 		<!-- 主内容 -->
@@ -132,13 +132,7 @@ import {computed, onBeforeUnmount, onMounted, ref, watch} from 'vue'
 import {useRoute} from 'vue-router'
 import {elementTableDataConversion, showMessage, transposeMatrix} from "@/utils/tools-functions.js";
 import TableTemplate from "@/components/TableTemplate.vue";
-import {
-	postAlarmLog,
-	postClearAlarm,
-	postRealData,
-	postSetTime,
-	postSwitch
-} from "@/server/request-apis.js";
+import {postAlarmLog, postClearAlarm, postRealData, postSetTime, postSwitch} from "@/server/request-apis.js";
 import ThLineChart from "@/components/echarts/ThLineChart.vue";
 import ApGaugeChart from "@/components/echarts/ApGaugeChart.vue";
 import Cookies from "js-cookie";
@@ -153,7 +147,7 @@ const apValue = ref([])
 const currentTime = ref('')
 const isLoading = ref(false)
 const SCGData = JSON.parse(localStorage.getItem('auth')).SCGData;
-const dataPointNameList = JSON.parse(localStorage.getItem('data_point'));
+const dataPointNameList = JSON.parse(localStorage.getItem('single_data_point'));
 
 // 找到SN码在SCGData中的索引index
 let index = SCGData[0].indexOf(sn.value);

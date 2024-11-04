@@ -1,9 +1,10 @@
 import apiClient from "./axiosConfig";
 
-const server = '/django/'
-const fastapiServer = '/fastapi/'
-const localServer = '/local/' //127.0.0.1:8000
-const xuServer = '/xu/' //192.168.28.228:
+// 代理服务配置在 vite.config.ts
+const server = '/django/' //47.108.231.242:9002
+const fastapiServer = '/fastapi/' //47.108.231.242:7005
+const localServer = '/local/' //127.0.0.1:8000（本机）
+const xuServer = '/xu/' //192.168.28.228（公司局域网）
 
 const apiEndpoints = {
     register: server + "register", //注册
@@ -24,7 +25,8 @@ const apiEndpoints = {
     userSN: server + "user_associated_device", // 获取用户拥有的所有SN码设备（Admin）
     fileUpload: server + "remote_upgrade", // 文件上传
     RealData: server + "real_time_data", //单通道获取实时数据
-    History: server + "history", //历史数据
+    history: server + "history", //历史数据
+    historyDownload: server + "history_download", //历史数据
     singleChannelSwitch: fastapiServer + "mqtt/single_channel_switch", //单通道开关
     upload: fastapiServer + "mqtt/upload", //OTA文件上传
     modifyPasswordCaptcha: server + "modify_password_captcha", //修改密码时的手机验证
@@ -36,6 +38,8 @@ const apiEndpoints = {
     initTokenDetect: server + "token_test", //进入网站的时候进行Token检查
     downloadAnalysisData: server + "download_analysis_data", //进入网站的时候进行Token检查
     clearAlarm: server + "delete_alarm", // 清除所有报警
+    modifyDeviceName: server + "revamp_name", // 修改设备名
+    multiChannelDataTest: server + "test_datalist", // 修改设备名
 };
 
 // 定义API请求函数
@@ -57,14 +61,15 @@ const postSnActivation = (sn, en) =>
 const getEquipmentData = () =>
     apiClient.get(apiEndpoints.DetailedData);
 
-// 获取要下载的文件列表数据
-const getFilesList = (sn) =>
+// 获取备份的文件列表数据
+const postFilesList = (sn) =>
     apiClient.post(apiEndpoints.filesList, {sn});
 
 // 获取要下载的文件流
 const postFilesDownload = (folderName, filesList) =>
     apiClient.post(apiEndpoints.filesDownload, {folderName, filesList,}, {responseType: "blob",},);
 
+// 下载完后，后端需要信号删除文件
 const postDownloadIsComplete = (sn) =>
     apiClient.post(apiEndpoints.downloadComplete, {sn});
 
@@ -98,11 +103,11 @@ const postRealData = (sn) =>
 
 // 获取历史数据
 const postHistoryData = (sn, type, vars, time_frame) =>
-    apiClient.post(apiEndpoints.History, {sn, type, vars, time_frame});
+    apiClient.post(apiEndpoints.history, {sn, type, vars, time_frame});
 
-// 获取设备传感器数据点
-const getEquipmentVarArray = () =>
-    apiClient.get(apiEndpoints.equipmentVar);
+// 下载历史数据
+const postHistoryDataDownload = (sn, type, vars, time_frame) =>
+    apiClient.post(apiEndpoints.historyDownload, {sn, type, vars, time_frame}, {responseType: "blob",});
 
 // 单通道开关
 const postSwitch = (user, sn, value, index) =>
@@ -144,11 +149,19 @@ const postAlarmLog = (sn) =>
 const postAnalysisDataDownload = (sn, proportion, time_frame) =>
     apiClient.post(apiEndpoints.downloadAnalysisData, {sn, proportion, time_frame}, {responseType: "blob",});
 
-// 下载分析数据的文件(用文件流传输）
+// 清除所有报警信息
 const postClearAlarm = (sn) =>
     apiClient.post(apiEndpoints.clearAlarm, {sn});
 
-// 导出所有的API函数
+// 修改设备名
+const postModifyDeviceName = (sn, en) =>
+    apiClient.post(apiEndpoints.modifyDeviceName, {sn, en});
+
+// 修改设备名
+const getMultiChannelDataTest = () =>
+    apiClient.get(apiEndpoints.multiChannelDataTest);
+
+// 抛出所有的API函数
 export {
     server,
     xuServer,
@@ -157,7 +170,7 @@ export {
     getPhoneCaptcha,
     postSnActivation,
     getEquipmentData,
-    getFilesList,
+    postFilesList,
     postFilesDownload,
     postDownloadIsComplete,
     getLogData,
@@ -177,4 +190,7 @@ export {
     getInitTokenDetect,
     postAnalysisDataDownload,
     postClearAlarm,
+    postHistoryDataDownload,
+    postModifyDeviceName,
+    getMultiChannelDataTest,
 };

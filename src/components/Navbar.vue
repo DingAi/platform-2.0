@@ -146,7 +146,7 @@ import Cookies from "js-cookie";
 import {ArrowDownBold, Clock, Histogram, House} from "@element-plus/icons";
 
 const authStore = useAuthStore();
-const {SCGData, user} = storeToRefs(authStore);
+const {SCGData} = storeToRefs(authStore);
 
 const showSubMenu = ref(false);
 const showUserMenu = ref(false);

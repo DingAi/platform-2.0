@@ -1,5 +1,5 @@
 import {defineStore} from 'pinia';
-import {getEquipmentData, getFilesList} from '@/server/request-apis.js';
+import {getEquipmentData, postFilesList} from '@/server/request-apis.js';
 import {ref} from 'vue';
 
 export const useEquipmentStore = defineStore('equipment', () => {
@@ -25,7 +25,7 @@ export const useEquipmentStore = defineStore('equipment', () => {
     //获取备份文件列表
     const getFiles = async () => {
         try {
-            const res = await getFilesList();
+            const res = await postFilesList();
             folders.value = res.data.folders;
             files.value = res.data.files;
         } catch (error) {

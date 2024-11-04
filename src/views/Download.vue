@@ -1,5 +1,5 @@
 <template>
-	<div class="space-y-2 size-full rounded-2xl">
+	<div class="space-y-2 size-full rounded-2xl smiley-sans">
 		<div class="mx-auto p-4 flex flex-col md:flex-row">
 			<div class="flex flex-col space-y-4 border-r pr-0 md:pr-4">
 				<button v-for="(folder, index) in folders" :key="index" @click="activeTab = index"
@@ -11,8 +11,8 @@
 					]">
 					<FolderSVG class="mr-2"/>
 					<div class="flex flex-col">
-						<span class="font-bold text-[#3F51B5]">{{ SCGData[1][index] }}</span>  <!-- 替换成你想要的主标题文本 -->
-						<span class="text-sm text-gray-500">{{ folder }}</span> <!-- 副标题样式 -->
+						<span class="font-bold text-[#3F51B5]">{{ SCGData[1][index] }}</span>
+						<span class="text-sm text-gray-500">{{ folder }}</span>
 					</div>
 				</button>
 			</div>
@@ -89,11 +89,10 @@
 import {computed, onMounted, ref, watch} from "vue";
 import FolderSVG from "@/components/FolderSVG.vue";
 import {
-	getFilesList,
+	postFilesList,
 	postDownloadIsComplete,
 	postFilesDownload,
 } from "@/server/request-apis.js";
-import {ElMessage} from "element-plus";
 import DataLoading from "@/components/DataLoading.vue";
 import {showMessage} from "@/utils/tools-functions.js";
 
@@ -110,7 +109,7 @@ const files = ref([]);
 
 const getFiles = async () => {
 	try {
-		const res = await getFilesList(SCGData[0]);
+		const res = await postFilesList(SCGData[0]);
 		folders.value = res.data.folders.sn;
 		files.value = res.data.files;
 	} catch (error) {

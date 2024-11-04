@@ -145,7 +145,7 @@ import SubmitButton from "@/components/SubmitButton.vue";
 import {showMessage} from "@/utils/tools-functions.js";
 import {useRoute} from "vue-router";
 
-const route = useRoute();
+const router = useRoute();
 const isLoading = ref(false);
 const username = ref('');
 const password = ref('');

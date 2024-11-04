@@ -57,28 +57,26 @@ function getCurrentTime() {
 }
 
 function selectProcessData(data) {
-    // 初始化分类集合和分类对应的条目对象
-    const categoriesSet = new Set();
-    const categoriesMap = {};
+    const firstValuesSet = new Set();
+    const mapping = {};
     
-    // 遍历数据，分类数据
-    data.forEach(([category, item]) => {
-        categoriesSet.add(category); // 收集分类
-        if (!categoriesMap[category]) {
-            categoriesMap[category] = []; // 初始化分类对应的条目数组
+    data.forEach(subArray => {
+        if (subArray.length >= 2) {
+            const firstValue = subArray[0];
+            const secondValue = subArray[1];
+            firstValuesSet.add(firstValue);
+            if (!mapping[firstValue]) {
+                mapping[firstValue] = [];
+            }
+            mapping[firstValue].push(secondValue);
         }
-        categoriesMap[category].push(item); // 添加条目到对应分类
     });
+    const firstValuesArray = Array.from(firstValuesSet);
+    const secondValuesArray = Object.values(mapping);
     
-    // 将 Set 转换为数组，得到第一个数组
-    const categoriesArray = Array.from(categoriesSet);
-    
-    // 将分类条目对象转换为数组，得到第二个数组
-    const entriesArray = Object.values(categoriesMap);
-    // 返回结果
     return {
-        categories: categoriesArray,  // 分类数组
-        entries: entriesArray          // 分类对应的条目数组
+        typeDataList: firstValuesArray,
+        varDataList: secondValuesArray
     };
 }
 

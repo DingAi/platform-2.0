@@ -1,8 +1,8 @@
 <template>
-	<div class="space-y-2 size-full">
+	<div class="space-y-2 size-full smiley-sans">
 		<div class="flex md:flex-row flex-col justify-between">
 			<div class="md:w-1/6 sticky pr-6 border-r pt-6">
-				<!-- Sticky menu -->
+				<!-- 左侧的菜单 -->
 				<nav class="space-y-2 sticky top-52 pb-4">
 					<ul class="space-y-2">
 						<li>
@@ -33,8 +33,10 @@
 					</ul>
 				</nav>
 			</div>
+			<!--右侧的对应内容-->
 			<div class="md:w-5/6">
 				<div class="content space-y-4 pr-4 pl-4">
+					
 					<!--Section01-->
 					<div id="section1" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow h-auto">
 						<div class="flex items-center">
@@ -45,26 +47,58 @@
 							<TableTemplate
 								:header="header"
 								:column="column"
-								:showButton="true"
-								buttonLabel="Del"
-								:onButtonClick="deleteClick"
+								:showButton="2"
+								:buttonLabels="['删除设备', '修改设备名']"
+								:onButtonClick="[deleteClick, modifyDeviceNameClick]"
 								:isLoading="addLoading"
 							/>
 						</div>
-						
-						<el-dialog v-model="dialogVisible" title="确定要删除设备【xxx】?" width="500">
+						<!--设备删除弹窗-->
+						<el-dialog v-model="dialogVisible1" title="确定要删除设备?" width="500">
 							<p>请输入<span class="text-pink-600">“删除设备”</span>：</p>
 							<div class="mt-2">
 								<el-input v-model="delText" placeholder="Please input"/>
 							</div>
 							<template #footer>
 								<div class="dialog-footer">
-									<el-button @click="dialogVisible = false">取消</el-button>
+									<el-button @click="dialogVisible1 = false">取消</el-button>
 									<el-button type="primary" @click="deleteEquipment">删除</el-button>
 								</div>
 							</template>
 						</el-dialog>
+						
+						<!--修改设备名弹窗-->
+						<el-dialog v-model="dialogVisible2" title="修改设备名" width="500">
+							<div class="sm:mx-auto sm:w-full sm:max-w-sm">
+								<form class="space-y-2 py-6" @submit.prevent="modifyDeviceName">
+									<label for="sn" class="block text-sm font-medium leading-6 p-2">原设备名</label>
+									<span class="text-2xl text-indigo-500">{{ SCGData[1][clickRowIndex] }}</span>
+									<label for="sn" class="block text-sm font-medium leading-6 p-2">设备SN码</label>
+									<div class="mt-1">
+										<input v-model="SCGData[0][clickRowIndex]" id="sn" name="sn" type="text"
+										       required disabled
+										       class="block w-full rounded-md border-0 p-2"
+										/>
+									</div>
+									
+									<label for="en"
+									       class="block text-sm font-medium leading-6 p-2">新设备名</label>
+									<div class="mt-1">
+										<input v-model="newDeviceName" id="en" name="en" type="text" required
+										       class="block w-full rounded-md border-0 p-2 shadow-sm ring-1
+										ring-inset ring-[#757de8] placeholder:text-gray-400 focus:ring-2 focus:ring-inset
+										focus:ring-[#3F51B5] sm:text-sm sm:leading-6"
+										/>
+									</div>
+									
+									<div class="pt-6">
+										<SubmitButton :loading="addLoading">修改设备名</SubmitButton>
+									</div>
+								</form>
+							</div>
+						</el-dialog>
 					</div>
+					
 					<!--Section02-->
 					<div id="section2" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow">
 						<h1 class="text-4xl mb-6 mt-4">SN 码激活</h1>
@@ -105,6 +139,7 @@
 							</form>
 						</div>
 					</div>
+					
 					<!--Section03-->
 					<div id="section3" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow h-auto">
 						<div class="flex items-center">
@@ -122,44 +157,45 @@
 							:page-row-number="10"
 						/>
 					</div>
+					
 					<!--Section04-->
 					<div id="section4" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow h-auto">
 						<h1 class="text-4xl mb-6">硬件驱动更新</h1>
 						<hr class="my-6 border-gray-600"/>
 						<div class="flex flex-col md:flex-row justify-between">
-								<div class="flex justify-center items-center p-2 w-full md:w-1/3">
-									<el-upload ref="upload"
-									           :http-request="fileUpload"
-									           :limit="1"
-									           :auto-upload="false"
-									           @change="handleFileChange"
-									           :before-upload="beforeUpload"
-									>
-										<template #trigger>
-											<el-button type="primary">选择二进制更新文件</el-button>
-										</template>
-									</el-upload>
-								</div>
-								<div class="flex justify-center items-center p-2 w-full md:w-1/3">
-									<el-select v-model="uploadSelectValue"
-									           placeholder="选择要更新的设备"
-									           @change="handleSelectChange"
-									           style="width: 240px">
-										<el-option v-for="item in snOption"
-										           :key="item.value"
-										           :label="item.label"
-										           :value="item.value"
-										/>
-									</el-select>
-								</div>
-								<div class="flex justify-center p-2 w-full md:w-1/3">
-									<el-button
-										class="ml-3"
-										:disabled="!fileSelected || !uploadSelectValue"
-										@click="submitUpload">
-										确定更新
-									</el-button>
-								</div>
+							<div class="flex justify-center items-center p-2 w-full md:w-1/3">
+								<el-upload ref="upload"
+								           :http-request="fileUpload"
+								           :limit="1"
+								           :auto-upload="false"
+								           @change="handleFileChange"
+								           :before-upload="beforeUpload"
+								>
+									<template #trigger>
+										<el-button type="primary">选择二进制更新文件</el-button>
+									</template>
+								</el-upload>
+							</div>
+							<div class="flex justify-center items-center p-2 w-full md:w-1/3">
+								<el-select v-model="uploadSelectValue"
+								           placeholder="选择要更新的设备"
+								           @change="handleSelectChange"
+								           style="width: 240px">
+									<el-option v-for="item in snOption"
+									           :key="item.value"
+									           :label="item.label"
+									           :value="item.value"
+									/>
+								</el-select>
+							</div>
+							<div class="flex justify-center p-2 w-full md:w-1/3">
+								<el-button
+									class="ml-3"
+									:disabled="!fileSelected || !uploadSelectValue"
+									@click="submitUpload">
+									确定更新
+								</el-button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -171,12 +207,7 @@
 <script setup lang="js">
 import {computed, onMounted, ref} from "vue";
 import {
-	getClearLog,
-	getLogData,
-	postDeleteEquipment,
-	postSnActivation,
-	postFileUpload,
-	postAlarmLog, postAlarmAlreadyRead,
+	getClearLog, getLogData, postDeleteEquipment, postSnActivation, postFileUpload, postModifyDeviceName,
 } from "@/server/request-apis.js"
 import TableTemplate from "@/components/TableTemplate.vue";
 import {useAuthStore} from "@/stores/userStore.js";
@@ -192,13 +223,15 @@ const fileSelected = ref(false);
 const isSNValid = ref(false);
 const snError = ref(false);
 
-// 组件状态
+// 页面定位与弹窗
 const activeSection = ref("section1");
-const dialogVisible = ref(false);
-const delText = ref("");
-const clickRowIndex = ref(null); // 行索引
+const dialogVisible1 = ref(false); // 第一个按钮弹窗
+const dialogVisible2 = ref(false); // 第二个按钮弹窗
+const delText = ref(""); // 用户在删除弹窗输入的文本
+const clickRowIndex = ref(null); // 表格的行索引
+const newDeviceName = ref(''); // 新的设备名称
 
-// 认证状态
+// 本地数据
 const authStore = useAuthStore();
 const {SCGData} = storeToRefs(authStore);
 
@@ -239,6 +272,7 @@ const scrollToSection = (sectionId) => {
 		window.scrollTo({top, behavior: "smooth"});
 	}
 };
+
 
 // 添加设备
 async function addEquipment() {
@@ -304,8 +338,15 @@ async function getLog() {
 
 // 弹窗按钮函数
 function deleteClick(rowIndex) {
-	dialogVisible.value = true;
+	dialogVisible1.value = true;
 	clickRowIndex.value = rowIndex;
+}
+
+// 弹窗按钮函数
+function modifyDeviceNameClick(rowIndex) {
+	dialogVisible2.value = true;
+	clickRowIndex.value = rowIndex;
+	console.log(clickRowIndex.value);
 }
 
 // 删除设备
@@ -314,7 +355,7 @@ async function deleteEquipment() {
 		try {
 			let index = Number(clickRowIndex.value);
 			const eqRes = await postDeleteEquipment(SCGData.value[0][index]);
-			dialogVisible.value = false;
+			dialogVisible1.value = false;
 			ElMessage({
 				showClose: true,
 				message: eqRes.data,
@@ -325,6 +366,24 @@ async function deleteEquipment() {
 			await refreshEquipments();
 			delText.value = "";
 		}
+	}
+}
+
+
+// 修改设备名
+const modifyDeviceName = async () => {
+	dialogVisible2.value = true;
+	let index = Number(clickRowIndex.value);
+	if (SCGData.value[1][index] === newDeviceName.value){
+		showMessage('新修改的设备名称与原设备名称相同')
+	} else {
+		const res = await postModifyDeviceName(SCGData.value[0][index],newDeviceName.value);
+		if(res.status === 200){
+			showMessage(res.data, 'info');
+		}
+		dialogVisible2.value = false;
+		SCGData.value[1][index] = newDeviceName.value;
+		await refreshEquipments()
 	}
 }
 

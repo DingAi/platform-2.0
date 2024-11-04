@@ -23,10 +23,6 @@ export const useAuthStore = defineStore('auth', () => {
     
     //登录后拿到的设备数据
     const SCGData = ref([]) // 单通道气体箱数据 Single Channel GasBox
-    const MCGData = ref({}) // 多通道气体箱数据 Multi Channel GasBox
-    
-    //设备的传感器结构
-    const sensorData = ref([])
     
     // 登录方法
     const login = async (username, password) => {
@@ -39,9 +35,55 @@ export const useAuthStore = defineStore('auth', () => {
                 SCGData.value = response.data.ed; // 用户已经拥有的设备信息
                 
                 //将传感器的详细数据放到本地
-                sensorData.value = response.data.data_list;
-                localStorage.setItem('sensorData', JSON.stringify(sensorData.value))
-                localStorage.setItem('data_point', JSON.stringify(response.data.data_ser))
+                localStorage.setItem('single_history_option', JSON.stringify(response.data.data_list))
+                localStorage.setItem('single_data_point', JSON.stringify(response.data.data_ser))
+                
+                // 这部分是为了方式在登录的时候多通道数据结构传输的数据过大，将从站的数据在这里生成
+                let masterStationData = response.data.data_duo.slice(0, 71); // 主站数据
+                let subStationData = response.data.data_duo.slice(71, 94); // 一份从站数据
+                
+                let masterHistoryOption = [response.data.duo_table[0]]; // 主站历史数据结构
+                let subHistoryOption = response.data.duo_table[1]; // 一份从站历史数据结构
+                let subStationKeys = [
+                    "slave_one",
+                    "slave_two",
+                    "slave_three",
+                    "slave_four",
+                    "slave_five",
+                    "slave_six",
+                    "slave_seven",
+                    "slave_eight",
+                    "slave_nine",
+                    "slave_ten"
+                ];
+                
+                // 循环生成1到10号站的数据
+                for (let i = 1; i <= 10; i++) {
+                    // 修改主站数据
+                    subStationData.forEach(station => {
+                        const modifiedStation = station.replace(/^一/, i.toString());
+                        masterStationData.push(modifiedStation);
+                    });
+                    // 生成每个子站的数据并存储到 masterHistoryOption
+                    if (i <= subStationKeys.length) { // 确保索引不超过子站数量
+                        // 创建 originalData 的副本
+                        const data = JSON.parse(JSON.stringify(subHistoryOption));
+                        // 更新 value
+                        data.value = subStationKeys[i - 1]; // 使用 i - 1 获取正确的 key
+                        // 修改 label 的第一个字符
+                        data.label = data.label.replace(/^1/, i.toString());
+                        // 修改 children 的 label
+                        data.children.forEach(child => {
+                            child.label = child.label.replace(/^1/, i.toString());
+                            child.value = child.value.replace(/1/g, i.toString());
+                        });
+                        // 将修改后的结果添加到 masterHistoryOption
+                        masterHistoryOption.push(data);
+                    }
+                }
+                
+                localStorage.setItem('multi_data_point', JSON.stringify(masterStationData));
+                localStorage.setItem('multi_history_option', JSON.stringify(masterHistoryOption))
                 
                 // 存储 username和token 到 Cookie
                 Cookies.set(`${PROJECT_NAME}_token`, token.value, {expires: expTime});
@@ -87,7 +129,7 @@ export const useAuthStore = defineStore('auth', () => {
             try {
                 const res = await postAlarmLog(item); // 使用 await
                 let alarmList = transposeMatrix(res.data['value']);
-
+                
                 // 检查 alarmList 中是否包含 0
                 if (alarmList[3].includes(0)) {
                     ElNotification({
@@ -113,7 +155,6 @@ export const useAuthStore = defineStore('auth', () => {
     return {
         token,
         SCGData,
-        MCGData,
         login,
         logout,
         getToken,

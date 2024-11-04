@@ -1,5 +1,5 @@
 <template>
-	<div class="space-y-4 text-center w-full h-[1000px] md:h-full">
+	<div class="space-y-4 text-center w-full h-[1000px] md:h-full smiley-sans">
 		<div class="flex flex-col md:flex-row justify-between items-center bg-[#f5f5f5] p-2 rounded-2xl inner-shadow">
 			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl p-2 mt-6 sm:mt-0">
 				<el-cascader
@@ -31,11 +31,12 @@
 				<el-button type="primary" @click="singleAnalysisData" round>加载数据分析</el-button>
 			</div>
 		</div>
-		<div class="flex items-center p-4 rounded-2xl inner-shadow h-h" v-if="!isFileLoading1">
-			<p class="text-5xl text-[#757de8] font-bold m-auto">【选择数据范围或传入文件后加载数据】</p>
-		</div>
+<!--		<div class="flex items-center p-4 rounded-2xl inner-shadow h-h" v-if="!isFileLoading1">-->
+<!--			<p class="text-5xl text-[#757de8] font-bold m-auto">【选择数据范围或传入文件后加载数据】</p>-->
+<!--		</div>-->
 		<div class="flex flex-col md:flex-row w-full analysis-div space-x-0 md:space-x-4 overflow-auto">
-			<div class="w-full md:w-1/3 h-auto min-h-[300px] sm:min-h-[420px] md:min-h-[400px] flex flex-col items-center space-y-4 overflow-auto p-6">
+			<div class="w-full md:w-1/3 h-auto min-h-[300px] sm:min-h-[420px] md:min-h-[400px] flex flex-col items-center
+			space-y-4 overflow-auto p-6">
 				<el-timeline v-if="isFileLoading1">
 					<el-timeline-item center v-for="(item, index) in matParsedData"
 					                  :key="index"

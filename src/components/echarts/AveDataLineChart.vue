@@ -59,7 +59,6 @@ const refresh = (dom, option) => {
 		})
 	}
 	option.xAxis.data = xAxis;
-	console.log(aveData)
 	option.series = seriesList
 	dom.setOption(option);
 	dom.hideLoading();
