@@ -1,9 +1,9 @@
 <template>
-	<nav class="top-0 z-50 sticky bg-[#ffffff] shadow py-4 text-[#333333]">
+	<nav class="top-0 z-50 sticky bg-white shadow py-4 bg-white font-light">
 		<div class="flex flex-row justify-between items-center mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 			<!-- Platform Logo -->
 			<div class="flex pl-4">
-				<router-link to="/" class="font-bold text-pink-600 text-xl">Platfrom</router-link>
+				<router-link to="/" class="text-pink-600 text-xl font-bold">Platfrom</router-link>
 			</div>
 			<!-- 汉堡菜单 -->
 			<div class="block px-4 sm:hidden items-center space-x-4">
@@ -17,8 +17,8 @@
 			<div v-if="showMobileMenu"
 			     class="absolute top-16 left-0 right-0 bg-white text-sm font-bold shadow-lg z-50 p-2">
 				<router-link to="/"
-				             class="flex px-4 py-1 hover:bg-[#f5f5f5] rounded-xl items-center justify-center"
-				             :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path === '/'}"
+				             class="flex px-4 py-1 hover:bg-theme-1-color-6 rounded-xl items-center justify-center"
+				             :class="{'bg-theme-1-color-1 text-white': $route.path === '/'}"
 				             @click="toggleMobileMenu">
 					<el-icon>
 						<House/>
@@ -26,8 +26,8 @@
 					Home
 				</router-link>
 				<router-link to="/history"
-				             class="flex px-4 py-1 hover:bg-[#f5f5f5] rounded-xl items-center justify-center"
-				             :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/history')}"
+				             class="flex px-4 py-1 hover:bg-theme-1-color-6 rounded-xl items-center justify-center"
+				             :class="{'bg-theme-1-color-1 text-white': $route.path.startsWith('/history')}"
 				             @click="toggleMobileMenu">
 					<el-icon>
 						<Clock/>
@@ -35,8 +35,8 @@
 					历史
 				</router-link>
 				<router-link to="/analysis"
-				             class="flex px-4 py-1 hover:bg-[#f5f5f5] rounded-xl items-center justify-center"
-				             :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/analysis')}"
+				             class="flex px-4 py-1 hover:bg-theme-1-color-6 rounded-xl items-center justify-center"
+				             :class="{'bg-theme-1-color-1 text-white': $route.path.startsWith('/analysis')}"
 				             @click="toggleMobileMenu">
 					<el-icon>
 						<Histogram/>
@@ -45,28 +45,28 @@
 				</router-link>
 				<router-link @click="toggleMobileMenu"
 				             to="/download"
-				             class="flex px-4 py-1 hover:bg-[#f5f5f5] rounded-xl items-center justify-center"
-				             :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/download')}">
+				             class="flex px-4 py-1 hover:bg-theme-1-color-6 rounded-xl items-center justify-center"
+				             :class="{'bg-theme-1-color-1 text-white': $route.path.startsWith('/download')}">
 					<el-icon>
 						<Download/>
 					</el-icon>
 					数据下载
 				</router-link>
 				<div class="relative mx-2" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
-					<button :class="{'bg-[#3F51B5] text-[#ffffff]': $route.path.startsWith('/type-a-equipment')}"
-					        class="flex hover:bg-[#f5f5f5] p-2 rounded-xl items-center justify-center"
+					<button :class="{'bg-theme-1-color-1 text-white': $route.path.startsWith('/type-a-equipment')}"
+					        class="flex hover:bg-theme-1-color-6 p-2 rounded-xl items-center justify-center"
 					        @click="toggleMobileMenu">
 						<el-icon>
 							<ArrowDownBold/>
 						</el-icon>
 						我的设备
 					</button>
-					<div class="mt-2 z-10 absolute bg-[#ffffff] shadow py-2 rounded-xl w-48 origin-top-right animate-zoom-in-up">
+					<div class="mt-2 z-10 absolute bg-white shadow py-2 rounded-xl w-48 origin-top-right animate-zoom-in-up">
 						<div v-for="(device, index) in devices" :key="index" class="pr-2 pl-2">
 							<router-link @click="toggleMobileMenu"
 							             :to="getPath(device)"
-							             :class="{'bg-[#3F51B5] text-[#ffffff] rounded mt-0.5': isActiveRoute(getPath(device))}"
-							             class="block hover:bg-[#f5f5f5] px-4 py-2 rounded mt-0.5">{{ device.name }}
+							             :class="{'bg-theme-1-color-1 text-white rounded mt-0.5': isActiveRoute(getPath(device))}"
+							             class="block hover:bg-theme-1-color-6 px-4 py-2 rounded mt-0.5">{{ device.name }}
 							</router-link>
 						</div>
 					</div>
@@ -76,32 +76,32 @@
 			<!-- 桌面版 Menu -->
 			<div class="hidden sm:flex items-center space-x-2">
 				<router-link to="/"
-				             class="hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded-xl font-bold"
-				             :class="{ 'bg-[#3F51B5] text-[#ffffff]': $route.path === '/' }">Home
+				             class="hover:bg-theme-1-color-1 hover:text-white px-4 py-2 rounded-xl font-bold"
+				             :class="{ 'bg-theme-1-color-1 text-white': $route.path === '/' }">Home
 				</router-link>
 				<router-link to="/history"
-				             class="hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded-xl"
-				             :class="{ 'bg-[#3F51B5] text-[#ffffff]': $route.path === '/history' }">历史
+				             class="hover:bg-theme-1-color-1 hover:text-white px-4 py-2 rounded-xl"
+				             :class="{ 'bg-theme-1-color-1 text-white': $route.path === '/history' }">历史
 				</router-link>
 				<router-link to="/analysis"
-				             class="hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded-xl"
-				             :class="{ 'bg-[#3F51B5] text-[#ffffff]': $route.path === '/analysis' }">数据分析
+				             class="hover:bg-theme-1-color-1 hover:text-white px-4 py-2 rounded-xl"
+				             :class="{ 'bg-theme-1-color-1 text-white': $route.path === '/analysis' }">数据分析
 				</router-link>
 				<router-link to="/download"
-				             class="hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded-xl"
-				             :class="{ 'bg-[#3F51B5] text-[#ffffff]': $route.path === '/download' }">数据下载
+				             class="hover:bg-theme-1-color-1 hover:text-white px-4 py-2 rounded-xl"
+				             :class="{ 'bg-theme-1-color-1 text-white': $route.path === '/download' }">数据下载
 				</router-link>
 				<div class="relative mx-2" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
-					<button :class="{'bg-[#3F51B5] text-[#ffffff]':$route.path.startsWith('/type-a-equipment'),}"
-					        class="flex items-center hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded-xl">我的设备
+					<button :class="{'bg-theme-1-color-1 text-white':$route.path.startsWith('/type-a-equipment'),}"
+					        class="flex items-center hover:bg-theme-1-color-1 hover:text-white px-4 py-2 rounded-xl">我的设备
 					</button>
 					<div v-if="showSubMenu"
-					     class="mt-2 z-10 absolute bg-[#ffffff] shadow py-2 rounded-xl w-48 origin-top-right animate-zoom-in-up">
+					     class="mt-2 z-10 absolute bg-white shadow py-2 rounded-xl w-48 origin-top-right animate-zoom-in-up">
 						<div v-for="(device, index) in devices" :key="index" class="pr-2 pl-2">
 							<router-link @click="toggleSubMenu"
 							             :to="getPath(device)"
-							             :class="{'bg-[#3F51B5] text-[#ffffff] rounded mt-0.5': isActiveRoute(getPath(device))}"
-							             class="block hover:bg-[#757de8] hover:text-[#ffffff] px-4 py-2 rounded mt-0.5">
+							             :class="{'bg-theme-1-color-1 text-white rounded mt-0.5': isActiveRoute(getPath(device))}"
+							             class="block hover:bg-theme-1-color-1 hover:text-white px-4 py-2 rounded mt-0.5">
 								{{ device.name }}
 							</router-link>
 						</div>
@@ -120,15 +120,15 @@
 					>
 						{{ avatarInitial }}
 					</el-avatar>
-					<span class="pl-4 font-bold text-[#333333]"> {{ Cookies.get('platform_user') }}</span>
+					<span class="pl-4 font-bold text-gray-700"> {{ Cookies.get('platform_user') }}</span>
 				</div>
 				<div v-if="showUserMenu"
-				     class="z-10 absolute right-0 mt-2 bg-[#ffffff] shadow-lg py-2 rounded-xl w-48 origin-top-right animate-zoom-in-up pr-2 pl-2">
+				     class="z-10 absolute right-0 mt-2 bg-white shadow-lg py-2 rounded-xl w-48 origin-top-right animate-zoom-in-up pr-2 pl-2">
 					<router-link to="/settings"
-					             class="block hover:bg-[#f5f5f5] px-4 py-2 rounded mt-0.5"
-					             :class="{'text-[#757de8]': $route.path === '/settings'}">设置
+					             class="block hover:bg-theme-1-color-6 px-4 py-2 rounded mt-0.5"
+					             :class="{'bg-theme-1-color-1': $route.path === '/settings'}">设置
 					</router-link>
-					<button @click="logout" class="block w-full text-left hover:bg-[#f5f5f5] px-4 py-2 rounded mt-0.5">
+					<button @click="logout" class="block w-full text-left hover:bg-theme-1-color-6 px-4 py-2 rounded mt-0.5">
 						登出
 					</button>
 				</div>

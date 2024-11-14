@@ -1,5 +1,6 @@
-import {template} from "lodash";
-
+// ====================================================================================
+// Echarts图表样式，多个界面使用
+// ====================================================================================
 const lineOptionTemplate = {
     title: {
         // text: "TITLE",
@@ -11,15 +12,15 @@ const lineOptionTemplate = {
             align:'left'  // 文字左对齐
         }
     },
-    toolbox: {
-        show: true,
-        feature: {
-            dataView: {readOnly: true},
-            magicType: { type: ['bar', 'line'] },
-            saveAsImage: {},
-            restore: {},
-        }
-    },
+    // toolbox: {
+    //     show: true,
+    //     feature: {
+    //         dataView: {readOnly: true},
+    //         magicType: { type: ['bar', 'line'] },
+    //         saveAsImage: {},
+    //         restore: {},
+    //     }
+    // },
     xAxis: {
         data: []
     },

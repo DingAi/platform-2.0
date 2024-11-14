@@ -24,7 +24,7 @@
 							:disabled="countdown > 0 || phoneError"
 							@click="handleButtonClick"
 							class="text-white rounded-r-md px-4 py-2 text-sm font-semibold focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600"
-							:class="countdown > 0 || phoneError ? 'bg-gray-500 cursor-not-allowed' : 'bg-[#3F51B5] hover:bg-[#757de8]'">
+							:class="countdown > 0 || phoneError ? 'bg-gray-500 cursor-not-allowed' : 'bg-theme-1-color-1 hover:bg-theme-1-color-2'">
 							{{ countdown > 0 ? `${countdown}s` : '验证' }}
 						</button>
 					</div>

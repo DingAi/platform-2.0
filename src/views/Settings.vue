@@ -7,27 +7,38 @@
 					<ul class="space-y-2">
 						<li>
 							<button @click="scrollToSection('section1'); activeSection = 'section1';"
-							        :class="{ 'bg-[#3F51B5] text-white': activeSection === 'section1' }"
-							        class="w-full text-left p-2 hover:bg-[#3F51B5] hover:text-white rounded">设备管理
+							        :class="{ 'bg-theme-1-color-1 text-white': activeSection === 'section1' }"
+							        class="w-full text-left p-2 hover:bg-theme-1-color-1 hover:text-white rounded">
+								用户信息
 							</button>
 						</li>
 						<li>
 							<button @click="scrollToSection('section2'); activeSection = 'section2';"
-							        :class="{ 'bg-[#3F51B5] text-white': activeSection === 'section2' }"
-							        class="w-full text-left p-2 hover:bg-[#3F51B5] hover:text-white rounded">SN码激活
+							        :class="{ 'bg-theme-1-color-1 text-white': activeSection === 'section2' }"
+							        class="w-full text-left p-2 hover:bg-theme-1-color-1 hover:text-white rounded">
+								设备管理
+							</button>
+						</li>
+						<li>
+							<button @click="scrollToSection('section3'); activeSection = 'section3';"
+							        :class="{ 'bg-theme-1-color-1 text-white': activeSection === 'section3' }"
+							        class="w-full text-left p-2 hover:bg-theme-1-color-1 hover:text-white rounded">
+								SN码激活
 							</button>
 						</li>
 						<el-divider/>
 						<li>
-							<button @click="scrollToSection('section3'); activeSection = 'section3';"
-							        :class="{ 'bg-[#3F51B5] text-white': activeSection === 'section3' }"
-							        class="w-full text-left p-2 hover:bg-[#3F51B5] hover:text-white rounded">操作日志
+							<button @click="scrollToSection('section4'); activeSection = 'section4';"
+							        :class="{ 'bg-theme-1-color-1 text-white': activeSection === 'section4' }"
+							        class="w-full text-left p-2 hover:bg-theme-1-color-1 hover:text-white rounded">
+								操作日志
 							</button>
 						</li>
 						<li>
-							<button @click="scrollToSection('section4');activeSection = 'section4';"
-							        :class="{ 'bg-[#3F51B5] text-white': activeSection === 'section4' }"
-							        class="w-full text-left p-2 hover:bg-[#3F51B5] hover:text-white rounded">硬件驱动更新
+							<button @click="scrollToSection('section5');activeSection = 'section5';"
+							        :class="{ 'bg-theme-1-color-1 text-white': activeSection === 'section5' }"
+							        class="w-full text-left p-2 hover:bg-theme-1-color-1 hover:text-white rounded">
+								硬件驱动更新
 							</button>
 						</li>
 					</ul>
@@ -35,12 +46,80 @@
 			</div>
 			<!--右侧的对应内容-->
 			<div class="md:w-5/6">
-				<div class="content space-y-4 pr-4 pl-4">
+				<div class="content space-y-6 px-4">
 					
 					<!--Section01-->
-					<div id="section1" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow h-auto">
+					<div id="section1" class="section rounded-2xl p-4 sm:p-20 bg-theme-1-color-6 inner-shadow h-auto">
 						<div class="flex items-center">
-							<h1 class="text-4xl text-[#333333] mb-6 ">设备管理</h1>
+							<h1 class="text-4xl mb-6 ">用户信息</h1>
+						</div>
+						<hr class="my-6 border-gray-600"/>
+						<el-descriptions size="large" border :column="columnCount">
+							<el-descriptions-item label="用户名">{{
+									Cookies.get('platform_user')
+								}}
+							</el-descriptions-item>
+							<el-descriptions-item label="手机" class-name="flex justify-between">
+								<span>{{ newPhone }}</span>
+							</el-descriptions-item>
+						</el-descriptions>
+						<div class="flex items-center mt-9">
+							<h1 class="text-2xl text-gray-500 mb-6 ">修改手机号</h1>
+						</div>
+						<hr class="my-6 border-gray-600"/>
+						<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+							<form class="space-y-2" @submit.prevent="modifyTheMobilePhoneNumber">
+								<div>
+									<label for="sn" class="block text-sm font-medium leading-6 p-2">新手机号</label>
+									<div class="mt-2 flex">
+										<input
+											v-model="phone"
+											id="phone"
+											name="phone"
+											type="text"
+											autocomplete="phone"
+											required
+											class="block w-full rounded-l-md border-0 p-2  shadow-sm ring-1 ring-inset
+											ring-[#757de8] placeholder:text-gray-400 focus:z-10 focus:ring-2
+											focus:ring-inset focus:ring-[#3F51B5] sm:text-sm sm:leading-6">
+										<button
+											type="button"
+											:disabled="countdown > 0 ||phoneError"
+											@click="getVerificationCode"
+											class=" rounded-r-md px-4 py-2 text-sm font-semibold focus:z-10 focus:ring-2
+											 focus:ring-inset focus:ring-[#3F51B5] w-24 text-white"
+											:class="countdown > 0 || phoneError ? 'bg-gray-500 cursor-not-allowed' : 'bg-theme-1-color-1 hover:bg-indigo-500'">
+											{{ countdown > 0 ? `${countdown}s` : '验证' }}
+										</button>
+									</div>
+									<p v-if="phoneError" class="text-red-500 text-sm">请输入有效的手机号</p>
+								</div>
+								
+								<div>
+									<label for="captcha" class="block text-sm font-medium leading-6 ">手机验证码</label>
+									<div class="mt-2">
+										<input
+											v-model="captcha"
+											id="captcha"
+											name="captcha"
+											type="text"
+											required
+											class="block w-full rounded-md border-0 p-2  shadow-sm ring-1 ring-inset
+											ring-[#757de8] placeholder:text-gray-400 focus:ring-2 focus:ring-inset
+											focus:ring-[#3F51B5] sm:text-sm sm:leading-6">
+									</div>
+								</div>
+								
+								<div class="pt-6">
+									<SubmitButton :loading="addLoading">确定</SubmitButton>
+								</div>
+							</form>
+						</div>
+					</div>
+					<!--Section02-->
+					<div id="section2" class="section rounded-2xl p-4 sm:p-20 bg-theme-1-color-6 inner-shadow h-auto">
+						<div class="flex items-center">
+							<h1 class="text-4xl mb-6 ">设备管理</h1>
 						</div>
 						<hr class="my-6 border-gray-600"/>
 						<div class="mb-12 overflow-auto">
@@ -87,8 +166,7 @@
 										<input v-model="newDeviceName" id="en" name="en" type="text" required
 										       class="block w-full rounded-md border-0 p-2 shadow-sm ring-1
 										ring-inset ring-[#757de8] placeholder:text-gray-400 focus:ring-2 focus:ring-inset
-										focus:ring-[#3F51B5] sm:text-sm sm:leading-6"
-										/>
+										focus:ring-[#3F51B5] sm:text-sm sm:leading-6"/>
 									</div>
 									
 									<div class="pt-6">
@@ -99,12 +177,12 @@
 						</el-dialog>
 					</div>
 					
-					<!--Section02-->
-					<div id="section2" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow">
+					<!--Section03-->
+					<div id="section3" class="section rounded-2xl p-4 sm:p-20 bg-theme-1-color-6 inner-shadow">
 						<h1 class="text-4xl mb-6 mt-4">SN 码激活</h1>
-						<hr class="my-6 border-gray-600"/>
+						<hr class="my-6 border-gray-400"/>
 						<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-							<form class="space-y-2" @submit.prevent="addEquipment">
+							<form class="space-y-2" @submit.prevent="activationEquipment">
 								<div>
 									<label for="sn" class="block text-sm font-medium leading-6 p-2">设备 SN 码</label>
 									<div class="mt-1">
@@ -115,9 +193,8 @@
 										       required
 										       @blur="validateSnFormat(sn)"
 										       class="block w-full rounded-md border-0 p-2 shadow-sm ring-1
-											ring-inset ring-[#757de8] placeholder:text-gray-400 focus:ring-2 focus:ring-inset
-											focus:ring-[#3F51B5] sm:text-sm sm:leading-6"
-										/>
+											ring-inset ring-[#757de8] placeholder:text-gray-400 focus:ring-2
+											focus:ring-inset focus:ring-[#3F51B5] sm:text-sm sm:leading-6"/>
 									</div>
 								</div>
 								
@@ -127,9 +204,8 @@
 									<div class="mt-1">
 										<input v-model="en" id="en" name="en" type="text" required
 										       class="block w-full rounded-md border-0 p-2 shadow-sm ring-1
-											ring-inset ring-[#757de8] placeholder:text-gray-400 focus:ring-2 focus:ring-inset
-											focus:ring-[#3F51B5] sm:text-sm sm:leading-6"
-										/>
+											ring-inset ring-[#757de8] placeholder:text-gray-400 focus:ring-2
+											focus:ring-inset focus:ring-[#3F51B5] sm:text-sm sm:leading-6"/>
 									</div>
 								</div>
 								
@@ -140,8 +216,8 @@
 						</div>
 					</div>
 					
-					<!--Section03-->
-					<div id="section3" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow h-auto">
+					<!--Section04-->
+					<div id="section4" class="section rounded-2xl p-4 sm:p-20 bg-theme-1-color-6 inner-shadow h-auto">
 						<div class="flex items-center">
 							<h1 class="text-4xl mb-6">操作日志</h1>
 							<el-button class="ml-auto" @click="clearLog" round>
@@ -158,8 +234,8 @@
 						/>
 					</div>
 					
-					<!--Section04-->
-					<div id="section4" class="section rounded-2xl p-4 sm:p-20 bg-[#f5f5f5] inner-shadow h-auto">
+					<!--Section05-->
+					<div id="section5" class="section rounded-2xl p-4 sm:p-20 bg-theme-1-color-6 inner-shadow h-auto">
 						<h1 class="text-4xl mb-6">硬件驱动更新</h1>
 						<hr class="my-6 border-gray-600"/>
 						<div class="flex flex-col md:flex-row justify-between">
@@ -205,9 +281,15 @@
 </template>
 
 <script setup lang="js">
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, onUnmounted, ref} from "vue";
 import {
-	getClearLog, getLogData, postDeleteEquipment, postSnActivation, postFileUpload, postModifyDeviceName,
+	getClearLog,
+	getLogData,
+	postDeleteEquipment,
+	postSnActivation,
+	postFileUpload,
+	postModifyDeviceName,
+	getPhoneCaptcha, postModifyUserPhone, postModifyPhoneCaptcha,
 } from "@/server/request-apis.js"
 import TableTemplate from "@/components/TableTemplate.vue";
 import {useAuthStore} from "@/stores/userStore.js";
@@ -215,53 +297,24 @@ import {storeToRefs} from "pinia";
 import {showMessage, transposeMatrix} from "@/utils/tools-functions.js";
 import SubmitButton from "@/components/SubmitButton.vue";
 import {ElMessage} from "element-plus";
+import Cookies from "js-cookie";
 
-// Loading状态
-const addLoading = ref(false);
-const logLoading = ref(false);
-const fileSelected = ref(false);
-const isSNValid = ref(false);
-const snError = ref(false);
+/*************************************************************
+ *                   全局状态
+ *
+ *  简要描述:
+ *  ----------------------------------------------------------
+ *  - 在登录之后会获取大量用户数据存储在本地，首先会获取获取这些本地数据；
+ *
+ *************************************************************/
 
-// 页面定位与弹窗
-const activeSection = ref("section1");
-const dialogVisible1 = ref(false); // 第一个按钮弹窗
-const dialogVisible2 = ref(false); // 第二个按钮弹窗
-const delText = ref(""); // 用户在删除弹窗输入的文本
-const clickRowIndex = ref(null); // 表格的行索引
-const newDeviceName = ref(''); // 新的设备名称
-
-// 本地数据
 const authStore = useAuthStore();
+
+// Pinia里读取的本地数据
 const {SCGData} = storeToRefs(authStore);
 
-// 表格头部
-const header = ref(["SN 码", "设备名称", "注册时间"]);
-const column = ref(
-	transposeMatrix([SCGData.value[0], SCGData.value[1], SCGData.value[2]])
-);
-
-// 日志列表
-const logHeader = ref(["信息", "时间"]);
-const logCol = ref([]);
-
-// 设备激活输入框
-const sn = ref(""); //SN码
-const en = ref(""); //设备名
-
-//设备上传选择的对象
-const upload = ref(null);
-const uploadSelectValue = ref("");
-const snOption = computed(() => {
-	let snList = []
-	for (let i = 0; i < SCGData.value[0].length; i++) {
-		snList.push({
-			value: SCGData.value[0][i],
-			label: SCGData.value[1][i]
-		})
-	}
-	return snList;
-})
+// 页面定位
+const activeSection = ref("section1");
 
 // 滚动到指定部分
 const scrollToSection = (sectionId) => {
@@ -273,45 +326,12 @@ const scrollToSection = (sectionId) => {
 	}
 };
 
-
-// 添加设备
-async function addEquipment() {
-	addLoading.value = true;
-	//正则判断
-	if (!sn.value.match(/^[ABCD][A-Z0-9]{9}[A-Z]\d{10}$/)) {
-		isSNValid.value = false;
-		snError.value = true;
-		ElMessage({message: 'SN码格式错误', type: 'error'});
-		addLoading.value = false; // 结束加载状态
-		return; // 如果格式错误，直接返回，不执行后续的网络请求
-	}
-	let res; // 在函数作用域内声明 res
-	try {
-		if (validateSnFormat(sn.value)) {
-			res = await postSnActivation(sn.value, en.value);
-			await refreshEquipments();
-			await getLog();
-		} else {
-			showMessage('SN码格式不正确', 'error');
-		}
-	} catch (error) {
-		console.error("添加设备失败:", error);
-	} finally {
-		if (res) { // 确保 res 存在再访问
-			showMessage(res.data, 'info');
-			sn.value = '';
-			en.value = '';
-		}
-		addLoading.value = false; // 结束加载状态
-	}
-}
-
 // 刷新设备列表
 async function refreshEquipments() {
 	addLoading.value = true;
 	try {
 		await authStore.getEquipments(); // 更新 SCGData
-		column.value = transposeMatrix([
+		column.value = transposeMatrix([  //转置数据之后组件才能正常显示
 			SCGData.value[0],
 			SCGData.value[1],
 			SCGData.value[2],
@@ -323,18 +343,106 @@ async function refreshEquipments() {
 	}
 }
 
-// 获取日志数据
-async function getLog() {
-	logLoading.value = true;
-	try {
-		const res = await getLogData();
-		logCol.value = transposeMatrix(res.data["log"]);
-	} catch (error) {
-		console.error("获取日志失败:", error);
-	} finally {
-		logLoading.value = false;
+
+/*************************************************************
+ *                   用户信息
+ *
+ *  简要描述:
+ *  ----------------------------------------------------------
+ *  - 从实时数据接口获取数据，这个界面的核心数据源；
+ *    在获取到数据之后对接铝排、开关群、数据点列表的状态；
+ *
+ *************************************************************/
+
+// 用户的手机号
+let userPhone = JSON.parse(localStorage.getItem('phone'));
+
+// 新手机号
+const newPhone = ref(userPhone)
+
+// 用户原手机号
+const phone = ref('');
+
+// 手机验证码
+const captcha = ref('');
+
+// 手机号格式错误状态
+const phoneError = ref(false);
+
+// 手机号格式验证
+const validatePhoneNumber = () => {
+	const phoneRegex = /^1\d{10}$/;
+	phoneError.value = !phoneRegex.test(phone.value);
+};
+
+// 验证码触发时计时
+const countdown = ref(0);
+let countdownTimer = null;
+const startCountdown = () => {
+	countdown.value = 90;
+	countdownTimer = setInterval(() => {
+		if (countdown.value > 0) {
+			countdown.value -= 1;
+		} else {
+			countdownTimer = null;
+		}
+	}, 1000);
+};
+// 发送验证码
+const getVerificationCode = () => {
+	validatePhoneNumber();
+	let res;
+	if (!phoneError.value && countdown.value === 0) {
+		res =  postModifyPhoneCaptcha(phone.value);
+		startCountdown();
+		if (res.state === 200){
+			newPhone.value = phone.value;
+			userPhone = phone.value;
+		}
+	}
+};
+
+// 修改手机号
+function modifyTheMobilePhoneNumber() {
+	validatePhoneNumber();
+	if (!phoneError.value) {
+		try{
+			postModifyUserPhone(phone.value, captcha.value)
+		} catch (e) {
+			console.log(e)
+		}
 	}
 }
+
+/*************************************************************
+ *                   设备列表
+ *
+ *  简要描述:
+ *  ----------------------------------------------------------
+ *  - 用户所属的设备的SN码-设备名，以及删除设备和修改设备名
+ *
+ *************************************************************/
+
+// 控制删除设备弹窗
+const dialogVisible1 = ref(false);
+
+// 控制第二个弹窗
+const dialogVisible2 = ref(false);
+
+// 删除操作输入框的文本
+const delText = ref("");
+
+// 表格的行索引
+const clickRowIndex = ref(null);
+
+// 新的设备名称
+const newDeviceName = ref('');
+
+// 设备表格头部
+const header = ref(["SN 码", "设备名称", "注册时间"]);
+const column = ref(
+	transposeMatrix([SCGData.value[0], SCGData.value[1], SCGData.value[2]])
+);
 
 // 弹窗按钮函数
 function deleteClick(rowIndex) {
@@ -374,11 +482,11 @@ async function deleteEquipment() {
 const modifyDeviceName = async () => {
 	dialogVisible2.value = true;
 	let index = Number(clickRowIndex.value);
-	if (SCGData.value[1][index] === newDeviceName.value){
+	if (SCGData.value[1][index] === newDeviceName.value) {
 		showMessage('新修改的设备名称与原设备名称相同')
 	} else {
-		const res = await postModifyDeviceName(SCGData.value[0][index],newDeviceName.value);
-		if(res.status === 200){
+		const res = await postModifyDeviceName(SCGData.value[0][index], newDeviceName.value);
+		if (res.status === 200) {
 			showMessage(res.data, 'info');
 		}
 		dialogVisible2.value = false;
@@ -388,11 +496,136 @@ const modifyDeviceName = async () => {
 }
 
 
+
+
+
+/*************************************************************
+ *                   SN码激活
+ *
+ *  简要描述:
+ *  ----------------------------------------------------------
+ *  - 激活已经注册了的SN码设备
+ *
+ *************************************************************/
+
+//SN码
+const sn = ref("");
+
+//设备名
+const en = ref("");
+
+// 激活SN码的表单加载状态
+const addLoading = ref(false);
+
+// SN码是否有效
+const isSNValid = ref(false);
+
+// SN码格式错误状态
+const snError = ref(false);
+
+
 // 验证 SN 码格式
 const validateSnFormat = (value) => {
 	const snPattern = /^[a-zA-Z0-9]{11}\d{4}\d{6}$/;
 	return snPattern.test(value);
 };
+
+
+
+// 激活设备
+async function activationEquipment() {
+	addLoading.value = true;
+	//正则判断
+	if (!sn.value.match(/^[ABCD][A-Z0-9]{9}[A-Z]\d{10}$/)) {
+		isSNValid.value = false;
+		snError.value = true;
+		ElMessage({message: 'SN码格式错误', type: 'error'});
+		addLoading.value = false; // 结束加载状态
+		return; // 如果格式错误，直接返回，不执行后续的网络请求
+	}
+	let res; // 在函数作用域内声明 res
+	try {
+		if (validateSnFormat(sn.value)) {
+			res = await postSnActivation(sn.value, en.value);
+			await refreshEquipments();
+			await getLog();
+		} else {
+			showMessage('SN码格式不正确', 'error');
+		}
+	} catch (error) {
+		console.error("添加设备失败:", error);
+	} finally {
+		if (res) { // 确保 res 存在再访问
+			showMessage(res.data, 'info');
+			sn.value = '';
+			en.value = '';
+		}
+		addLoading.value = false; // 结束加载状态
+	}
+}
+
+/*************************************************************
+ *                   操作日志
+ *
+ *  简要描述:
+ *  ----------------------------------------------------------
+ *  - 用户的登录，以及开关操作、SN码激活、设备驱动更新等都会触发日志；
+ *
+ *************************************************************/
+
+// 日志数据加载状态
+const logLoading = ref(false);
+
+// 日志表头
+const logHeader = ref(["信息", "时间"]);
+
+// 日志数据
+const logCol = ref([]);
+
+
+// 获取日志数据
+async function getLog() {
+	logLoading.value = true;
+	try {
+		const res = await getLogData();
+		logCol.value = transposeMatrix(res.data["log"]);
+	} catch (error) {
+		console.error("获取日志失败:", error);
+	} finally {
+		logLoading.value = false;
+	}
+}
+
+
+/*************************************************************
+ *                   硬件驱动更新
+ *
+ *  简要描述:
+ *  ----------------------------------------------------------
+ *  - OTA更新
+ *
+ *************************************************************/
+
+//设备上传选择的对象
+const upload = ref(null);
+
+const uploadSelectValue = ref("");
+
+// 文件是否已选择
+const fileSelected = ref(false);
+
+
+// 文件上传下拉框的数据
+const snOption = computed(() => {
+	let snList = []
+	for (let i = 0; i < SCGData.value[0].length; i++) {
+		snList.push({
+			value: SCGData.value[0][i],
+			label: SCGData.value[1][i]
+		})
+	}
+	return snList;
+})
 
 
 // 校验上传文件类型和大小
@@ -448,22 +681,29 @@ const fileUpload = async ({file}) => {
 };
 
 
-// 清除日志
-const clearLog = async () => {
-	try {
-		await getClearLog();
-	} catch (e) {
-		console.log(e)
-	} finally {
-		await getLog()
-		showMessage('日志已清除', 'success');
-	}
+
+/*************************************************************
+ *                   界面数据挂载
+ *
+ *************************************************************/
+
+// 用于适配用户信息的表格手机端的显示模式
+const columnCount = ref(2)
+
+function updateColumnCount() {
+	columnCount.value = window.innerWidth <= 768 ? 1 : 2 // 768px以下视为手机端
+	
 }
 
 // 组件挂载后获取日志
 onMounted(async () => {
 	await getLog();
+	window.addEventListener('resize', updateColumnCount);
 });
+
+onUnmounted(() => {
+	window.removeEventListener('resize', updateColumnCount)
+})
 </script>
 
 <style scoped>

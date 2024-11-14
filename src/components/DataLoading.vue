@@ -6,7 +6,7 @@
   </div>
 
   <!-- Loading Text -->
-  <div class="text-2xl text-[#3F51B5] font-bold">Loading...</div>
+  <div class="text-2xl text-theme-1-color-1 font-bold">Loading...</div>
 </template>
 
 <script setup lang="ts"></script>

@@ -37,7 +37,7 @@
 						<button
 							type="button"
 							@click="validateSNCode"
-							class="text-white bg-[#3F51B5] rounded-r-md px-4 py-2 text-sm font-semibold focus:ring-2 focus:ring-inset focus:ring-[#3F51B5] w-24"
+							class="text-white bg-theme-1-color-1 rounded-r-md px-4 py-2 text-sm font-semibold focus:ring-2 focus:ring-inset focus:ring-[#3F51B5] w-24"
 						>
 							验证
 						</button>
@@ -76,7 +76,7 @@
 							:disabled="countdown > 0 || phoneError || !isSNValid"
 							@click="handleButtonClick"
 							class=" rounded-r-md px-4 py-2 text-sm font-semibold focus:z-10 focus:ring-2 focus:ring-inset focus:ring-[#3F51B5] w-24 text-white"
-							:class="countdown > 0 || phoneError || !isSNValid ? 'bg-gray-500 cursor-not-allowed' : 'bg-[#3F51B5] hover:bg-green-500'">
+							:class="countdown > 0 || phoneError || !isSNValid ? 'bg-gray-500 cursor-not-allowed' : 'bg-theme-1-color-1 hover:bg-green-500'">
 							{{ countdown > 0 ? `${countdown}s` : '验证' }}
 						</button>
 					</div>
@@ -171,11 +171,11 @@ const startCountdown = () => {
 		if (countdown.value > 0) {
 			countdown.value -= 1;
 		} else {
-			clearInterval(countdownTimer);
 			countdownTimer = null;
 		}
 	}, 1000);
 };
+
 // SN码验证
 const validateSNCode = async () => {
 	// 假设snCode是外部定义的响应式数据

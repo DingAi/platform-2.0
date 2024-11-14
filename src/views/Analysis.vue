@@ -1,6 +1,6 @@
 <template>
-	<div class="space-y-4 text-center w-full h-[1000px] md:h-full smiley-sans">
-		<div class="flex flex-col md:flex-row justify-between items-center bg-[#f5f5f5] p-2 rounded-2xl inner-shadow">
+	<div class="space-y-4 text-center w-full h-[1000px] md:h-full">
+		<div class="flex flex-col md:flex-row justify-between items-center bg-theme-1-color-6 p-2 rounded-2xl inner-shadow smiley-sans">
 			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl p-2 mt-6 sm:mt-0">
 				<el-cascader
 					v-model="selectedValues1"
@@ -11,20 +11,18 @@
 					class="w-full"
 				/>
 			</div>
-			<div class="flex items-center justify-center h-full w-full md:w-1/4 rounded-2xl rounded-bl p-2">
+			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl p-2 mt-6 sm:mt-0" v-if="isMultiChannel">
 				<el-cascader
-					v-if="isMultiChannel"
 					v-model="selectedValues2"
-					:options="equipmentOption"
+					:options="multiSubStationOption"
 					collapse-tags
 					collapse-tags-tooltip
-					:props="cascaderProps"
 					placeholder="请选择"
 					class="w-full"
 				/>
 			</div>
 			<!-- 时间选择器 -->
-			<div class="flex items-center justify-center w-full md:w-2/5 rounded-xl px-8">
+			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl p-2 mt-6 sm:mt-0">
 				<TimeDatePicker v-model="timeRange"/>
 			</div>
 			<div class="flex items-center justify-center h-full w-full md:w-1/5 rounded-2xl p-2">
@@ -36,7 +34,7 @@
 <!--		</div>-->
 		<div class="flex flex-col md:flex-row w-full analysis-div space-x-0 md:space-x-4 overflow-auto">
 			<div class="w-full md:w-1/3 h-auto min-h-[300px] sm:min-h-[420px] md:min-h-[400px] flex flex-col items-center
-			space-y-4 overflow-auto p-6">
+			space-y-4 overflow-auto p-6 smiley-sans">
 				<el-timeline v-if="isFileLoading1">
 					<el-timeline-item center v-for="(item, index) in matParsedData"
 					                  :key="index"
@@ -46,7 +44,7 @@
 							<div class="size-full space-y-4 p-2">
 								<div class="w-full flex flex-row">
 									<span class="text-gray-400 font-bold">
-										Index：<span class="text-[#2196F3]">{{ index + 1 }}</span>/{{matParsedData.length}}
+										Index：<span class="text-theme-1-color-4">{{ index + 1 }}</span>/{{matParsedData.length}}
 									</span>
 								</div>
 								<div class="flex flex-row justify-between space-x-4 items-center px-4">
@@ -73,15 +71,21 @@
 				</el-timeline>
 			</div>
 			<div class="w-full md:w-3/4 h-auto md:h-full flex flex-col items-center space-y-4">
-				<div class="w-full h-[450px] md:h-1/2 bg-[#f5f5f5] rounded-2xl inner-shadow">
+				<div v-if="isLoading" class="flex flex-col justify-center items-center py-4 space-y-4 h-1/2">
+					<DataLoading/>
+				</div>
+				<div v-else class="w-full h-[450px] md:h-1/2 bg-theme-1-color-6 rounded-2xl inner-shadow">
 					<AveDataChart :aveData="aveDataList" :x-axis="xAxisData" :type="typeIndex"/>
 				</div>
-				<div class="w-full h-[450px] md:h-1/2 bg-[#f5f5f5] rounded-2xl inner-shadow">
+				<div v-if="isLoading" class="flex flex-col justify-center items-center py-4 space-y-4 h-1/2">
+					<DataLoading/>
+				</div>
+				<div v-else class="w-full h-[450px] md:h-1/2 bg-theme-1-color-6 rounded-2xl inner-shadow">
 					<FluxHistoryChart :flux-data="fluxList"/>
 				</div>
 			</div>
 		</div>
-		<div class="flex flex-col md:flex-row justify-between items-center bg-[#f5f5f5] p-3 h-auto rounded-2xl inner-shadow">
+		<div class="flex flex-col md:flex-row justify-between items-center bg-theme-1-color-6 p-3 h-auto rounded-2xl inner-shadow">
 			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
 <!--				<file-upload @fileParsed="handleFileParsed">上传数据分析文件</file-upload>-->
 			</div>
@@ -126,18 +130,21 @@ import AveDataChart from "@/components/echarts/AveDataLineChart.vue";
 import FileUpload from "@/components/FileUpload.vue";
 import {excelTimestampToDate, getTimeRange, showMessage, transposeMatrix} from "@/utils/tools-functions.js";
 import * as XLSX from 'xlsx';
-import SubmitButton from "@/components/SubmitButton.vue";
 import {useAuthStore} from "@/stores/userStore.js";
 import {storeToRefs} from "pinia";
 import TimeDatePicker from "@/components/ElementTimeDatePicker.vue";
 import {postAnalysisDataDownload, postSingleAnalysisData} from "@/server/request-apis.js";
+import DataLoading from "@/components/DataLoading.vue";
 
 // Pinia数据
 const authStore = useAuthStore();
 const {SCGData} = storeToRefs(authStore);
 
+// 数据加载状态
+const isLoading = ref(false);
+
 // 选择用数据
-const selectedValues1 = ref("AE0XAOJY18G2409000003");
+const selectedValues1 = ref(["AE0XAOJY18G2409000003"]); //设备的SN码
 const selectedValues2 = ref([]);
 const snOption = computed(() => {
 	let option = []
@@ -151,11 +158,28 @@ const snOption = computed(() => {
 });
 // 判断选择的是否是多通道数据
 const isMultiChannel = computed(() => {
-	return selectedValues1.value[0] === 'B';
+	return selectedValues1.value[0][0] === 'B';
+})
+const multiSubStationOption = computed(() => {
+	let i = 1
+	const numbersInWords = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
+	let option = []
+	while (i < 10){
+		option.push({
+			value: 'slave_' + numbersInWords ,
+			label: '子站 0' + i.toString()
+		})
+		i++;
+	}
+	option.push({
+		value: 'slave_ten' ,
+		label: '子站 10'
+	})
+	return option;
 })
 // const timeRange = ref(["2024-10-18 05:38:40", "2024-10-18 10:20:40"])
 // 时间范围
-const timeRange = ref(getTimeRange(24))
+const timeRange = ref(getTimeRange(72))
 
 // 用于存储解析后的数据
 const xlsxFileData1 = ref(null);
@@ -183,28 +207,36 @@ const timeRangeList = ref([])
 
 // 获取分析的数据并处理
 const singleAnalysisData = async () => {
-	typeIndex.value = 0;
-	const res = await postSingleAnalysisData(selectedValues1.value, boxVolume.value / boxArea.value, timeRange.value);
-	xAxisData.value = []
-	timeRangeList.value = []
-	for (let i = 0; i < res.data.analyze_data[0].length; i++) {
-		// 图标用X轴
-		xAxisData.value.push(res.data.analyze_data[8][i] + ' - ' + res.data.analyze_data[9][i]);
-		// 时间线用轴
-		timeRangeList.value.push([res.data.analyze_data[9][i], res.data.analyze_data[9][i]])
+	try {
+		isLoading.value = true;
+		typeIndex.value = 0;
+		const res = await postSingleAnalysisData(selectedValues1.value[0], boxVolume.value / boxArea.value, timeRange.value);
+		xAxisData.value = []
+		timeRangeList.value = []
+		for (let i = 0; i < res.data.analyze_data[0].length; i++) {
+			// 图标用X轴
+			xAxisData.value.push(res.data.analyze_data[8][i] + ' - ' + res.data.analyze_data[9][i]);
+			// 时间线用轴
+			timeRangeList.value.push([res.data.analyze_data[9][i], res.data.analyze_data[9][i]])
+		}
+		aveDataList.value = [res.data.analyze_data[6], res.data.analyze_data[7]]
+		fluxList.value = { ec: res.data.analyze_data[2], ew: res.data.analyze_data[5], time: xAxisData }
+		let timeLineData = [
+			res.data.analyze_data[8],
+			res.data.analyze_data[9],
+			res.data.analyze_data[0],
+			res.data.analyze_data[1],
+			res.data.analyze_data[3],
+			res.data.analyze_data[4],
+		]
+		matParsedData.value = transposeMatrix(timeLineData)
+		isFileLoading1.value = true;
+	} catch (e) {
+		console.log(e)
+	} finally {
+		isLoading.value = false;
 	}
-	aveDataList.value = [res.data.analyze_data[6], res.data.analyze_data[7]]
-	fluxList.value = { ec: res.data.analyze_data[2], ew: res.data.analyze_data[5], time: xAxisData }
-	let timeLineData = [
-		res.data.analyze_data[8],
-		res.data.analyze_data[9],
-		res.data.analyze_data[0],
-		res.data.analyze_data[1],
-		res.data.analyze_data[3],
-		res.data.analyze_data[4],
-	]
-	matParsedData.value = transposeMatrix(timeLineData)
-	isFileLoading1.value = true;
+	
 }
 
 // 处理传递过来的数据分析数据
@@ -394,43 +426,5 @@ onMounted(() => {
 
 .analysis-div {
 	height: calc(100vh - 370px);
-}
-
-.h-h {
-	height: calc(100vh - 370px);
-}
-
-:deep(.el-cascader-node.in-active-path, .el-cascader-node.is-active, .el-cascader-node.is-selectable.in-checked-path){
-	color: #3F51B5;
-}
-
-:deep(.el-date-range-picker .el-picker-panel__body ){
-	@media (max-width: 768px) {
-		width: 323px !important;
-	}
-}
-
-:deep(.el-date-range-picker__editors-wrap) {
-	@media (max-width: 768px) {
-		display: flex !important;
-	}
-}
-
-:deep(.el-date-range-picker__content) {
-	@media (max-width: 768px) {
-		width: 100% !important;
-	}
-}
-
-:deep(.el-picker-panel [slot=sidebar], .el-picker-panel__sidebar) {
-	width: 70px !important;
-}
-
-:deep(.el-picker-panel [slot=sidebar]+.el-picker-panel__body, .el-picker-panel__sidebar+.el-picker-panel__body) {
-	margin-left: 70px !important;
-}
-
-:deep(.el-date-range-picker) {
-	width: 393px !important;
 }
 </style>

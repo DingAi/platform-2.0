@@ -20,10 +20,22 @@ apiClient.interceptors.request.use(
         const authStore = useAuthStore();
         const token = authStore.getToken(); // 调用 store 中的方法获取 token
         
-        // 登录和注册接口不需要 token
-        const isAuthRequest = config.url === `${server}login` || config.url === `${server}register`
-            || config.url === `${server}register_captcha` || config.url === `${server}modify_password_captcha` || config.url === `${server}modify_password`
-            || config.url === `${server}verify_sn`;
+        // 登录、注册、修改密码、手机验证码接口不需要 token
+        const noAuthRequests = [
+            `${server}login`,
+            `${server}register`,
+            `${server}register_captcha`,
+            `${server}modify_password_captcha`,
+            `${server}modify_password`,
+            `${server}verify_sn`
+        ];
+
+        // 检查是否为不需要 token 的请求
+        const isAuthRequest = noAuthRequests.includes(config.url);
+
+        // const isAuthRequest = config.url === `${server}login` || config.url === `${server}register`
+        //     || config.url === `${server}register_captcha` || config.url === `${server}modify_password_captcha` || config.url === `${server}modify_password`
+        //     || config.url === `${server}verify_sn`;
 
         if (!isAuthRequest) {
             if (!token) {
@@ -68,6 +80,8 @@ apiClient.interceptors.response.use(
                 case 401:
                     showMessage("登录过期，请重新登录");
                     authStore.logout();
+                    
+                    // 登录过期，跳转到登录界面
                     Router.push({path: "/login"});
                     break;
                 case 403:

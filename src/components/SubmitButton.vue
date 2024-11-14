@@ -1,7 +1,7 @@
 <template>
 	<button :class="['flex w-full justify-center items-center rounded-xl px-3 py-1.5 text-sm font-semibold leading-6 ' +
      'text-white shadow-sm',
-      loading ? 'bg-[#3F51B5] cursor-not-allowed' : 'bg-[#3F51B5] hover:bg-[#757de8]']" :disabled="loading">
+      loading ? 'bg-theme-1-color-1 cursor-not-allowed' : 'bg-theme-1-color-1 hover:bg-theme-1-color-2']" :disabled="loading">
     <span v-if="loading" class="loader-container">
       <span class="loader"></span>
       <span class="loading-text">Loading...</span>

@@ -4,7 +4,8 @@ import 'echarts/theme/macarons.js'
 
 const refInitEcharts = (ref, theme="macarons") => {
     if (ref) {
-        let dom = echarts.init(ref, theme);
+        // 这里{ renderer: 'canvas' }是使用WebGL渲染Echarts，提高渲染速度
+        let dom = echarts.init(ref, theme, { renderer: 'canvas' });
         return dom;
     }
     return null;
@@ -12,7 +13,7 @@ const refInitEcharts = (ref, theme="macarons") => {
 
 const idInitEcharts = (id) => {
     let theDiv = document.getElementById(id);
-    const dom = echarts.init(theDiv, 'new-blue');
+    const dom = echarts.init(theDiv, 'new-blue' );
     return dom;
 }
 

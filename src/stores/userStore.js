@@ -37,10 +37,13 @@ export const useAuthStore = defineStore('auth', () => {
                 //将传感器的详细数据放到本地
                 localStorage.setItem('single_history_option', JSON.stringify(response.data.data_list))
                 localStorage.setItem('single_data_point', JSON.stringify(response.data.data_ser))
+                localStorage.setItem('single_data_unit', JSON.stringify(response.data.dan_unit))
+                localStorage.setItem('multi_data_unit', JSON.stringify(response.data.duo_unit))
+                localStorage.setItem('phone', JSON.stringify(response.data.phone))
                 
                 // 这部分是为了方式在登录的时候多通道数据结构传输的数据过大，将从站的数据在这里生成
-                let masterStationData = response.data.data_duo.slice(0, 71); // 主站数据
-                let subStationData = response.data.data_duo.slice(71, 94); // 一份从站数据
+                let masterStationData = response.data.data_duo.slice(0, 70); // 主站数据
+                let subStationData = response.data.data_duo.slice(70, 93); // 一份从站数据
                 
                 let masterHistoryOption = [response.data.duo_table[0]]; // 主站历史数据结构
                 let subHistoryOption = response.data.duo_table[1]; // 一份从站历史数据结构
@@ -138,7 +141,6 @@ export const useAuthStore = defineStore('auth', () => {
                         type: 'warning',
                         offset: 100
                     })
-                    // showMessage('设备 【' + SCGData[1][i] + '】' + ' 有报警！', 'error', 4000);
                 }
             } catch (error) {
                 console.error(`设备 【${SCGData[1][i]}】 报警请求失败:`, error);

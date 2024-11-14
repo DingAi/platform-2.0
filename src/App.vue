@@ -38,7 +38,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<Navbar class="z-max smiley-sans" v-if="showNavbar"/>
+	<Navbar class="z-max" v-if="showNavbar"/>
 	<main :style="{ 'min-height': mainMinHeight }" class="bg-[#ffffff] sm:pt-10">
 		<div class="mx-auto container">
 			<router-view></router-view>

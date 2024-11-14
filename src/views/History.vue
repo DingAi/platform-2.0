@@ -1,6 +1,7 @@
 <template>
-	<div class="space-y-4 text-center size-full smiley-sans">
-		<div class="flex flex-col md:flex-row justify-between items-stretch bg-[#f5f5f5] rounded-2xl py-2 space-y-4 md:space-y-0 md:space-x-2 inner-shadow">
+	<div class="space-y-4 text-center size-full">
+		<div class="flex flex-col md:flex-row justify-between items-stretch bg-theme-1-color-6 rounded-2xl py-2 space-y-4
+		md:space-y-0 md:space-x-2 inner-shadow smiley-sans">
 			
 			<!-- SN 选择器 -->
 			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-4 mt-6 sm:mt-0">
@@ -40,14 +41,18 @@
 			</div>
 			
 			<!-- 时间选择器 -->
-			<div class="flex items-center justify-center w-full md:w-2/5 rounded-xl px-4">
+			<div class="flex items-center justify-center w-auto md:w-1/4 rounded-xl px-4">
 				<TimeDatePicker v-model="timeRange"/>
 			</div>
 			
 			<!-- 获取历史数据按钮 -->
-			<div class="flex items-center justify-center w-full md:w-1/5 rounded-xl p-4">
-				<el-button type="primary" @click="getHistoryData" class="w-full" round>加载数据</el-button>
-				<el-button v-if="!historyLoading" type="primary" @click="historyDataDownload" class="w-full" plain round>数据下载</el-button>
+			<div class="flex flex-col items-center justify-center md:flex-row w-full md:w-1/5 rounded-xl ">
+				<div class="p-2 w-full md:1/2">
+					<el-button type="primary" @click="getHistoryData" round >加载数据</el-button>
+				</div>
+				<div class="p-2 w-full md:1/2">
+					<el-button v-if="!historyLoading" type="primary" @click="historyDataDownload" plain round>数据下载</el-button>
+				</div>
 			</div>
 		</div>
 		
@@ -75,19 +80,31 @@ const authStore = useAuthStore();
 const {SCGData} = storeToRefs(authStore);
 
 // const timeRange = ref(["2024-09-29 18:00:00", "2024-09-30 11:00:00"])
+
+// 时间日期选择器绑定的值
 const timeRange = ref(getTimeRange(3))
+
+// 第一个选择器绑定的值（SN码）
 const selectedValues1 = ref(["AE0XAOJY18G2409000003"]);
+
+// 第二个选择器绑定的值
 const selectedValues2 = ref([["sensors", "co2_conc_during_meas"],["sensors", "co2_concentration"]]);
+
+// 判断第一个选择器选择的值是不是多通道设备
 const isMultiChannel = computed(() =>{
 	return selectedValues1.value[0].charAt(0) === 'B';
-}) // 判断是否为多通道
+})
 
-
+// 存储接收到的历史数据
 const historyData = ref([]);
+
+// 历史数据的加载状态
 const historyLoading = ref(false);
+
+// 存储X轴的数据
 const xAxisData = ref([]);
 
-
+//第一个选择器的Elemnet Plus Option属性
 const snOption = computed(() => {
 	let option = []
 	for (let i = 0; i < SCGData.value[0].length; i++) {
@@ -99,15 +116,19 @@ const snOption = computed(() => {
 	return option
 });
 
+// 单通道数据的option
 const singleDeviceOption = ref(JSON.parse(localStorage.getItem("single_history_option")));
+
+// 多通道数据的option
 const multiDeviceOption = ref(JSON.parse(localStorage.getItem("multi_history_option")));
 
-//获取历史数据
+/**
+ * 获取历史数据
+ */
 const getHistoryData = async () => {
 	historyLoading.value = true;
 	try {
 		let result = selectProcessData(selectedValues2.value)
-		console.log(selectedValues2.value)
 		const res = await postHistoryData(selectedValues1.value[0], result.typeDataList, result.varDataList, timeRange.value)
 		historyData.value = res.data.history_data;
 		xAxisData.value = res.data.timest;
@@ -127,12 +148,16 @@ const cascaderProps = {
 	children: 'children' // 子级字段
 }
 
+/**
+ * 历史数据下载：
+ * 收到接口返回的MinIO的URL然后下载
+ */
 const historyDataDownload = async () => {
 	try {
-		let typeData = selectProcessData(selectedValues2.value)
-		const res = await postHistoryDataDownload(selectedValues1.value[0], typeData.categories, typeData.entries, timeRange.value);
+		let result = selectProcessData(selectedValues2.value)
+		const res = await postHistoryDataDownload(selectedValues1.value[0], result.typeDataList, result.varDataList, timeRange.value);
 		// 创建一个 Blob URL
-		const url = window.URL.createObjectURL(new Blob([res.data]));
+		const url = res.data.url;
 		
 		// 创建一个链接元素
 		const link = document.createElement('a');
@@ -153,6 +178,7 @@ const historyDataDownload = async () => {
 }
 
 onMounted(()=>{
+	// 加载界面的时候根据缺省值先生成一下图表数据
 	getHistoryData();
 })
 </script>

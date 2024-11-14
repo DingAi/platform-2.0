@@ -6,7 +6,7 @@
 		
 		<div v-else class="table-min">
 			<table class="min-w-full shadow-sm rounded-lg overflow-hidden bg-[#ffffff]">
-				<thead class="bg-[#3F51B5] text-white">
+				<thead class="bg-theme-1-color-1 text-white">
 				<tr>
 					<th class="px-6 py-3.5 text-left text-sm font-bold">Index</th>
 					<th v-for="(head, index) in header" :key="index" class="px-6 py-3.5 text-left text-sm font-bold">
@@ -23,7 +23,7 @@
 					:key="rowIndex"
 					class="border-t border-gray-500 hover:bg-[#f7f7f7] hover:text-pink-600 transition-colors duration-300 ease-in-out text-left"
 				>
-					<td class="px-6 py-3 text-sm font-bold text-[#3F51B5]">
+					<td class="px-6 py-3 text-sm font-bold text-theme-1-color-1">
 						{{ (currentPage - 1) * pageSize + rowIndex + 1 }}
 					</td>
 					<td v-for="(cell, cellIndex) in row" :key="cellIndex"
@@ -36,7 +36,7 @@
 								<button
 									v-if="buttonIndex < showButton"
 									@click="handleButtonClick(rowIndex, buttonIndex)"
-									class="bg-[#3F51B5] text-white px-4 py-1 rounded hover:bg-[#757de8] transition duration-200"
+									class="bg-theme-1-color-1 text-white px-4 py-1 rounded hover:bg-[#757de8] transition duration-200"
 								>
 									{{ label }}
 								</button>
@@ -47,13 +47,13 @@
 				<tr v-if="paginatedData.length === 0">
 					<td :colspan="header.length + 1 + (showButton > 0 ? 1 : 0)"
 					    class="px-6 py-4 text-center text-sm text-gray-500">
-						No data available
+						暂无数据
 					</td>
 				</tr>
 				</tbody>
 			</table>
 		</div>
-		<div class="pl-20 pr-20">
+		<div class="">
 			<el-pagination
 				v-model:currentPage="currentPage"
 				:page-size="pageSize"

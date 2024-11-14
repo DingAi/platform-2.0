@@ -19,7 +19,50 @@
   --el-color-primary: #3F51B5 !important;
   --el-color-primary-light-3: #757de8 !important;
   --el-menu-text-color: #ffffff !important;
-  /*--el-text-color-regular: #fafafa !important;*/
+
+  .el-date-editor {
+    --el-date-editor-datetimerange-width: 100%;
+  }
+  .el-picker-panel__sidebar {
+    @media (max-width: 768px) {
+      width: 70px;
+    }
+  }
+
+  .el-date-range-picker__time-header {
+    @media (max-width: 768px) {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .el-date-range-picker.has-sidebar {
+    @media (max-width: 768px) {
+      width: 360px;
+    }
+  }
+
+  .el-picker-panel [slot=sidebar]+.el-picker-panel__body, .el-picker-panel__sidebar+.el-picker-panel__body{
+    @media (max-width: 762px) {
+      margin-left: 70px;
+      width: 380px;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .el-date-range-picker__time-header {
+    @media (max-width: 762px) {
+      width: 280px;
+    }
+
+  }
+
+  .el-date-range-picker__content {
+    @media (max-width: 768px) {
+      width: 300px;
+    }
+  }
 }
 
 @font-face {
