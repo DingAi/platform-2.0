@@ -1,18 +1,52 @@
 <template>
 	<div class="space-y-6 text-center size-full">
-		
 		<!-- 顶栏 -->
 		<div class="flex flex-col md:flex-row justify-between items-center bg-theme-1-color-6 p-4 h-auto rounded-2xl inner-shadow smiley-sans">
 			<span class="text-xl text-theme-1-color-8 px-2 mt-2 md:mt-0 font-bold">{{ deviceName }}</span>
 			<span class="text-xl text-white bg-pink-400 rounded-xl px-2 mt-2 md:mt-0">{{ sn }}</span>
 		</div>
 		
+		<!-- 电池与运行状态栏-->
+		<div class="flex flex-col md:flex-row justify-between items-center p-2 smiley-sans" v-show="isConnectState">
+			<div class="flex flex-row w-auto items-center">
+				<span class="text-xl text-gray-500">电池电量： </span>
+				<div class="w-32">
+					<el-progress
+						:text-inside="true"
+						:percentage="batteryLevel"
+						:stroke-width="25"
+						:color="batteryLevelColors"
+						striped-flow
+						striped/>
+				</div>
+			</div>
+			<span class="text-xl text-theme-1-color-4 px-2 mt-2 md:mt-0 font-bold">
+				运行步骤：{{ runStepsNameList[runStepsIndex] }}
+			</span>
+		</div>
+		<div class="flex flex-col md:flex-row justify-between items-center p-2 smiley-sans" v-show="isConnectState">
+			<div class="flex flex-row w-auto items-center">
+				<span class="text-xl text-gray-500">流量卡： </span>
+				<span class="text-xl text-gray-500">{{ flowData }}</span>
+			</div>
+		</div>
+		
+		<!-- 设备离线内容 -->
+		<div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 h-screen
+			md:h-rem-36 rounded-2xl p-4" v-show="!isConnectState">
+			<!-- 加载状态 -->
+<!--			<div class="flex flex-col justify-center items-center py-4 space-y-4 h-full">-->
+<!--				<DataLoading/>-->
+<!--			</div>-->
+			<span class="text-8xl text-[#757de8]">设备离线</span>
+		</div>
+		
 		<!-- 铝牌电磁阀样式 -->
-		<div class="hidden md:flex flex-row justify-center items-center md:h-60 rounded-2xl space-x-8">
-			<div class="w-1/3 h-full grid grid-cols-3 gap-2 py-6">
+		<div class="hidden md:flex flex-row justify-center items-center md:h-60 rounded-2xl space-x-8" v-show="isConnectState">
+			<div class="w-1/3 h-full grid grid-cols-3 gap-2 py-6" >
 				<div class="flex flex-col items-center justify-center" v-for="item in [18,19,20,21,22,23]">
 					<span class="text-pink-600 font-light">{{ multiPointNameList[item] }}</span>
-					<span class="text-gray-500 font-light">{{ pageListData[item] }}V</span>
+					<span class="text-gray-500 font-light">{{ pageListData[item] }} {{multiPointUnit[item]}}</span>
 				</div>
 			</div>
 			<div class="w-2/3 flex flex-row justify-center items-center rounded-2xl border-2 py-6 space-x-6 shadow">
@@ -40,7 +74,7 @@
 		</div>
 		
 		<!--温度与气压数据-->
-		<div class="block h-rem-40 md:h-40 sm:h-24 xs:h-20 my-4">
+		<div class="block h-rem-40 md:h-40 sm:h-24 xs:h-20 my-4" v-show="isConnectState">
 			<el-descriptions title="温度与气压数据" size="large" border :column="columnCount">
 				<el-descriptions-item
 					v-for="item in [1,3,5,7,9,11]"
@@ -59,15 +93,9 @@
 			</el-descriptions>
 		</div>
 		
-		<!-- 设备离线内容 -->
-		<div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 h-auto
-			md:h-96 rounded-2xl bg-theme-1-color-6 inner-shadow p-4" v-show="!isConnectState">
-			<span class="text-8xl text-[#757de8]">设备离线</span>
-		</div>
-		
-		
 		<!-- 开关群组 -->
-		<div class="flex flex-row switch-group-h max-w-full rounded-2xl p-4 bg-theme-1-color-6 overflow-x-auto space-x-4 inner-shadow">
+		<div class="flex flex-row switch-group-h max-w-full rounded-2xl p-4 bg-theme-1-color-6 overflow-x-auto
+		space-x-4 inner-shadow" v-show="isConnectState">
 			<div class="flex flex-col h-full w-60 rounded-2xl p-4 shadow bg-gray-300">
 				<div class="flex flex-row h-1/6 justify-center items-center">
 					<span class="bg-pink-400 text-white rounded px-2">主站</span>
@@ -200,7 +228,7 @@
 		
 		<!-- 主内容 -->
 		<div class="flex flex-col justify-between items-center space-y-4 md:space-y-0 md:space-x-4 h-screen
-			md:h-96 rounded-2xl bg-theme-1-color-6 inner-shadow p-4" v-show="isConnectState">
+			md:h-96 rounded-2xl bg-theme-1-color-6 inner-shadow p-4">
 			<div class="flex flex-col h-1/4 md:flex-row justify-between items-stretch py-2 md:space-y-0 md:space-x-2">
 				<!-- 设备选择器 -->
 				<div class="flex items-center justify-center w-full md:w-2/5 rounded-xl p-4">
@@ -226,9 +254,13 @@
 						<el-button type="primary" @click="getHistoryData" round>加载数据</el-button>
 					</div>
 					<div class="p-2">
-						<el-button v-if="!historyLoading" type="primary" @click="historyDataDownload" plain round>
-							数据下载
-						</el-button>
+						<el-tooltip content="提醒:大量数据建议使用数据下载界面"
+						            placement="bottom"
+						            effect="customized">
+							<el-button v-if="!historyLoading" type="primary" @click="historyDataDownload" plain round>
+								数据下载
+							</el-button>
+						</el-tooltip>
 					</div>
 				</div>
 			</div>
@@ -245,7 +277,7 @@
 		
 		
 		<!-- 传感器数据列表 -->
-		<div class="justify-between items-center bg-theme-1-color-6 p-6 px-6 md:px-20 h-full rounded-2xl pb-10 inner-shadow">
+		<div class="justify-between items-center bg-theme-1-color-6 p-6 pt-12 md:px-20 h-full rounded-2xl pb-10 inner-shadow">
 			<div class="flex items-center flex-col md:flex-row">
 				<h1 class="text-2xl md:text-4xl mb-6">传感器数据列表</h1>
 			</div>
@@ -257,9 +289,9 @@
 		
 		<!-- 报警列表 -->
 		<div class="justify-between items-center bg-theme-1-color-6 p-6 px-6 md:px-20 h-full rounded-2xl pb-10 inner-shadow">
-			<div class="flex items-center">
+			<div class="flex flex-col md:flex-row items-center">
 				<h1 class="text-4xl mb-6">报警</h1>
-				<el-button class="ml-auto" round @click="clearAlarm">
+				<el-button class="m-auto md:ml-auto" round @click="clearAlarm">
 					清空报警
 				</el-button>
 			</div>
@@ -268,6 +300,7 @@
 			</div>
 		</div>
 	</div>
+	
 </template>
 
 
@@ -278,7 +311,7 @@ import {elementTableDataConversion, showMessage, transposeMatrix} from "@/utils/
 import TableTemplate from "@/components/TableTemplate.vue";
 import {
 	postAlarmLog,
-	postClearAlarm,
+	postClearAlarm, postDeviceFlow,
 	postHistoryData,
 	postHistoryDataDownload,
 	postMultiSwitch,
@@ -291,6 +324,7 @@ import HistoryChart from "@/components/echarts/HistoryChart.vue";
 import DataLoading from "@/components/DataLoading.vue";
 import _ from "lodash";
 import Cookies from "js-cookie";
+import {batteryLevelColors} from "@/utils/preset-data.js";
 
 const route = useRoute();
 
@@ -331,6 +365,9 @@ const deviceName = ref(SCGData[1][index]);
 // 传感器的数据是否加载成功
 const sensorLoading = ref(false);
 
+// 电池电量
+const batteryLevel = ref(null);
+
 
 /*************************************************************
  *                   多通道实时数据通信
@@ -348,51 +385,88 @@ const sensorLoading = ref(false);
 
 // 页内导航中要显示的不同的列表数据
 const pageListData = ref([]);
+
 // 数据点位列表的表头
 const sensorHeader = ref(['传感器', '值', '单位'])
+
 // 数据点位列表的值，一个二维数组
 const sensorCol = ref([])
-let pollingActive = true;  //是否接收到数据
+
+// 运行步骤
+const runStepsNameList = ref([
+	'箱子关闭，风扇开启',
+	'盖子正在关闭',
+	'风扇搅拌',
+	'读二氧化碳',
+	'抽真空',
+	'箱子打开,风扇关闭',
+	'等待下一循环',
+])
+
+// 当前运行到哪一步
+const runStepsIndex = ref(null)
+
+// 手机流量
+const flowData = ref({})
 
 /**
  * 接收多通道的实时数据
  */
-const multiChannelDataTest = async () => {
-	if (!pollingActive) return;
+const getRealData = async () => {
 	try {
 		const res = await postRealData(sn.value);
-		
-		// 时间设置数据赋值（slice是左闭右开的）
-		setTimeList.value = res.data.data_big.slice(42, 48);
-		
-		// 铝牌电磁阀状态刷新（slice是左闭右开的）
-		aluminumPlateStateFlushed(res.data.data_big.slice(56, 66));
-		
-		// 开关数据刷新
-		let tempSubStationSwitchList = [];
-		for (let i = 0; i < 9; i++) {
-			for (let j = 0; j < 3; j++) {
-				tempSubStationSwitchList.push(res.data.data_big[70 + i * 23 + j]);
+		if (res.data.data_big.length > 0){
+			// 时间设置数据赋值（slice是左闭右开的）
+			setTimeList.value = res.data.data_big.slice(42, 48);
+			
+			// 铝牌电磁阀状态刷新（slice是左闭右开的）
+			aluminumPlateStateFlushed(res.data.data_big.slice(56, 66));
+			
+			// 开关数据刷新
+			let tempSubStationSwitchList = [];
+			for (let i = 0; i < 10; i++) {
+				tempSubStationSwitchList.push([
+					res.data.data_big[68 + i*22 + 10],
+					res.data.data_big[68 + i*22 + 11],
+					res.data.data_big[68 + i*22 + 20],
+				]);
 			}
+			switchStateList.value = switchStateFlushed(tempSubStationSwitchList);
+			
+			// 电池电量
+			batteryLevel.value = res.data.charged_v;
+			
+			pageListData.value = res.data.data_big;
+			// 根据点击主站还是从站切割数据
+			const [start, end] = deviceIndex.value === 0 ? [0, 68] : [68 + (deviceIndex.value - 1) * 22, 68 + (deviceIndex.value * 22)];
+			sensorCol.value = transposeMatrix([
+				multiPointNameList.slice(start, end),
+				res.data.data_big.slice(start, end),
+				multiPointUnit.slice(start, end),
+			]);
+			
+			// 运行步骤
+			runStepsIndex.value = res.data.data_big[55] - 1;
+			
+			isConnectState.value = true;
+		} else {
+			isConnectState.value = false;
 		}
-		switchStateFlushed(tempSubStationSwitchList);
-		
-		pageListData.value = res.data.data_big;
-		// 根据点击主站还是从站切割数据
-		const [start, end] = deviceIndex.value === 0 ? [0, 70] : [70 + (deviceIndex.value - 1) * 23, 70 + (deviceIndex.value * 23)];
-		sensorCol.value = transposeMatrix([
-			multiPointNameList.slice(start, end),
-			res.data.data_big.slice(start, end),
-			multiPointUnit.slice(start, end),
-		]);
 	} catch (e) {
 		console.log(e)
-	} finally {
-		isConnectState.value = true;
 	}
 }
 
-// 处理铝排的状态
+const getDeviceFlow = async () => {
+	try{
+		const res = await postDeviceFlow(sn.value)
+		flowData.value = res.data.flow
+		console.log(res.data)
+	} catch (e){
+		console.log(e)
+	}
+}
+
 /**
  * 铝排数据刷新
  * @param {list} aluminumPlateData ： 实时数据获取到的子站电磁阀开关数值数组
@@ -407,14 +481,18 @@ const aluminumPlateStateFlushed = (aluminumPlateData) => {
 
 /**
  * 开关状态数据刷新
- * @param {list} tempSubStationSwitchList ： 10个子站除了电磁阀状态之外的开关状态二维数组
+ * @param {*[]} tempSubStationSwitchList ： 10个子站除了电磁阀状态之外的开关状态二维数组
  */
 const switchStateFlushed = (tempSubStationSwitchList) => {
-	let topDataList = aluminumPlateStateList.value;
-	for (let i = 0; i < 9; i++) {
-		topDataList[i] = [...topDataList[i], ...tempSubStationSwitchList[i]];
+	// 重新复制aluminumPlateStateList.value不能和其建立ref关联
+	let topDataList = [...aluminumPlateStateList.value];
+	if(topDataList.length > 0){
+		for (let i = 0; i < 10; i++) {
+			topDataList[i] = [...topDataList[i], ...tempSubStationSwitchList[i]];
+		}
+		return  topDataList;
 	}
-	switchStateList.value = topDataList;
+	
 }
 
 
@@ -447,7 +525,7 @@ const closeMenu = () => {
 const selectItem = (index) => {
 	deviceIndex.value = index;
 	// 点击按钮后马上更新数据
-	multiChannelDataTest()
+	getRealData()
 	// 更新历史下拉选择的数据
 	if (deviceIndex.value > 0) {
 		selectedHistoryValue.value = ['s' + deviceIndex.value + '_measure_co2'];
@@ -492,7 +570,7 @@ const columnCount = computed(() => {
 const switchStateList = ref(_.times(10, () => _.fill(Array(5), 0)))
 
 // 一个子站的开关列表
-const switchNameList = ref(['进气电磁阀', '出气电磁阀', '电机', '风扇', '传感器'])
+const switchNameList = ref(['进气电磁阀', '出气电磁阀', '盖子', '风扇', '传感器'])
 
 // 开关站点关键字索引
 const stationIndex = ['f0', 'f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9', 'fa'];
@@ -569,7 +647,7 @@ const switchTrigger = async (i, j) => {
 			slaveLoadingList.value[i][j] = false; // 动画停止加载
 			showMessage(deviceNameList[i] + '【' + switchNameList.value[j] + '】开关执行失败：' + res.data.message, 'error')
 		}
-		await multiChannelDataTest()
+		await getRealData()
 	}
 }
 
@@ -600,7 +678,7 @@ const masterSwitchTrigger = async (newValue, i) => {
 	} catch (e) {
 		console.error(e);
 	} finally {
-		await multiChannelDataTest()
+		await getRealData()
 	}
 }
 
@@ -741,7 +819,6 @@ const getAlarmLog = async () => {
 		tempAlarmData[2] = tempAlarmData[2].map(item => item.replace('T', ' '));
 		alarmTableData.value = elementTableDataConversion(alarmHeaderList.value, transposeMatrix(tempAlarmData));
 	} catch (e) {
-		showMessage('报警数据获取失败')
 		console.log(e)
 	} finally {
 		alarmLoading.value = true;
@@ -776,11 +853,12 @@ const clearAlarm = async () => {
 
 let intervalId;
 onMounted(async () => {
-	await multiChannelDataTest();
+	await getRealData();
 	await getHistoryData()
+	await getDeviceFlow()
 	intervalId = setInterval(() => {
-		multiChannelDataTest();
-	}, 5000)
+		getRealData();
+	}, 20000)
 });
 
 
@@ -793,7 +871,7 @@ onBeforeUnmount(() => {
 watch(() => route.params.id, (newId) => {
 	sn.value = newId
 	let index = SCGData[0].indexOf(sn.value);
-	multiChannelDataTest()
+	getRealData()
 	deviceName.value = ref(SCGData[1][index]);
 	sensorCol.value = []
 })

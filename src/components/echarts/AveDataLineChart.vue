@@ -46,6 +46,11 @@ const indexNameList = computed(() => {
 	}
 })
 
+/**
+ * 图表的数据刷新
+ * @param {echartDom} dom ： Echarts声明的Dom
+ * @param {echartOption} option ： Echarts图表格式配置
+ */
 const refresh = (dom, option) => {
 	let seriesList = []
 	for (let i = 0; i < aveData.length; i++) {

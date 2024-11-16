@@ -16,6 +16,7 @@ export default {
                 'theme-1-color-7': '#cccccc',
                 'theme-1-color-8': '#5c5c5c',
                 'theme-1-color-9': '#333333',
+                'theme-bg': '#fef8ef',
                 manjaro: {
                     green: {
                         50: '#e4f8ea',    // Very light green

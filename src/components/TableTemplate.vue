@@ -121,9 +121,13 @@ const {
 	},
 });
 
+// 当前页码
 const currentPage = ref(1);
+
+// 一页的数据条数
 const pageSize = ref(pageRowNumber);
 
+// 当前显示的页的数据
 const paginatedData = computed(() => {
 	const start = (currentPage.value - 1) * pageSize.value;
 	const end = start + pageSize.value;

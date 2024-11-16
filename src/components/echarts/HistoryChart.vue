@@ -21,6 +21,11 @@ const {historyData, xAxisData, historyLoading} = defineProps({
 const historyLine = ref(null);
 const loading = ref(false);
 
+
+/**
+ * 图表的数据刷新
+ * @param {echartDom} dom ： Echarts声明的Dom
+ */
 const refresh = (dom) => {
 	if (historyData.length > 0){
 		let option = JSON.parse(JSON.stringify(lineOptionTemplate));

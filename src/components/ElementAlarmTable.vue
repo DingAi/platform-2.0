@@ -23,11 +23,11 @@
 			</template>
 		</el-table-column>
 	</el-table>
-	<div class="flex flex-row justify-between p-4">
-		<div>
+	<div class="flex flex-col md:flex-row justify-center md:justify-between items-center md:items-start p-4">
+		<div class="p-4">
 			<el-button type="primary" plain @click="setSelectAlreadyRead(sn)">已读选中的报警</el-button>
 		</div>
-		<div>
+		<div class="p-4">
 			<el-pagination
 				v-model:current-page="currentPage"
 				:page-size="pageSize"

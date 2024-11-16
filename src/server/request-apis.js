@@ -4,6 +4,7 @@ import apiClient from "./axiosConfig";
 const server = '/django/' //47.108.231.242:9002
 const fastapiServer = '/fastapi/' //47.108.231.242:7005
 const localServer = '/local/' //127.0.0.1:8000（本机）
+const comServer = '/ylzs/' //47.108.231.242:9011（公司阿里云）
 const xuServer = '/xu/' //192.168.28.228（公司局域网）
 
 const serverUrl = {
@@ -79,8 +80,11 @@ const serverUrl = {
     //清除所有日志
     clearLog: server + "clear_log",
     
-    
+    // 单通道数据分析
     singleAnalysisData: server + "single_analysis_data",
+    
+    // 多通道数据分析
+    multiAnalysisData: server + "multi_analysis_data",
     
     //获取该设备的所有报警日志
     alarmLog: fastapiServer + "mistake_value",
@@ -117,6 +121,9 @@ const serverUrl = {
     
     //修改用户手机号的时候获取验证码
     modifyPhoneCaptcha: server + "modify_phone_captcha",
+    
+    //获取设备流量
+    deviceFlow: comServer + "flows_data",
 };
 
 /**
@@ -373,12 +380,11 @@ const postAlarmLog = (sn) =>
 /**
  * 下载分析数据的文件(用文件流传输）
  * @param {string} sn : SN码
- * @param {list} station_index : 索引指明主站还是从站
- * @param {list} switch_index : 开关索引
- * @param {list} switch_value : 执行的开关值
+ * @param {list} proportion : 体积面积比
+ * @param {list} time_frame : 时间范围数组
  */
 const postAnalysisDataDownload = (sn, proportion, time_frame) =>
-    apiClient.post(serverUrl.downloadAnalysisData, {sn, proportion, time_frame});
+    apiClient.post(serverUrl.downloadAnalysisData, {sn, proportion, time_frame}, {responseType: "blob"});
 
 /**
  * 清除所有报警信息
@@ -431,6 +437,15 @@ const postModifyUserPhone = (phone, cap) =>
 const getFastAPITokenTest = () =>
     apiClient.get(serverUrl.tokenTestAPI, {});
 
+
+/**
+ * 修改用户手机号时获取验证码
+ *
+ * @param {string} sn : SN码
+ */
+const postDeviceFlow= (sn) =>
+    apiClient.post(serverUrl.deviceFlow, {sn});
+
 // 抛出所有的API函数
 export {
     server,
@@ -466,4 +481,5 @@ export {
     postModifyDevicePassword,
     postModifyPhoneCaptcha,
     postModifyUserPhone,
+    postDeviceFlow,
 };

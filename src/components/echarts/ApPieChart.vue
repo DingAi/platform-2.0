@@ -17,6 +17,11 @@ const { apData } = defineProps({
 const apPie = ref(null);
 let option = JSON.parse(JSON.stringify(pieOptionTemplate));
 
+/**
+ * 图表的数据刷新
+ * @param {echartDom} dom ： Echarts声明的Dom
+ * @param {echartOption} option ： Echarts图表格式配置
+ */
 const refresh = (dom, option) => {
 	option.series[0].data = [
 		{ value: Math.floor(apData[0]/1000), name: '进气气压' },

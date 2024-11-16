@@ -1,5 +1,5 @@
 <template>
-	<nav class="top-0 z-50 sticky bg-white shadow py-4 bg-white font-light">
+	<nav class="top-0 z-50 sticky bg-white shadow py-4 font-light">
 		<div class="flex flex-row justify-between items-center mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
 			<!-- Platform Logo -->
 			<div class="flex pl-4">
@@ -8,9 +8,7 @@
 			<!-- 汉堡菜单 -->
 			<div class="block px-4 sm:hidden items-center space-x-4">
 				<button @click="toggleMobileMenu" class="focus:outline-none flex justify-center">
-					<el-icon>
-						<Menu/>
-					</el-icon>
+					<el-icon><Menu/></el-icon>
 				</button>
 			</div>
 			<!-- 移动菜单 -->

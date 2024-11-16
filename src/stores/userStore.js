@@ -17,7 +17,8 @@ export const useAuthStore = defineStore('auth', () => {
     const COOKIE_EXPIRES_DAYS = 7; // 7 天
     const COOKIE_EXPIRES_HOURS = 1 / 24; // 1 小时
     const COOKIE_EXPIRES_MINS = 1 / 144; // 10 分钟
-    // 状态定义
+    
+    // 状态定义，使用Cookie的值，Cookie没有值就使用null
     const token = ref(Cookies.get(`${PROJECT_NAME}_token`) || null);
     const user = ref(Cookies.get(`${PROJECT_NAME}_user`) || null);
     
@@ -25,6 +26,11 @@ export const useAuthStore = defineStore('auth', () => {
     const SCGData = ref([]) // 单通道气体箱数据 Single Channel GasBox
     
     // 登录方法
+    /**
+     * 更新页内导航选中的索引
+     * @param {string} username ： 登录用户名
+     * @param {string} password ： 登录密码
+     */
     const login = async (username, password) => {
         try {
             const response = await postLogin(username, password);
@@ -42,11 +48,15 @@ export const useAuthStore = defineStore('auth', () => {
                 localStorage.setItem('phone', JSON.stringify(response.data.phone))
                 
                 // 这部分是为了方式在登录的时候多通道数据结构传输的数据过大，将从站的数据在这里生成
-                let masterStationData = response.data.data_duo.slice(0, 70); // 主站数据
-                let subStationData = response.data.data_duo.slice(70, 93); // 一份从站数据
+                // 主站数据
+                let masterStationData = response.data.data_duo.slice(0, 68);
+                // 一份从站数据
+                let subStationData = response.data.data_duo.slice(68, 90);
+                // 主站历史数据结构
+                let masterHistoryOption = [response.data.duo_table[0]];
+                // 一份从站历史数据结构
+                let subHistoryOption = response.data.duo_table[1];
                 
-                let masterHistoryOption = [response.data.duo_table[0]]; // 主站历史数据结构
-                let subHistoryOption = response.data.duo_table[1]; // 一份从站历史数据结构
                 let subStationKeys = [
                     "slave_one",
                     "slave_two",
@@ -104,8 +114,11 @@ export const useAuthStore = defineStore('auth', () => {
         }
     };
     
-    // 登出方法
+    /**
+     * 登出函数
+     */
     const logout = () => {
+        // 清除Cookie Token和本地数据
         token.value = null;
         user.value = null;
         Cookies.remove(`${PROJECT_NAME}_token`);
@@ -115,17 +128,10 @@ export const useAuthStore = defineStore('auth', () => {
         Router.push({path: '/login'})
     };
     
-    //数据获取方法
-    const getEquipments = async () => {
-        try {
-            const res = await getEquipmentData();
-            SCGData.value = res.data['ed'];
-            return SCGData;
-        } catch (error) {
-            console.log(error)
-        }
-    }
-    
+    /**
+     * 判断是否有设备报警
+     * @param {json} SCGData ： 本地的用户设备数据
+     */
     async function isExistenceAlarm(SCGData) {
         for (let i = 0; i < SCGData[0].length; i++) {
             const item = SCGData[0][i];
@@ -148,10 +154,10 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
     
-    //提供token数据
     const getToken = () => {
-        return Cookies.get(`${PROJECT_NAME}_token`) || token.value;
+        return token.value;
     };
+
     
     // 返回状态和方法
     return {
@@ -159,8 +165,7 @@ export const useAuthStore = defineStore('auth', () => {
         SCGData,
         login,
         logout,
-        getToken,
-        getEquipments
+        getToken
     };
 }, {
     persist: {

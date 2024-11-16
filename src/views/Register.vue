@@ -146,7 +146,9 @@ import {showMessage} from "@/utils/tools-functions.js";
 import {useRoute} from "vue-router";
 
 const router = useRoute();
+
 const isLoading = ref(false);
+
 const username = ref('');
 const password = ref('');
 const rePassword = ref('');

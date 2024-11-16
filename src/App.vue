@@ -39,12 +39,12 @@ onMounted(() => {
 
 <template>
 	<Navbar class="z-max" v-if="showNavbar"/>
-	<main :style="{ 'min-height': mainMinHeight }" class="bg-[#ffffff] sm:pt-10">
+	<main :style="{ 'min-height': mainMinHeight }" class="bg-white sm:pt-10">
 		<div class="mx-auto container">
 			<router-view></router-view>
 		</div>
 	</main>
-	<footer class="flex justify-center items-center bg-[#FFFFFF] h-20">
+	<footer class="flex justify-center items-center bg-white h-20">
 		<p class="text-center text-gray-700">
 			杨陵子石科技有限公司
 			<a href="https://beian.miit.gov.cn/#/Integrated/index">陕ICP备2024044716号</a>

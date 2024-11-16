@@ -9,6 +9,10 @@ const { apData } = defineProps({
 
 const apGauge = ref(null)
 
+/**
+ * 图表的数据刷新
+ * @param {echartDom} dom ： Echarts声明的Dom
+ */
 const refresh = (dom) => {
 	let option = setGaugeData(
 		Number((apData[0] / 1000).toPrecision(3)),

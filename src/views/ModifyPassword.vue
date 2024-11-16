@@ -98,20 +98,37 @@ import {useRouter} from "vue-router";
 
 
 const router = useRouter();
+// 表单按钮需要的加载状态
 const isLoading = ref(false);
 
+// SN 码
 const us = ref('');
+
+// 手机号
 const phone = ref('');
+
+// 手机验证码
 const cap = ref('');
+
+// 设置的密码
 const pwd = ref('');
+
+// 重复输入的密码
 const rePwd = ref('');
 
+// 手机号格式错误
 const phoneError = ref(false);
+
+
 const passwordError = ref(false);
+// 重复密码是否相同
 const passwordMatchError = ref(false);
+
+// 验证倒计时
 const countdown = ref(0);
 let countdownTimer = null;
 
+// 验证倒计时
 const startCountdown = () => {
 	countdown.value = 90;
 	countdownTimer = setInterval(() => {
@@ -124,6 +141,7 @@ const startCountdown = () => {
 	}, 1000);
 };
 
+// 手机号验证并请求手机验证码
 const handleButtonClick = () => {
 	validatePhoneNumber();
 	if (countdown.value === 0) {
@@ -135,16 +153,19 @@ const handleButtonClick = () => {
 	}
 };
 
+// 验证手机号
 const validatePhoneNumber = () => {
 	const phoneRegex = /^1\d{10}$/; // 验证中国手机号格式
 	phoneError.value = !phoneRegex.test(phone.value);
 };
 
+// 验证密码是否匹配
 const validatePassword = () => {
 	passwordError.value = pwd.value.length < 6;
 	passwordMatchError.value = pwd.value !== rePwd.value;
 };
 
+// 发送修改密码请求
 const modifyPassword = async () => {
 	validatePhoneNumber();
 	validatePassword();
@@ -170,22 +191,6 @@ const modifyPassword = async () => {
 </script>
 
 <style scoped>
-.cursor-not-allowed {
-	cursor: not-allowed;
-}
-
-.bg-gray-500 {
-	background-color: #6b7280;
-}
-
-.bg-green-600 {
-	background-color: #16a34a;
-}
-
-.hover\:bg-green-500:hover {
-	background-color: #22c55e;
-}
-
 .text-red-500 {
 	color: #ef4444;
 }

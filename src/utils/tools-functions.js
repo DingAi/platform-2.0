@@ -2,11 +2,17 @@
 import moment from "moment";
 import {ElMessage} from "element-plus";
 
+// 二维数组转置
 function transposeMatrix(matrix) {
     return matrix[0].map((_, colIndex) => matrix.map((row) => row[colIndex]));
 }
 
-// 返回从当前时间开始向后hour个小时的时间范围
+
+/**
+ * 返回从当前时间开始向后 hour 个小时的时间范围
+ * @param {number} hour ： 小时
+ * @return {[string, string]} 时间范围数组
+ */
 function getTimeRange(hour) {
     const currentTime = moment();
     // 获取24小时前的时间
@@ -32,18 +38,10 @@ function tableTransformData(data, keyNames) {
             [dateKey]: data[2][i],
         });
     }
-    
     return tableData;
 }
 
-function chartDataFlow(value, dataList, xLength) {
-    dataList.push(value);
-    if (dataList.length === xLength) {
-        dataList.shift()
-    }
-    return dataList;
-}
-
+// 使用Element Plus获取报警
 function showMessage(message, type = "error", duration = 2000) {
     ElMessage({
         message,
@@ -52,10 +50,7 @@ function showMessage(message, type = "error", duration = 2000) {
     });
 }
 
-function getCurrentTime() {
-    return moment().format('YY-MM-DD HH:mm:ss');
-}
-
+// 历史数据加工
 function selectProcessData(data) {
     const firstValuesSet = new Set();
     const mapping = {};
@@ -125,9 +120,7 @@ export {
     transposeMatrix,
     getTimeRange,
     tableTransformData,
-    chartDataFlow,
     showMessage,
-    getCurrentTime,
     selectProcessData,
     excelTimestampToDate,
     elementTableDataConversion,

@@ -51,13 +51,15 @@
 					<el-button type="primary" @click="getHistoryData" round >加载数据</el-button>
 				</div>
 				<div class="p-2 w-full md:1/2">
-					<el-button v-if="!historyLoading" type="primary" @click="historyDataDownload" plain round>数据下载</el-button>
+					<el-tooltip content="提醒:历史大数据下载建议使用数据下载界面" placement="bottom" effect="customized">
+						<el-button v-if="!historyLoading" type="primary" @click="historyDataDownload" plain round>数据下载</el-button>
+					</el-tooltip>
 				</div>
 			</div>
 		</div>
 		
 		<!-- 历史图表 -->
-		<div class="p-2 w-full history-chart rounded-2xl inner-shadow">
+		<div class="p-2 w-full history-chart bg-theme-1-color-6 rounded-2xl inner-shadow">
 			<div v-if="historyLoading" class="flex flex-col justify-center items-center py-4 space-y-4 h-full">
 				<DataLoading/>
 			</div>

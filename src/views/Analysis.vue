@@ -3,7 +3,7 @@
 		<div class="flex flex-col md:flex-row justify-between items-center bg-theme-1-color-6 p-2 rounded-2xl inner-shadow smiley-sans">
 			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl p-2 mt-6 sm:mt-0">
 				<el-cascader
-					v-model="selectedValues1"
+					v-model="selectedDeviceSnValues"
 					:options="snOption"
 					collapse-tags
 					collapse-tags-tooltip
@@ -86,20 +86,20 @@
 			</div>
 		</div>
 		<div class="flex flex-col md:flex-row justify-between items-center bg-theme-1-color-6 p-3 h-auto rounded-2xl inner-shadow">
-			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
+			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl mt-6 sm:mt-0">
 <!--				<file-upload @fileParsed="handleFileParsed">上传数据分析文件</file-upload>-->
 			</div>
-			<div class="flex flex-row items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
-				<span class="font-semibold">箱体体积(m³)：</span>
+			<div class="flex flex-row items-center justify-center w-full md:w-1/4 rounded-xl mt-6 sm:mt-0">
+				<span class="font-semibold">体积(m³)：</span>
 				<div>
 					<el-input-number v-model="boxVolume" :step="0.1"/>
 				</div>
 			</div>
-			<div class="flex flex-row items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
+			<div class="flex flex-row items-center justify-center w-full md:w-1/4 rounded-xl mt-6 sm:mt-0">
 				<span class="font-semibold">底面积(㎡)：</span>
 				<el-input-number v-model="boxArea" :step="0.1"/>
 			</div>
-			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-8 mt-6 sm:mt-0">
+			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl mt-6 sm:mt-0">
 				<el-button round @click="analysisDataDownload">下载数据</el-button>
 			</div>
 		</div>
@@ -143,8 +143,8 @@ const {SCGData} = storeToRefs(authStore);
 // 数据加载状态
 const isLoading = ref(false);
 
-// 选择用数据
-const selectedValues1 = ref(["AE0XAOJY18G2409000003"]); //设备的SN码
+//
+const selectedDeviceSnValues = ref(["AE0XAOJY18G2409000003"]); //设备的SN码
 const selectedValues2 = ref([]);
 const snOption = computed(() => {
 	let option = []
@@ -158,8 +158,10 @@ const snOption = computed(() => {
 });
 // 判断选择的是否是多通道数据
 const isMultiChannel = computed(() => {
-	return selectedValues1.value[0][0] === 'B';
+	return selectedDeviceSnValues.value[0][0] === 'B';
 })
+
+// 组装多通道选择器的Option
 const multiSubStationOption = computed(() => {
 	let i = 1
 	const numbersInWords = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
@@ -177,7 +179,9 @@ const multiSubStationOption = computed(() => {
 	})
 	return option;
 })
+// 固定的时间范围
 // const timeRange = ref(["2024-10-18 05:38:40", "2024-10-18 10:20:40"])
+
 // 时间范围
 const timeRange = ref(getTimeRange(72))
 
@@ -197,8 +201,10 @@ const xAxisData = ref([])
 const fluxList = ref({})
 const aveDataList = ref([])
 
-// 箱子的体积和底面积
+// 箱子的体积
 const boxVolume = ref(1)
+
+// 箱子的底面积
 const boxArea = ref(1)
 
 const historyKeyList = ref([])
@@ -210,7 +216,7 @@ const singleAnalysisData = async () => {
 	try {
 		isLoading.value = true;
 		typeIndex.value = 0;
-		const res = await postSingleAnalysisData(selectedValues1.value[0], boxVolume.value / boxArea.value, timeRange.value);
+		const res = await postSingleAnalysisData(selectedDeviceSnValues.value[0], boxVolume.value / boxArea.value, timeRange.value);
 		xAxisData.value = []
 		timeRangeList.value = []
 		for (let i = 0; i < res.data.analyze_data[0].length; i++) {
@@ -391,11 +397,13 @@ const exportToExcel = (data, filename = 'PagePrecessed.xlsx') => {
 	showMessage('数据已导出', 'success')
 }
 
-// 数据下载
+/**
+ * 数据下载
+ */
 const analysisDataDownload = async () =>{
 	try {
 		showMessage('数据开始下载', 'info')
-		const res = await postAnalysisDataDownload(selectedValues1.value, boxVolume.value / boxArea.value, timeRange.value);
+		const res = await postAnalysisDataDownload(selectedDeviceSnValues.value[0], boxVolume.value / boxArea.value, timeRange.value);
 		// 创建一个 Blob URL
 		const url = window.URL.createObjectURL(new Blob([res.data]));
 		
@@ -410,8 +418,8 @@ const analysisDataDownload = async () =>{
 		link.parentNode.removeChild(link); // 下载后移除链接
 	} catch (e) {
 		console.log('数据下载错误：',e)
+		showMessage('数据下载错误')
 	} finally {
-		showMessage('数据下载完成', 'success')
 	}
 	
 }

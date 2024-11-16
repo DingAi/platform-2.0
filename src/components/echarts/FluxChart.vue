@@ -17,7 +17,13 @@ const {fluxData} = defineProps({
 const fluxDom = ref(null)
 let option = JSON.parse(JSON.stringify(fluxOption));
 
-
+/**
+ * 图表的数据刷新
+ * @param {echartDom} dom ： 开关触发后的状态值
+ * @param {list} ec ： 碳通量
+ * @param {list} ew ： 水通量
+ * @param {list} timeRangeList ： X轴的时间数组
+ */
 const refresh = (dom, ec, ew, timeRangeList) => {
 	option.series[0].data = ec;
 	option.series[1].data = ew;

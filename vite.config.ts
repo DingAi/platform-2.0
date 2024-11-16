@@ -34,7 +34,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/fastapi/, ""),
       },
       "/ylzs": {
-        target: "http://47.108.231.242:7001",
+        target: "http://47.108.231.242:9011",
         changeOrigin: true,
         ws: true,
         rewrite: (path) => path.replace(/^\/ylzs/, ""),

@@ -8,7 +8,7 @@
 		</div>
 		
 		<!-- 电池与运行状态栏-->
-		<div class="flex flex-col md:flex-row justify-between items-center p-4 smiley-sans">
+		<div class="flex flex-col md:flex-row justify-between items-center p-4 smiley-sans" v-show="!isConnectState">
 			<div class="flex flex-row w-auto items-center">
 				<span class="text-xl text-gray-500">电池电量： </span>
 				<div class="w-32">
@@ -16,11 +16,29 @@
 						:text-inside="true"
 						:percentage="batteryLevel"
 						:stroke-width="25"
-						:color="colors"
+						:color="batteryLevelColors"
 						striped/>
 				</div>
 			</div>
-			<span class="text-xl text-theme-1-color-8 px-2 mt-2 md:mt-0 font-bold">设备电池电量：{{ batteryLevel }}%</span>
+			<span class="text-xl text-theme-1-color-4 px-2 mt-2 md:mt-0 font-bold">
+				运行步骤：{{ runStepsNameList[runStepsIndex] }}
+			</span>
+		</div>
+		<div class="flex flex-col md:flex-row justify-between items-center p-2 smiley-sans" v-show="!isConnectState">
+			<div class="flex flex-col md:flex-row w-auto items-center px-2">
+				<span class="text-xl text-gray-500">流量卡状态： </span>
+				<span class="text-xl text-gray-700 px-2">卡状态</span>
+				<span class="text-xl p-2 text-theme-1-color-4">{{ flowCardState[flowData['cardStatusId'] - 1] }}</span>
+				<span class="text-xl text-gray-700 px-2 ">总流量</span>
+				<span class="text-xl p-2 text-theme-1-color-4">{{ flowData['totalFlow'] }}MB</span>
+				<span class="text-xl text-gray-700  px-2">已用流量</span>
+				<span class="text-xl text-pink-400 p-2">{{ flowData['useFlow'] }}MB</span>
+				<span class="text-xl text-gray-700  px-2">剩余流量</span>
+				<span class="text-xl text-indigo-400 p-2">{{ flowData['surplusFlow'] }}MB</span>
+<!--				<span class="text-xl text-gray-500">{{ flowData }}</span>-->
+				<span class="text-xl text-gray-700 px-2 ">卡到期时间</span>
+				<span class="text-xl p-2 text-gray-400">{{ flowData['cardEndDate'] }}</span>
+			</div>
 		</div>
 		
 		<!-- 通信异常内容 -->
@@ -39,13 +57,15 @@
 			</div>
 			<!-- 第二个图表 -->
 			<div class="rounded w-full md:w-7/12 h-rem-30 md:h-full p-4">
-				<ThLineChart :th-value="thValue" :current-time="currentTime"/>
+				<ThLineChart :th-value="lineChartData" :current-time="currentTime"/>
 			</div>
 			<!-- 右侧操作区 -->
 			<div class="rounded w-full md:w-2/12 h-rem-28 md:h-full space-y-4 flex flex-col overflow-hidden justify-start
 			 md:justify-center">
 				<div class="h-1/6 rounded overflow-hidden flex items-center p-6 justify-center">
-					<el-button type="primary" @click="dialogVisible = true" round>时间设置</el-button>
+					<el-button type="primary" @click="dialogVisible = true" round :disabled="setTimeManualDisabled">
+						时间设置
+					</el-button>
 				</div>
 				
 				<!-- 时间弹窗 -->
@@ -101,16 +121,14 @@
 		</div>
 		
 		
-		
 		<!--温度与气压数据-->
 		<div class="block h-rem-29 md:h-44 my-4 p-6" v-if="isLoading">
 			<el-descriptions title="温度与气压数据" size="large" border :column="columnCount">
 				<el-descriptions-item
-					v-for="item in [44,45, 46, 47, 53, 54, 55, 56]"
+					v-for="(item, index) in [44,45, 46, 47, 53, 54, 55, 56]"
 					:key="item"
-					:label="singlePointNameList[item]"
-				>
-					<el-tag>{{ pointCol[item][1] }} {{ singlePointUnitList[item] }}</el-tag>
+					:label="singlePointNameList[item]">
+					<el-tag>{{ descriptionsList[index] }} {{ singlePointUnitList[item] }}</el-tag>
 				</el-descriptions-item>
 			</el-descriptions>
 		</div>
@@ -148,17 +166,23 @@ import {computed, onBeforeUnmount, onMounted, ref, watch} from 'vue'
 import {useRoute} from 'vue-router'
 import {elementTableDataConversion, showMessage, transposeMatrix} from "@/utils/tools-functions.js";
 import TableTemplate from "@/components/TableTemplate.vue";
-import {postAlarmLog, postClearAlarm, postRealData, postSetTime, postSingleSwitch} from "@/server/request-apis.js";
-import ThLineChart from "@/components/echarts/ThLineChart.vue";
+import {
+	postAlarmLog,
+	postClearAlarm,
+	postDeviceFlow,
+	postRealData,
+	postSetTime,
+	postSingleSwitch
+} from "@/server/request-apis.js";
+import ThLineChart from "@/components/echarts/RealTimeLineChart.vue";
 import ApGaugeChart from "@/components/echarts/ApGaugeChart.vue";
 import Cookies from "js-cookie";
 import ElementTable from "@/components/ElementAlarmTable.vue";
+import {batteryLevelColors} from "@/utils/preset-data.js";
 
 
 /*************************************************************
  *                   全局状态信息
- *
- *  简要描述:
  *  ----------------------------------------------------------
  *  - 一些关于SN码的路由，用户名，以及一些从本地存储中获取的全局变量（例如
  *    数据点的汉字翻译、单位、电池数据；
@@ -178,7 +202,7 @@ const sn = ref(route.params.id);
 const isConnectState = ref(false);
 
 // 温湿度图表数据
-const thValue = ref([]);
+const lineChartData = ref([]);
 
 // 气压图表数据
 const apValue = ref([]);
@@ -201,14 +225,6 @@ const singlePointUnitList = JSON.parse(localStorage.getItem('single_data_unit'))
 // 电池电量
 const batteryLevel = ref(null);
 
-// 电池进度条颜色梯度
-const colors = [
-	{ color: '#f56c6c', percentage: 30 },
-	{ color: '#e6a23c', percentage: 50 },
-	{ color: '#5cb87a', percentage: 70 },
-	{ color: '#106b1b', percentage: 100 },
-]
-
 // 找到SN码在SCGData中的索引index
 let index = SCGData[0].indexOf(sn.value);
 
@@ -219,16 +235,43 @@ const equipmentName = ref(SCGData[1][index]);
  *                   重要数据展示表
  *
  *************************************************************/
+//重要气压和温湿度数据
+const descriptionsList = ref([])
+
+// 运行步骤
+const runStepsNameList = ref([
+	'箱子关闭，风扇开启',
+	'盖子正在关闭',
+	'风扇搅拌',
+	'读二氧化碳',
+	'抽真空',
+	'箱子打开,风扇关闭',
+	'等待下一循环',
+])
+
+const flowCardState = ['正常', '销号', '停机', '停机']
+
+// 手机流量
+const flowData = ref({})
+
+const runStepsIndex = ref(null)
 
 // 用于适配用户信息的表格手机端的显示模式
 const columnCount = computed(() => {
 	return window.innerWidth < 768 ? 1 : 4;
 })
 
+const getDeviceFlow = async () => {
+	try{
+		const res = await postDeviceFlow(sn.value)
+		flowData.value = res.data.flow.data
+	} catch (e){
+		console.log(e)
+	}
+}
+
 /*************************************************************
  *                   单通道通信
- *
- *  简要描述:
  *  ----------------------------------------------------------
  *  - 一些关于SN码的路由，用户名，以及一些从本地存储中获取的全局变量（例如
  *    数据点的汉字翻译、单位、电池数据；
@@ -244,12 +287,8 @@ const pointHeader = ref(['传感器', '值', '单位'])
 // 数据点表格列的内容
 const pointCol = ref([])
 
-//是否接收到数据
-let pollingActive = true;
-
 
 const getRealData = async () => {
-	if (!pollingActive) return;
 	try {
 		const res = await postRealData(sn.value);
 		if (res.data.data_big.length > 0) {
@@ -270,16 +309,18 @@ const getRealData = async () => {
 			//表格数据
 			pointCol.value = transposeMatrix([singlePointNameList, all_data, singlePointUnitList]);
 			
-			// 温湿度图表数据
-			thValue.value = [
+			// 折线图
+			lineChartData.value = [
 				all_data[53].toFixed(2),
 				all_data[54].toFixed(2),
 				all_data[55].toFixed(2),
-				all_data[56].toFixed(2)
+				all_data[56].toFixed(2),
+				all_data[56].toFixed(5),
 			];
 			
 			// 气压图表数据
 			apValue.value = [all_data[42].toFixed(2), all_data[43].toFixed(2)];
+			
 			// 时间设置数据
 			setTimeList.value = [
 				all_data[5],
@@ -288,19 +329,37 @@ const getRealData = async () => {
 				all_data[11],
 				all_data[15],
 				all_data[18],
+				all_data[20],
 			];
+			
+			//重要气压和温湿度数据
+			descriptionsList.value = [
+				all_data[44],
+				all_data[45],
+				all_data[46],
+				all_data[47],
+				all_data[53],
+				all_data[54],
+				all_data[55],
+				all_data[56],
+			]
+			// 电池电量
 			batteryLevel.value = res.data.charged_v;
+			
+			// 运行步骤
+			runStepsIndex.value = all_data[27] - 1;
 		} else {
 			isConnectState.value = true;
 		}
 	} catch (e) {
 		console.error(e);
-		pollingActive = false; // Stop polling on error
 		showMessage('请求数据失败！')
 	} finally {
 		isLoading.value = true;
 	}
 }
+
+
 
 /*************************************************************
  *                   开关控制
@@ -323,7 +382,7 @@ const getRealData = async () => {
 const switchList = ref([])
 
 // 开关名列表
-const switchNameList = ref(['手动开关', '传感器', '电机', '风扇', '气泵'])
+const switchNameList = ref(['手动开关', '传感器', '盖子', '风扇', '气泵'])
 
 // 开关加载动画显示状态
 const switchLoadingList = ref(Array(switchList.value.length).fill(false)); // 初始加载状态
@@ -332,10 +391,13 @@ const switchLoadingList = ref(Array(switchList.value.length).fill(false)); // �
 const setTimeList = ref([])
 
 // 设置时间的选项名
-const setTimeNameList = ref(['转速', 'SD卡1写延时', 'SD卡2写延时', '熄屏时间', '开关箱时间', '读二氧化碳时间',])
+const setTimeNameList = ref(['转速', 'SD卡1写延时', 'SD卡2写延时', '熄屏时间', '开关箱时间', '读二氧化碳时间', '不同箱循环时间'])
 
 // 开关加载动画显示状态
 const setTimeLoadingList = ref(Array(setTimeList.value.length).fill(false));
+
+// 时间控制按钮的是否可控状态
+const setTimeManualDisabled = ref(true);
 
 // 是否手动控制过设备
 const isManualSwitch = ref(false)
@@ -345,6 +407,7 @@ const dialogVisible = ref(false);
 
 // 手动开关的绑定状态对其他开关是否可选施加影响
 const isManual = computed(() => {
+	// 无论什么状态下手动开关的状态都是可以被控制的
 	return switchList.value[0] === 1 ? [false, false, false, false, false] : [false, true, true, true, true]
 })
 
@@ -364,7 +427,11 @@ async function setInitSwitchState(decimal) {
 }
 
 const switchTrigger = async (index) => {
+	// 打开开关加载动画
 	switchLoadingList.value[index] = true;
+	
+	// 如果手动状态开关是打开的，就允许其他开关被触发
+	setTimeManualDisabled.value = switchList.value[0] !== 1;
 	isManual.value = switchList.value[0] === 1 ? [false, false, false, false, false] : [false, true, true, true, true]
 	let strValue = '';
 	for (let item of switchList.value) {
@@ -375,7 +442,7 @@ const switchTrigger = async (index) => {
 		if (res.data.state) {
 			switchList.value[index] = switchList.value[index] === 1 ? 1 : 0; // 如果 res.data.state 为 true，则切换状态
 			switchLoadingList.value[index] = false; // 动画停止加载
-			showMessage('【' + switchNameList.value[index] + '】开关执行成功', 'success')
+			showMessage('【' + switchNameList.value[index] + '】开关执行成功', 'success');
 		} else {
 			switchList.value[index] = switchList.value[index] === 1 ? 0 : 1; // 如果 res.data.state 为 true，则切换状态
 			switchLoadingList.value[index] = false; // 动画停止加载
@@ -403,8 +470,6 @@ const setTimeValue = async (value, index) => {
 
 /*************************************************************
  *                   报警数据
- *
- *  简要描述:
  *  ----------------------------------------------------------
  *  - 获取报警的数据；
  *    设置报警已读；
@@ -439,7 +504,6 @@ const getAlarmLog = async () => {
 		tempAlarmData[2] = tempAlarmData[2].map(item => item.replace('T', ' '));
 		alarmTableData.value = elementTableDataConversion(alarmHeaderList.value, transposeMatrix(tempAlarmData));
 	} catch (e) {
-		showMessage('报警数据获取失败')
 		console.log(e)
 	} finally {
 		alarmLoading.value = true;
@@ -463,8 +527,6 @@ const clearAlarm = async () => {
 
 /*************************************************************
  *                   渲染与卸载
- *
- *  简要描述:
  *  ----------------------------------------------------------
  *  - 控制实时数据的轮询间隔，获取到数据之后进行初始刷新；
  *    切换或关闭界面之后销毁轮询；
@@ -477,6 +539,7 @@ let intervalId; // 设置循环对象，切换界面的时候关闭这个界面�
 onMounted(async () => {
 	await getAlarmLog();
 	await getRealData();
+	await getDeviceFlow()
 	
 	intervalId = setInterval(() => {
 		getRealData();
@@ -495,12 +558,14 @@ watch(
 		sn.value = newId;
 		isManualSwitch.value = false;
 		alarmTableData.value = []
+		descriptionsList.value = [];
 		let index = SCGData[0].indexOf(sn.value);
 		getRealData();
 		getAlarmLog();
+		getDeviceFlow()
 		equipmentName.value = ref(SCGData[1][index]);
 		pointCol.value = [];
-		thValue.value = [];
+		lineChartData.value = [];
 	}
 )
 </script>
