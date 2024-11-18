@@ -4,7 +4,7 @@
 		<div class="flex flex-col md:flex-row justify-between items-center bg-theme-1-color-6 p-4 h-auto rounded-2xl
 		inner-shadow smiley-sans">
 			<span class="text-xl text-theme-1-color-8 px-2 mt-2 md:mt-0 font-bold">{{ equipmentName }}</span>
-			<span class="text-xl text-white bg-theme-1-color-2 rounded-xl px-2 mt-2 md:mt-0">{{ sn }}</span>
+			<span class="text-xl text-white bg-theme-1-color-2 rounded-xl px-2 mt-2 md:mt-0">SN：{{ sn }}</span>
 		</div>
 		
 		<!-- 电池与运行状态栏-->
@@ -20,7 +20,7 @@
 						striped/>
 				</div>
 			</div>
-			<span class="text-xl text-theme-1-color-4 px-2 mt-2 md:mt-0 font-bold">
+			<span class="text-xl text-theme-1-color-4 px-2 mt-2 md:mt-0">
 				运行步骤：{{ runStepsNameList[runStepsIndex] }}
 			</span>
 		</div>
@@ -35,7 +35,7 @@
 				<span class="text-xl text-pink-400 p-2">{{ flowData['useFlow'] }}MB</span>
 				<span class="text-xl text-gray-700  px-2">剩余流量</span>
 				<span class="text-xl text-indigo-400 p-2">{{ flowData['surplusFlow'] }}MB</span>
-<!--				<span class="text-xl text-gray-500">{{ flowData }}</span>-->
+				<!--				<span class="text-xl text-gray-500">{{ flowData }}</span>-->
 				<span class="text-xl text-gray-700 px-2 ">卡到期时间</span>
 				<span class="text-xl p-2 text-gray-400">{{ flowData['cardEndDate'] }}</span>
 			</div>
@@ -43,22 +43,22 @@
 		
 		<!-- 通信异常内容 -->
 		<div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 h-auto
-			md:h-96 rounded-2xl bg-theme-1-color-6 inner-shadow p-4" v-show="isConnectState">
+			md:h-rem-30 rounded-2xl bg-theme-1-color-6 inner-shadow p-4" v-show="isConnectState">
 			<span class="text-8xl text-theme-1-color-2">设备离线</span>
 		</div>
 		
 		<!-- 主内容 -->
 		<div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4 h-auto
-			md:h-96 rounded-2xl bg-theme-1-color-6 inner-shadow p-4" v-show="!isConnectState">
+			md:h-rem-30 rounded-2xl bg-theme-1-color-6 inner-shadow p-4" v-show="!isConnectState">
 			<!-- 第一个图表 -->
-			<div class="rounded w-full md:w-3/12 h-96 md:h-full p-2">
-				<!--				<ApPieChart :ap-data="apValue"/>-->
-				<ApGaugeChart :ap-data="apValue"/>
-			</div>
-			<!-- 第二个图表 -->
-			<div class="rounded w-full md:w-7/12 h-rem-30 md:h-full p-4">
-				<ThLineChart :th-value="lineChartData" :current-time="currentTime"/>
-			</div>
+			<!--			<div class="rounded w-full md:w-3/12 h-96 md:h-full p-2">-->
+			<!--				&lt;!&ndash;				<ApPieChart :ap-data="apValue"/>&ndash;&gt;-->
+			<!--				<ApGaugeChart :ap-data="apValue"/>-->
+			<!--			</div>-->
+			<!--			&lt;!&ndash; 第二个图表 &ndash;&gt;-->
+			<!--			<div class="rounded w-full md:w-7/12 h-rem-30 md:h-full p-4">-->
+			<!--				<ThLineChart :th-value="lineChartData" :current-time="currentTime"/>-->
+			<!--			</div>-->
 			<!-- 右侧操作区 -->
 			<div class="rounded w-full md:w-2/12 h-rem-28 md:h-full space-y-4 flex flex-col overflow-hidden justify-start
 			 md:justify-center">
@@ -118,6 +118,53 @@
 					<span class="text-sm p-2 text-whit w-20">{{ switchNameList[index] }}</span>
 				</div>
 			</div>
+			<div class="flex flex-col rounded w-full md:w-10/12 h-rem-30 md:h-full">
+				<div class="flex flex-col w-full h-1/4 md:flex-row ">
+					<div class="flex flex-col items-center justify-center w-full md:w-1/3 rounded-xl px-4 h-full">
+						<p class="w-full text-left p-2">选择数据：</p>
+						<el-cascader
+							v-model="deviceHistorSelected"
+							:options="singleDeviceOption"
+							collapse-tags
+							collapse-tags-tooltip
+							:props="cascaderProps"
+							placeholder="请选择"
+							class="w-full"
+						/>
+					</div>
+					<div class="flex flex-col items-center justify-center w-auto md:w-1/3 rounded-xl px-4">
+						<p class="w-full text-left p-2">选择时间范围：</p>
+						<TimeDatePicker v-model="timeRange"/>
+					</div>
+					<div class="flex flex-col items-center justify-center md:flex-row w-full md:w-1/3 rounded-xl ">
+						<div class="p-2 w-full md:1/2">
+							<el-button type="primary" @click="getHistoryData" round>加载数据</el-button>
+						</div>
+						<div class="p-2 w-full md:1/2">
+							<el-tooltip content="提醒:历史大数据下载建议使用数据下载界面"
+							            placement="bottom"
+							            effect="customized">
+								<el-button v-if="!historyLoading"
+								           type="primary"
+								           @click="historyDataDownload"
+								           plain
+								           round>数据下载
+								</el-button>
+							</el-tooltip>
+						</div>
+					</div>
+				</div>
+				<el-divider></el-divider>
+				<div class="p-2 w-full h-3/4 bg-theme-1-color-6 ">
+					<div v-if="historyLoading" class="flex flex-col justify-center items-center py-4 space-y-4 h-full">
+						<DataLoading/>
+					</div>
+					<HistoryChart v-else
+					              :historyData="historyData"
+					              :xAxisData="xAxisData"
+					              :historyLoading="historyLoading"/>
+				</div>
+			</div>
 		</div>
 		
 		
@@ -136,7 +183,7 @@
 		<!-- 传感器数据列表 -->
 		<div class="justify-between items-center bg-theme-1-color-6 p-6 px-6 md:px-20 h-full rounded-2xl pb-10 inner-shadow">
 			<div class="flex items-center flex-col md:flex-row">
-				<h1 class="text-2xl md:text-4xl mb-6">传感器数据列表</h1>
+				<span class="text-xl text-gray-500 py-4">传感器数据列表</span>
 			</div>
 			<table-template :column="pointCol"
 			                :header="pointHeader"
@@ -164,12 +211,18 @@
 <script setup>
 import {computed, onBeforeUnmount, onMounted, ref, watch} from 'vue'
 import {useRoute} from 'vue-router'
-import {elementTableDataConversion, showMessage, transposeMatrix} from "@/utils/tools-functions.js";
+import {
+	elementTableDataConversion,
+	getTimeRange,
+	selectProcessData,
+	showMessage,
+	transposeMatrix
+} from "@/utils/tools-functions.js";
 import TableTemplate from "@/components/TableTemplate.vue";
 import {
 	postAlarmLog,
 	postClearAlarm,
-	postDeviceFlow,
+	postDeviceFlow, postHistoryData,
 	postRealData,
 	postSetTime,
 	postSingleSwitch
@@ -179,6 +232,10 @@ import ApGaugeChart from "@/components/echarts/ApGaugeChart.vue";
 import Cookies from "js-cookie";
 import ElementTable from "@/components/ElementAlarmTable.vue";
 import {batteryLevelColors} from "@/utils/preset-data.js";
+import DataLoading from "@/components/DataLoading.vue";
+import HistoryChart from "@/components/echarts/HistoryChart.vue";
+import {cascaderProps} from "@/utils/preset-data.js";
+import TimeDatePicker from "@/components/ElementTimeDatePicker.vue";
 
 
 /*************************************************************
@@ -232,6 +289,79 @@ let index = SCGData[0].indexOf(sn.value);
 const equipmentName = ref(SCGData[1][index]);
 
 /*************************************************************
+ *                   历史数据
+ *
+ *  简要描述:
+ *  ----------------------------------------------------------
+ *  - 使用和历史界面一样的接口,不包括设备选择
+ *
+ *************************************************************/
+// 时间日期选择器绑定的值
+const timeRange = ref(getTimeRange(3))
+
+// 存储接收到的历史数据
+const historyData = ref([]);
+
+// 历史数据的加载状态
+const historyLoading = ref(false);
+
+// 存储X轴的数据
+const xAxisData = ref([]);
+
+// 单通道数据的option
+const singleDeviceOption = ref(JSON.parse(localStorage.getItem("single_history_option")));
+
+// 设备历史选择器
+const deviceHistorSelected = ref([["sensors", "co2_conc_during_meas"]])
+
+/**
+ * 获取历史数据
+ */
+const getHistoryData = async () => {
+	historyLoading.value = true;
+	try {
+		console.log(deviceHistorSelected.value)
+		let result = selectProcessData(deviceHistorSelected.value)
+		const res = await postHistoryData(sn.value, result.typeDataList, result.varDataList, timeRange.value)
+		historyData.value = res.data.history_data;
+		xAxisData.value = res.data.timest;
+	} catch (e){
+		console.log(e);
+		showMessage('获取历史数据错误');
+	} finally {
+		historyLoading.value = false;
+	}
+}
+
+/**
+ * 历史数据下载：
+ * 收到接口返回的MinIO的URL然后下载
+ */
+const historyDataDownload = async () => {
+	try {
+		let result = selectProcessData(selectedValues2.value)
+		const res = await postHistoryDataDownload(selectedValues1.value[0], result.typeDataList, result.varDataList, timeRange.value);
+		// 创建一个 Blob URL
+		const url = res.data.url;
+		
+		// 创建一个链接元素
+		const link = document.createElement('a');
+		link.href = url;
+		link.setAttribute('download', 'history_data.xlsx'); // 指定下载的文件名
+		
+		// 添加链接到 DOM
+		document.body.appendChild(link);
+		link.click(); // 模拟点击下载
+		link.parentNode.removeChild(link); // 下载后移除链接
+	} catch (e){
+		console.log(e);
+		showMessage('下载错误');
+	} finally {
+		historyLoading.value = false;
+	}
+	
+}
+/*************************************************************
  *                   重要数据展示表
  *
  *************************************************************/
@@ -262,10 +392,10 @@ const columnCount = computed(() => {
 })
 
 const getDeviceFlow = async () => {
-	try{
+	try {
 		const res = await postDeviceFlow(sn.value)
 		flowData.value = res.data.flow.data
-	} catch (e){
+	} catch (e) {
 		console.log(e)
 	}
 }
@@ -360,7 +490,6 @@ const getRealData = async () => {
 }
 
 
-
 /*************************************************************
  *                   开关控制
  *
@@ -382,7 +511,7 @@ const getRealData = async () => {
 const switchList = ref([])
 
 // 开关名列表
-const switchNameList = ref(['手动开关', '传感器', '盖子', '风扇', '气泵'])
+const switchNameList = ref(['自动模式', '传感器', '盖子关', '风扇', '气泵'])
 
 // 开关加载动画显示状态
 const switchLoadingList = ref(Array(switchList.value.length).fill(false)); // 初始加载状态
@@ -432,7 +561,14 @@ const switchTrigger = async (index) => {
 	
 	// 如果手动状态开关是打开的，就允许其他开关被触发
 	setTimeManualDisabled.value = switchList.value[0] !== 1;
-	isManual.value = switchList.value[0] === 1 ? [false, false, false, false, false] : [false, true, true, true, true]
+	if(switchList.value[0] === 1){
+		isManual.value = [false, false, false, false, false];
+		switchNameList.value[0] = '手动模式';
+	} else {
+		isManual.value = [false, true, true, true, true]
+		switchNameList.value[0] = '自动模式';
+	}
+	
 	let strValue = '';
 	for (let item of switchList.value) {
 		strValue += item.toString()
@@ -540,7 +676,7 @@ onMounted(async () => {
 	await getAlarmLog();
 	await getRealData();
 	await getDeviceFlow()
-	
+	await getHistoryData();
 	intervalId = setInterval(() => {
 		getRealData();
 	}, 20000);
@@ -562,7 +698,8 @@ watch(
 		let index = SCGData[0].indexOf(sn.value);
 		getRealData();
 		getAlarmLog();
-		getDeviceFlow()
+		getDeviceFlow();
+		getHistoryData();
 		equipmentName.value = ref(SCGData[1][index]);
 		pointCol.value = [];
 		lineChartData.value = [];

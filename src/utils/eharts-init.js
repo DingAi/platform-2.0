@@ -1,5 +1,6 @@
 import * as echarts from 'echarts';
 import 'echarts/theme/macarons.js'
+import 'echarts/theme/roma.js'
 
 /**
  * 根据元素的ref属性来生成Echarts的dom
@@ -7,7 +8,7 @@ import 'echarts/theme/macarons.js'
  * @param {string} ref : 元素的ref属性
  * @param {list} theme : 表格的主题
  */
-const refInitEcharts = (ref, theme="macarons") => {
+const refInitEcharts = (ref, theme="roma") => {
     if (ref) {
         // 这里{ renderer: 'canvas' }是使用WebGL渲染Echarts，提高渲染速度
         let dom = echarts.init(ref, theme, { renderer: 'canvas' });

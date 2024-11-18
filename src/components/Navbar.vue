@@ -11,6 +11,7 @@
 					<el-icon><Menu/></el-icon>
 				</button>
 			</div>
+			
 			<!-- 移动菜单 -->
 			<div v-if="showMobileMenu"
 			     class="absolute top-16 left-0 right-0 bg-white text-sm font-bold shadow-lg z-50 p-2">
@@ -21,7 +22,7 @@
 					<el-icon>
 						<House/>
 					</el-icon>
-					Home
+					主页
 				</router-link>
 				<router-link to="/history"
 				             class="flex px-4 py-1 hover:bg-theme-1-color-6 rounded-xl items-center justify-center"
@@ -39,7 +40,7 @@
 					<el-icon>
 						<Histogram/>
 					</el-icon>
-					数据分析
+					碳水通量
 				</router-link>
 				<router-link @click="toggleMobileMenu"
 				             to="/download"
@@ -75,19 +76,7 @@
 			<div class="hidden sm:flex items-center space-x-2">
 				<router-link to="/"
 				             class="hover:bg-theme-1-color-1 hover:text-white px-4 py-2 rounded-xl font-bold"
-				             :class="{ 'bg-theme-1-color-1 text-white': $route.path === '/' }">Home
-				</router-link>
-				<router-link to="/history"
-				             class="hover:bg-theme-1-color-1 hover:text-white px-4 py-2 rounded-xl"
-				             :class="{ 'bg-theme-1-color-1 text-white': $route.path === '/history' }">历史
-				</router-link>
-				<router-link to="/analysis"
-				             class="hover:bg-theme-1-color-1 hover:text-white px-4 py-2 rounded-xl"
-				             :class="{ 'bg-theme-1-color-1 text-white': $route.path === '/analysis' }">数据分析
-				</router-link>
-				<router-link to="/download"
-				             class="hover:bg-theme-1-color-1 hover:text-white px-4 py-2 rounded-xl"
-				             :class="{ 'bg-theme-1-color-1 text-white': $route.path === '/download' }">数据下载
+				             :class="{ 'bg-theme-1-color-1 text-white': $route.path === '/' }">主页
 				</router-link>
 				<div class="relative mx-2" @mouseenter="handleMouseEnter" @mouseleave="handleMouseLeave">
 					<button :class="{'bg-theme-1-color-1 text-white':$route.path.startsWith('/type-a-equipment'),}"
@@ -105,6 +94,19 @@
 						</div>
 					</div>
 				</div>
+				<router-link to="/history"
+				             class="hover:bg-theme-1-color-1 hover:text-white px-4 py-2 rounded-xl"
+				             :class="{ 'bg-theme-1-color-1 text-white': $route.path === '/history' }">历史
+				</router-link>
+				<router-link to="/analysis"
+				             class="hover:bg-theme-1-color-1 hover:text-white px-4 py-2 rounded-xl"
+				             :class="{ 'bg-theme-1-color-1 text-white': $route.path === '/analysis' }">碳水通量
+				</router-link>
+				<router-link to="/download"
+				             class="hover:bg-theme-1-color-1 hover:text-white px-4 py-2 rounded-xl"
+				             :class="{ 'bg-theme-1-color-1 text-white': $route.path === '/download' }">数据下载
+				</router-link>
+				
 			</div>
 			<!-- 用户头像和下拉菜单 -->
 			<div class="relative mx-2 rounded p-2"

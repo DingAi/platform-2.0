@@ -17,6 +17,7 @@ const { aveData, xAxis, type } = defineProps({
 
 const aveLine = ref(null);
 let option = JSON.parse(JSON.stringify(lineOptionTemplate));
+option.title.text = '箱内平均温湿度'
 option.color = ["#db2777", "#3F51B5",];
 const seriesNameList = [
 	'X',

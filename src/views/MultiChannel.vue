@@ -3,7 +3,7 @@
 		<!-- 顶栏 -->
 		<div class="flex flex-col md:flex-row justify-between items-center bg-theme-1-color-6 p-4 h-auto rounded-2xl inner-shadow smiley-sans">
 			<span class="text-xl text-theme-1-color-8 px-2 mt-2 md:mt-0 font-bold">{{ deviceName }}</span>
-			<span class="text-xl text-white bg-pink-400 rounded-xl px-2 mt-2 md:mt-0">{{ sn }}</span>
+			<span class="text-xl text-white bg-pink-400 rounded-xl px-2 mt-2 md:mt-0">SN：{{ sn }}</span>
 		</div>
 		
 		<!-- 电池与运行状态栏-->

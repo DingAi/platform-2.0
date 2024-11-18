@@ -29,6 +29,7 @@ const loading = ref(false);
 const refresh = (dom) => {
 	if (historyData.length > 0){
 		let option = JSON.parse(JSON.stringify(lineOptionTemplate));
+		option.title.text = '历史图表'
 		option.color = ["#db2777", "#3F51B5",];
 		try {
 			option.xAxis.data = xAxisData;

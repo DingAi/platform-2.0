@@ -1,10 +1,10 @@
 <template>
-	<div class="space-y-4 text-center size-full">
+	<div class="space-y-4 size-full">
 		<div class="flex flex-col md:flex-row justify-between items-stretch bg-theme-1-color-6 rounded-2xl py-2 space-y-4
-		md:space-y-0 md:space-x-2 inner-shadow smiley-sans">
-			
+		md:space-y-0 md:space-x-2 inner-shadow">
 			<!-- SN 选择器 -->
-			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-4 mt-6 sm:mt-0">
+			<div class="flex flex-col items-center justify-center w-full md:w-1/4 rounded-xl px-4 mt-6 sm:mt-0">
+				<p class="w-full text-left p-2">选择设备：</p>
 				<el-cascader
 					v-model="selectedValues1"
 					:options="snOption"
@@ -16,7 +16,8 @@
 			</div>
 			
 			<!-- 设备选择器 -->
-			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-4" v-if="isMultiChannel">
+			<div class="flex flex-col items-center justify-center w-full md:w-1/4 rounded-xl px-4" v-if="isMultiChannel">
+				<p class="w-full text-left p-2">选择数据：</p>
 				<el-cascader
 					v-model="selectedValues2"
 					:options="multiDeviceOption"
@@ -28,7 +29,8 @@
 				/>
 			</div>
 			
-			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl px-4" v-else>
+			<div class="flex flex-col items-center justify-center w-full md:w-1/4 rounded-xl px-4" v-else>
+				<p class="w-full text-left p-2">选择数据：</p>
 				<el-cascader
 					v-model="selectedValues2"
 					:options="singleDeviceOption"
@@ -41,7 +43,8 @@
 			</div>
 			
 			<!-- 时间选择器 -->
-			<div class="flex items-center justify-center w-auto md:w-1/4 rounded-xl px-4">
+			<div class="flex flex-col items-center justify-center w-auto md:w-1/4 rounded-xl px-4">
+				<p class="w-full text-left p-2">选择时间范围：</p>
 				<TimeDatePicker v-model="timeRange"/>
 			</div>
 			
@@ -77,6 +80,7 @@ import {storeToRefs} from "pinia";
 import {postHistoryData, postHistoryDataDownload} from "@/server/request-apis.js";
 import HistoryChart from "@/components/echarts/HistoryChart.vue";
 import DataLoading from "@/components/DataLoading.vue";
+import {cascaderProps} from "@/utils/preset-data.js";
 
 const authStore = useAuthStore();
 const {SCGData} = storeToRefs(authStore);
@@ -140,14 +144,6 @@ const getHistoryData = async () => {
 	} finally {
 		historyLoading.value = false;
 	}
-}
-
-// 定义级联选择器的属性
-const cascaderProps = {
-	multiple: true,
-	value: 'value', // 选项的值字段
-	label: 'label', // 选项的标签字段
-	children: 'children' // 子级字段
 }
 
 /**

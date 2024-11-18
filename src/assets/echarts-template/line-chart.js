@@ -3,24 +3,25 @@
 // ====================================================================================
 const lineOptionTemplate = {
     title: {
-        // text: "TITLE",
+        text: "TITLE",
+        left: 'center'
     },
-    legend:{},
+    legend:{top: '7%',},
     tooltip: {
         trigger: 'axis',
         textStyle:{
             align:'left'  // 文字左对齐
         }
     },
-    // toolbox: {
-    //     show: true,
-    //     feature: {
-    //         dataView: {readOnly: true},
-    //         magicType: { type: ['bar', 'line'] },
-    //         saveAsImage: {},
-    //         restore: {},
-    //     }
-    // },
+    toolbox: {
+        show: true,
+        feature: {
+            dataView: {readOnly: true},
+            magicType: { type: ['bar', 'line'] },
+            saveAsImage: {},
+            restore: {},
+        }
+    },
     xAxis: {
         data: []
     },

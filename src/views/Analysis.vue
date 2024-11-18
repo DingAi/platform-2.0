@@ -1,7 +1,8 @@
 <template>
 	<div class="space-y-4 text-center w-full h-[1000px] md:h-full">
-		<div class="flex flex-col md:flex-row justify-between items-center bg-theme-1-color-6 p-2 rounded-2xl inner-shadow smiley-sans">
-			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl p-2 mt-6 sm:mt-0">
+		<div class="flex flex-col md:flex-row justify-between items-center bg-theme-1-color-6 p-2 rounded-2xl inner-shadow">
+			<div class="flex flex-col items-center justify-center w-full md:w-1/4 rounded-xl p-2 mt-6 sm:mt-0">
+				<p class="w-full text-left p-2">选择设备：</p>
 				<el-cascader
 					v-model="selectedDeviceSnValues"
 					:options="snOption"
@@ -11,7 +12,8 @@
 					class="w-full"
 				/>
 			</div>
-			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl p-2 mt-6 sm:mt-0" v-if="isMultiChannel">
+			<div class="flex flex-col items-center justify-center w-full md:w-1/4 rounded-xl p-2 mt-6 sm:mt-0" v-if="isMultiChannel">
+				<p class="w-full text-left p-2">选择子站：</p>
 				<el-cascader
 					v-model="selectedValues2"
 					:options="multiSubStationOption"
@@ -22,7 +24,8 @@
 				/>
 			</div>
 			<!-- 时间选择器 -->
-			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl p-2 mt-6 sm:mt-0">
+			<div class="flex flex-col items-center justify-center w-full md:w-1/4 rounded-xl p-2 mt-6 sm:mt-0">
+				<p class="w-full text-left p-2">选择时间：</p>
 				<TimeDatePicker v-model="timeRange"/>
 			</div>
 			<div class="flex items-center justify-center h-full w-full md:w-1/5 rounded-2xl p-2">
@@ -35,6 +38,7 @@
 		<div class="flex flex-col md:flex-row w-full analysis-div space-x-0 md:space-x-4 overflow-auto">
 			<div class="w-full md:w-1/3 h-auto min-h-[300px] sm:min-h-[420px] md:min-h-[400px] flex flex-col items-center
 			space-y-4 overflow-auto p-6 smiley-sans">
+				<p>线性回归拟合度和K值</p>
 				<el-timeline v-if="isFileLoading1">
 					<el-timeline-item center v-for="(item, index) in matParsedData"
 					                  :key="index"
@@ -88,15 +92,16 @@
 		<div class="flex flex-col md:flex-row justify-between items-center bg-theme-1-color-6 p-3 h-auto rounded-2xl inner-shadow">
 			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl mt-6 sm:mt-0">
 <!--				<file-upload @fileParsed="handleFileParsed">上传数据分析文件</file-upload>-->
+				<el-text size="large">箱体数据修改：</el-text>
 			</div>
 			<div class="flex flex-row items-center justify-center w-full md:w-1/4 rounded-xl mt-6 sm:mt-0">
-				<span class="font-semibold">体积(m³)：</span>
+				<span class="">体积(m³)：</span>
 				<div>
 					<el-input-number v-model="boxVolume" :step="0.1"/>
 				</div>
 			</div>
 			<div class="flex flex-row items-center justify-center w-full md:w-1/4 rounded-xl mt-6 sm:mt-0">
-				<span class="font-semibold">底面积(㎡)：</span>
+				<span class="">底面积(㎡)：</span>
 				<el-input-number v-model="boxArea" :step="0.1"/>
 			</div>
 			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl mt-6 sm:mt-0">
