@@ -1,10 +1,10 @@
 <template>
 	<div class="space-y-4 size-full">
-		<div class="flex flex-col md:flex-row justify-between items-stretch bg-theme-1-color-6 rounded-2xl py-2 space-y-4
+		<div class="flex flex-col md:flex-row justify-between items-stretch bg-theme-1-color-6 rounded-2xl py-4 space-y-4
 		md:space-y-0 md:space-x-2 inner-shadow">
 			<!-- SN 选择器 -->
 			<div class="flex flex-col items-center justify-center w-full md:w-1/4 rounded-xl px-4 mt-6 sm:mt-0">
-				<p class="w-full text-left p-2">选择设备：</p>
+				<p class="w-full text-left p-2 pb-3">选择设备：</p>
 				<el-cascader
 					v-model="selectedValues1"
 					:options="snOption"
@@ -17,7 +17,7 @@
 			
 			<!-- 设备选择器 -->
 			<div class="flex flex-col items-center justify-center w-full md:w-1/4 rounded-xl px-4" v-if="isMultiChannel">
-				<p class="w-full text-left p-2">选择数据：</p>
+				<p class="w-full text-left p-2 pb-3">选择数据：</p>
 				<el-cascader
 					v-model="selectedValues2"
 					:options="multiDeviceOption"
@@ -30,7 +30,7 @@
 			</div>
 			
 			<div class="flex flex-col items-center justify-center w-full md:w-1/4 rounded-xl px-4" v-else>
-				<p class="w-full text-left p-2">选择数据：</p>
+				<p class="w-full text-left p-2 pb-3">选择数据：</p>
 				<el-cascader
 					v-model="selectedValues2"
 					:options="singleDeviceOption"
@@ -49,13 +49,13 @@
 			</div>
 			
 			<!-- 获取历史数据按钮 -->
-			<div class="flex flex-col items-center justify-center md:flex-row w-full md:w-1/5 rounded-xl ">
-				<div class="p-2 w-full md:1/2">
-					<el-button type="primary" @click="getHistoryData" round >加载数据</el-button>
+			<div class="flex flex-col items-center justify-center md:flex-row w-full md:w-1/5 rounded-xl p-4">
+				<div class="w-full p-2">
+					<el-button class="w-full" type="primary" @click="getHistoryData" round >加载数据</el-button>
 				</div>
-				<div class="p-2 w-full md:1/2">
+				<div class="w-full p-2">
 					<el-tooltip content="提醒:历史大数据下载建议使用数据下载界面" placement="bottom" effect="customized">
-						<el-button v-if="!historyLoading" type="primary" @click="historyDataDownload" plain round>数据下载</el-button>
+						<el-button class="w-full" v-if="!historyLoading" type="primary" @click="historyDataDownload" plain round>数据下载</el-button>
 					</el-tooltip>
 				</div>
 			</div>
@@ -66,7 +66,7 @@
 			<div v-if="historyLoading" class="flex flex-col justify-center items-center py-4 space-y-4 h-full">
 				<DataLoading/>
 			</div>
-			<HistoryChart v-else :historyData="historyData" :xAxisData="xAxisData" :historyLoading="historyLoading"/>
+			<HistoryChart v-else :historyData="historyData" :xAxisData="xAxisData"/>
 		</div>
 	</div>
 </template>

@@ -7,7 +7,7 @@
 		</div>
 		
 		<!-- 电池与运行状态栏-->
-		<div class="flex flex-col md:flex-row justify-between items-center p-2 smiley-sans" v-show="isConnectState">
+		<div class="flex flex-col md:flex-row justify-between items-center p-2 smiley-sans" v-show="!disconnect">
 			<div class="flex flex-row w-auto items-center">
 				<span class="text-xl text-gray-500">电池电量： </span>
 				<div class="w-32">
@@ -24,7 +24,7 @@
 				运行步骤：{{ runStepsNameList[runStepsIndex] }}
 			</span>
 		</div>
-		<div class="flex flex-col md:flex-row justify-between items-center p-2 smiley-sans" v-show="isConnectState">
+		<div class="flex flex-col md:flex-row justify-between items-center p-2 smiley-sans" v-show="!disconnect">
 			<div class="flex flex-row w-auto items-center">
 				<span class="text-xl text-gray-500">流量卡： </span>
 				<span class="text-xl text-gray-500">{{ flowData }}</span>
@@ -33,16 +33,16 @@
 		
 		<!-- 设备离线内容 -->
 		<div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 h-screen
-			md:h-rem-36 rounded-2xl p-4" v-show="!isConnectState">
-			<!-- 加载状态 -->
-<!--			<div class="flex flex-col justify-center items-center py-4 space-y-4 h-full">-->
-<!--				<DataLoading/>-->
-<!--			</div>-->
-			<span class="text-8xl text-[#757de8]">设备离线</span>
+			md:h-rem-36 rounded-2xl p-4" v-show="disconnect">
+			 加载状态
+			<div class="flex flex-col justify-center items-center py-4 space-y-4 h-full" v-if="isLoading">
+				<DataLoading/>
+			</div>
+			<span class="text-8xl text-[#757de8]" v-else>设备离线</span>
 		</div>
 		
 		<!-- 铝牌电磁阀样式 -->
-		<div class="hidden md:flex flex-row justify-center items-center md:h-60 rounded-2xl space-x-8" v-show="isConnectState">
+		<div class="hidden md:flex flex-row justify-center items-center md:h-60 rounded-2xl space-x-8" v-show="!disconnect">
 			<div class="w-1/3 h-full grid grid-cols-3 gap-2 py-6" >
 				<div class="flex flex-col items-center justify-center" v-for="item in [18,19,20,21,22,23]">
 					<span class="text-pink-600 font-light">{{ multiPointNameList[item] }}</span>
@@ -74,7 +74,7 @@
 		</div>
 		
 		<!--温度与气压数据-->
-		<div class="block h-rem-40 md:h-40 sm:h-24 xs:h-20 my-4" v-show="isConnectState">
+		<div class="block h-rem-40 md:h-40 sm:h-24 xs:h-20 my-4" v-show="!disconnect">
 			<el-descriptions title="温度与气压数据" size="large" border :column="columnCount">
 				<el-descriptions-item
 					v-for="item in [1,3,5,7,9,11]"
@@ -93,9 +93,35 @@
 			</el-descriptions>
 		</div>
 		
+		<!--二氧化碳数据-->
+		<div class="block h-rem-40 md:h-52 my-4" v-show="!disconnect">
+			<el-descriptions title="二氧化碳数据" size="large" border :column="columnCount">
+				<el-descriptions-item :label="multiPointNameList[24]">
+					<el-tag>{{ pageListData[24] }} {{ multiPointUnit[24] }}</el-tag>
+				</el-descriptions-item>
+				<el-descriptions-item
+					v-for="item in [0,1,2,3,4]"
+					:key="item"
+					:label="multiPointNameList[70 + item*22]"
+				>
+					<el-tag :type="pageListData[70 + item*22]>0?'success':'info'">{{ pageListData[70 + item*22] }} {{ multiPointUnit[70 + item*22] }}</el-tag>
+				</el-descriptions-item>
+				<el-descriptions-item :label="multiPointNameList[25]">
+					<el-tag>{{ pageListData[25] }} {{ multiPointUnit[25] }}</el-tag>
+				</el-descriptions-item>
+				<el-descriptions-item
+					v-for="item in [5,6,7,8,9]"
+					:key="item"
+					:label="multiPointNameList[70 + item*22]"
+				>
+					<el-tag :type="pageListData[70 + item*22]>0?'success':'info'">{{ pageListData[70 + item*22] }} {{ multiPointUnit[70 + item*22] }}</el-tag>
+				</el-descriptions-item>
+			</el-descriptions>
+		</div>
+		
 		<!-- 开关群组 -->
 		<div class="flex flex-row switch-group-h max-w-full rounded-2xl p-4 bg-theme-1-color-6 overflow-x-auto
-		space-x-4 inner-shadow" v-show="isConnectState">
+		space-x-4 inner-shadow" v-show="!disconnect">
 			<div class="flex flex-col h-full w-60 rounded-2xl p-4 shadow bg-gray-300">
 				<div class="flex flex-row h-1/6 justify-center items-center">
 					<span class="bg-pink-400 text-white rounded px-2">主站</span>
@@ -268,10 +294,7 @@
 				<div v-if="historyLoading" class="flex flex-col justify-center items-center py-4 space-y-4 h-full">
 					<DataLoading/>
 				</div>
-				<HistoryChart v-else
-				              :historyData="historyData"
-				              :xAxisData="xAxisData"
-				              :historyLoading="historyLoading"/>
+				<HistoryChart v-else :historyData="historyData" :xAxisData="xAxisData"/>
 			</div>
 		</div>
 		
@@ -281,10 +304,7 @@
 			<div class="flex items-center flex-col md:flex-row">
 				<h1 class="text-2xl md:text-4xl mb-6">传感器数据列表</h1>
 			</div>
-			<TableTemplate :column="sensorCol"
-			               :header="sensorHeader"
-			               :is-loading="sensorLoading"
-			               :page-row-number="30"/>
+			<TableTemplate :column="sensorCol" :header="sensorHeader" :is-loading="sensorLoading" :page-row-number="30"/>
 		</div>
 		
 		<!-- 报警列表 -->
@@ -307,7 +327,7 @@
 <script setup>
 import {computed, onBeforeUnmount, onMounted, ref, watch} from 'vue'
 import {useRoute} from 'vue-router'
-import {elementTableDataConversion, showMessage, transposeMatrix} from "@/utils/tools-functions.js";
+import {elementTableDataConversion, getTimeRange, showMessage, transposeMatrix} from "@/utils/tools-functions.js";
 import TableTemplate from "@/components/TableTemplate.vue";
 import {
 	postAlarmLog,
@@ -342,7 +362,10 @@ const route = useRoute();
 const sn = ref(route.params.id);
 
 // 设备通信连接状态
-const isConnectState = ref(false)
+const disconnect = ref(false)
+
+// 界面渲染的时候显示加载
+const isLoading = ref(false);
 
 // 从本地数据获取到用户的SN码和设备名
 const SCGData = JSON.parse(localStorage.getItem('auth')).SCGData;
@@ -447,13 +470,13 @@ const getRealData = async () => {
 			
 			// 运行步骤
 			runStepsIndex.value = res.data.data_big[55] - 1;
-			
-			isConnectState.value = true;
 		} else {
-			isConnectState.value = false;
+			disconnect.value = true;
 		}
 	} catch (e) {
 		console.log(e)
+	} finally {
+		isLoading.value = true;
 	}
 }
 
@@ -461,7 +484,6 @@ const getDeviceFlow = async () => {
 	try{
 		const res = await postDeviceFlow(sn.value)
 		flowData.value = res.data.flow
-		console.log(res.data)
 	} catch (e){
 		console.log(e)
 	}
@@ -724,11 +746,11 @@ const cascaderProps = {
 	label: 'label', // 选项的标签字段
 }
 
-// const timeRange = ref(getTimeRange(3))
-const timeRange = ref([
-	"2024-11-01 09:39:23",
-	"2024-11-01 14:39:23"
-])
+const timeRange = ref(getTimeRange(3))
+// const timeRange = ref([
+// 	"2024-11-01 09:39:23",
+// 	"2024-11-01 14:39:23"
+// ])
 
 // 历史数据
 const historyData = ref([]);
@@ -763,7 +785,7 @@ const historyDataDownload = async () => {
 		let typeData = deviceIndex.value > 0 ? [multiHistoryOption[deviceIndex.value].value] : ['master_station'];
 		const res = await postHistoryDataDownload(sn.value, typeData, [selectedHistoryValue.value.flat()], timeRange.value)
 		// 创建一个 Blob URL
-		const url = window.URL.createObjectURL(new Blob([res.data]));
+		const url = res.data.url;
 		// 创建一个链接元素
 		const link = document.createElement('a');
 		link.href = url;

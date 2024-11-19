@@ -157,7 +157,11 @@ export const useAuthStore = defineStore('auth', () => {
     const getToken = () => {
         return token.value;
     };
-
+    
+    const getEquipments = () => {
+        return SCGData.value
+    };
+    
     
     // 返回状态和方法
     return {
@@ -165,7 +169,8 @@ export const useAuthStore = defineStore('auth', () => {
         SCGData,
         login,
         logout,
-        getToken
+        getToken,
+        getEquipments
     };
 }, {
     persist: {

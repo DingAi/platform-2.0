@@ -12,10 +12,9 @@ import { onMounted, ref, watch } from "vue";
 import { refInitEcharts } from "@/utils/eharts-init.js";
 import { lineOptionTemplate } from "@/assets/echarts-template/line-chart.js";
 
-const {historyData, xAxisData, historyLoading} = defineProps({
+const {historyData, xAxisData} = defineProps({
 	historyData: Array,
 	xAxisData: Array,
-	historyLoading: Boolean,
 });
 
 const historyLine = ref(null);

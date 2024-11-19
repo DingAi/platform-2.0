@@ -330,7 +330,7 @@ const scrollToSection = (sectionId) => {
 async function refreshEquipments() {
 	addLoading.value = true;
 	try {
-		await authStore.getEquipments(); // 更新 SCGData
+		authStore.getEquipments(); // 更新 SCGData
 		column.value = transposeMatrix([  //转置数据之后组件才能正常显示
 			SCGData.value[0],
 			SCGData.value[1],
@@ -482,17 +482,25 @@ async function deleteEquipment() {
 const modifyDeviceName = async () => {
 	dialogVisible2.value = true;
 	let index = Number(clickRowIndex.value);
-	if (SCGData.value[1][index] === newDeviceName.value) {
-		showMessage('新修改的设备名称与原设备名称相同')
-	} else {
-		const res = await postModifyDeviceName(SCGData.value[0][index], newDeviceName.value);
-		if (res.status === 200) {
-			showMessage(res.data, 'info');
+	try {
+		if (SCGData.value[1][index] === newDeviceName.value) {
+			showMessage('新修改的设备名称与原设备名称相同')
+		} else {
+			const res = await postModifyDeviceName(SCGData.value[0][index], newDeviceName.value);
+			if (res.status === 200) {
+				showMessage(res.data, 'info');
+			}
+			dialogVisible2.value = false;
+			SCGData.value[1][index] = newDeviceName.value;
+			localStorage.setItem('auth', JSON.stringify(SCGData.value))
+			
 		}
-		dialogVisible2.value = false;
-		SCGData.value[1][index] = newDeviceName.value;
+	} catch (e){
+		console.log(e)
+	} finally {
 		await refreshEquipments()
 	}
+	
 }
 
 
@@ -547,8 +555,11 @@ async function activationEquipment() {
 	try {
 		if (validateSnFormat(sn.value)) {
 			res = await postSnActivation(sn.value, en.value);
-			await refreshEquipments();
-			await getLog();
+			// 刷新设备延迟三秒
+			setTimeout(()=>{
+				refreshEquipments();
+				getLog();
+			}, 3000);
 		} else {
 			showMessage('SN码格式不正确', 'error');
 		}

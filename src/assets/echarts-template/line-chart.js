@@ -4,9 +4,9 @@
 const lineOptionTemplate = {
     title: {
         text: "TITLE",
-        left: 'center'
+        left: 'center',
     },
-    legend:{top: '7%',},
+    legend:{top: '10%',},
     tooltip: {
         trigger: 'axis',
         textStyle:{

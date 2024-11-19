@@ -1,5 +1,5 @@
 <template>
-	<div class="space-y-4 text-center w-full h-[1000px] md:h-full">
+	<div class="space-y-4 text-center w-full h-[1100px] md:h-full">
 		<div class="flex flex-col md:flex-row justify-between items-center bg-theme-1-color-6 p-2 rounded-2xl inner-shadow">
 			<div class="flex flex-col items-center justify-center w-full md:w-1/4 rounded-xl p-2 mt-6 sm:mt-0">
 				<p class="w-full text-left p-2">选择设备：</p>
@@ -12,7 +12,8 @@
 					class="w-full"
 				/>
 			</div>
-			<div class="flex flex-col items-center justify-center w-full md:w-1/4 rounded-xl p-2 mt-6 sm:mt-0" v-if="isMultiChannel">
+			<div class="flex flex-col items-center justify-center w-full md:w-1/4 rounded-xl p-2 mt-6 sm:mt-0"
+			     v-if="isMultiChannel">
 				<p class="w-full text-left p-2">选择子站：</p>
 				<el-cascader
 					v-model="selectedValues2"
@@ -32,9 +33,9 @@
 				<el-button type="primary" @click="singleAnalysisData" round>加载数据分析</el-button>
 			</div>
 		</div>
-<!--		<div class="flex items-center p-4 rounded-2xl inner-shadow h-h" v-if="!isFileLoading1">-->
-<!--			<p class="text-5xl text-[#757de8] font-bold m-auto">【选择数据范围或传入文件后加载数据】</p>-->
-<!--		</div>-->
+		<!--		<div class="flex items-center p-4 rounded-2xl inner-shadow h-h" v-if="!isFileLoading1">-->
+		<!--			<p class="text-5xl text-[#757de8] font-bold m-auto">【选择数据范围或传入文件后加载数据】</p>-->
+		<!--		</div>-->
 		<div class="flex flex-col md:flex-row w-full analysis-div space-x-0 md:space-x-4 overflow-auto">
 			<div class="w-full md:w-1/3 h-auto min-h-[300px] sm:min-h-[420px] md:min-h-[400px] flex flex-col items-center
 			space-y-4 overflow-auto p-6 smiley-sans">
@@ -48,25 +49,27 @@
 							<div class="size-full space-y-4 p-2">
 								<div class="w-full flex flex-row">
 									<span class="text-gray-400 font-bold">
-										Index：<span class="text-theme-1-color-4">{{ index + 1 }}</span>/{{matParsedData.length}}
+										Index：<span class="text-theme-1-color-4">{{
+											index + 1
+										}}</span>/{{ matParsedData.length }}
 									</span>
 								</div>
 								<div class="flex flex-row justify-between space-x-4 items-center px-4">
                                     <span class="badge open-color-auto p-2 text-white bg-pink-600 rounded w-36">
-                                        K<sub>(CO<sub>2</sub>)</sub> ：{{ item[2]}}
+                                        K<sub>(CO<sub>2</sub>)</sub> ：{{ item[2] }}
                                     </span>
-									<el-divider direction="vertical" />
+									<el-divider direction="vertical"/>
 									<span class="badge open-color-auto text-gray-500">
                                         R<sup>2</sup><sub>(CO<sub>2</sub>)</sub> ：{{ item[3] }}
                                     </span>
 								</div>
 								<div class="flex flex-row justify-between space-x-4 items-center px-4">
                                     <span class="badge open-color-auto p-2 text-white bg-[#3f51b5] rounded w-36">
-                                        K<sub>(H<sub>2</sub>O)</sub>  ：{{ item[4]}}
+                                        K<sub>(H<sub>2</sub>O)</sub>  ：{{ item[4] }}
                                     </span>
-									<el-divider direction="vertical" />
+									<el-divider direction="vertical"/>
 									<span class="badge open-color-auto text-gray-600">
-                                        R<sup>2</sup><sub>(H<sub>2</sub>O)</sub> ：{{ item[5]}}
+                                        R<sup>2</sup><sub>(H<sub>2</sub>O)</sub> ：{{ item[5] }}
                                     </span>
 								</div>
 							</div>
@@ -91,7 +94,7 @@
 		</div>
 		<div class="flex flex-col md:flex-row justify-between items-center bg-theme-1-color-6 p-3 h-auto rounded-2xl inner-shadow">
 			<div class="flex items-center justify-center w-full md:w-1/4 rounded-xl mt-6 sm:mt-0">
-<!--				<file-upload @fileParsed="handleFileParsed">上传数据分析文件</file-upload>-->
+				<!--				<file-upload @fileParsed="handleFileParsed">上传数据分析文件</file-upload>-->
 				<el-text size="large">箱体数据修改：</el-text>
 			</div>
 			<div class="flex flex-row items-center justify-center w-full md:w-1/4 rounded-xl mt-6 sm:mt-0">
@@ -138,7 +141,12 @@ import * as XLSX from 'xlsx';
 import {useAuthStore} from "@/stores/userStore.js";
 import {storeToRefs} from "pinia";
 import TimeDatePicker from "@/components/ElementTimeDatePicker.vue";
-import {postAnalysisDataDownload, postSingleAnalysisData} from "@/server/request-apis.js";
+import {
+	postSingleChannelDownload,
+	postMultiAnalysisData,
+	postSingleAnalysisData,
+	postMultiChannelFluxDownload
+} from "@/server/request-apis.js";
 import DataLoading from "@/components/DataLoading.vue";
 
 // Pinia数据
@@ -161,6 +169,7 @@ const snOption = computed(() => {
 	}
 	return option
 });
+
 // 判断选择的是否是多通道数据
 const isMultiChannel = computed(() => {
 	return selectedDeviceSnValues.value[0][0] === 'B';
@@ -168,22 +177,24 @@ const isMultiChannel = computed(() => {
 
 // 组装多通道选择器的Option
 const multiSubStationOption = computed(() => {
-	let i = 1
+	let i = 0
 	const numbersInWords = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
 	let option = []
-	while (i < 10){
+	while (i < 9) {
 		option.push({
-			value: 'slave_' + numbersInWords ,
-			label: '子站 0' + i.toString()
+			value: 'analyse_' + numbersInWords[i],
+			label: '子站 0' + (i+1).toString()
 		})
 		i++;
 	}
 	option.push({
-		value: 'slave_ten' ,
+		value: 'analysis_ten',
 		label: '子站 10'
 	})
+	console.log(option)
 	return option;
 })
+
 // 固定的时间范围
 // const timeRange = ref(["2024-10-18 05:38:40", "2024-10-18 10:20:40"])
 
@@ -219,9 +230,17 @@ const timeRangeList = ref([])
 // 获取分析的数据并处理
 const singleAnalysisData = async () => {
 	try {
+		let res = null;
 		isLoading.value = true;
 		typeIndex.value = 0;
-		const res = await postSingleAnalysisData(selectedDeviceSnValues.value[0], boxVolume.value / boxArea.value, timeRange.value);
+		if (isMultiChannel.value) {
+			// 如果是多通道的话就使用多通道接口
+			res = await postMultiAnalysisData(selectedDeviceSnValues.value[0], selectedValues2.value[0], boxVolume.value / boxArea.value, timeRange.value);
+			console.log(isMultiChannel.value)
+		} else {
+			res = await postSingleAnalysisData(selectedDeviceSnValues.value[0], boxVolume.value / boxArea.value, timeRange.value);
+		}
+		
 		xAxisData.value = []
 		timeRangeList.value = []
 		for (let i = 0; i < res.data.analyze_data[0].length; i++) {
@@ -231,7 +250,7 @@ const singleAnalysisData = async () => {
 			timeRangeList.value.push([res.data.analyze_data[9][i], res.data.analyze_data[9][i]])
 		}
 		aveDataList.value = [res.data.analyze_data[6], res.data.analyze_data[7]]
-		fluxList.value = { ec: res.data.analyze_data[2], ew: res.data.analyze_data[5], time: xAxisData }
+		fluxList.value = {ec: res.data.analyze_data[2], ew: res.data.analyze_data[5], time: xAxisData}
 		let timeLineData = [
 			res.data.analyze_data[8],
 			res.data.analyze_data[9],
@@ -405,10 +424,18 @@ const exportToExcel = (data, filename = 'PagePrecessed.xlsx') => {
 /**
  * 数据下载
  */
-const analysisDataDownload = async () =>{
+const analysisDataDownload = async () => {
 	try {
+		let res = null;
+		if (isMultiChannel.value) {
+			// 如果是多通道的话就使用多通道接口
+			res = await postMultiChannelFluxDownload(selectedDeviceSnValues.value[0], selectedValues2.value[0], boxVolume.value / boxArea.value, timeRange.value);
+			console.log(isMultiChannel.value)
+		} else {
+			res = await postSingleChannelDownload(selectedDeviceSnValues.value[0], boxVolume.value / boxArea.value, timeRange.value);
+		}
 		showMessage('数据开始下载', 'info')
-		const res = await postAnalysisDataDownload(selectedDeviceSnValues.value[0], boxVolume.value / boxArea.value, timeRange.value);
+		
 		// 创建一个 Blob URL
 		const url = window.URL.createObjectURL(new Blob([res.data]));
 		
@@ -422,7 +449,7 @@ const analysisDataDownload = async () =>{
 		link.click(); // 模拟点击下载
 		link.parentNode.removeChild(link); // 下载后移除链接
 	} catch (e) {
-		console.log('数据下载错误：',e)
+		console.log('数据下载错误：', e)
 		showMessage('数据下载错误')
 	} finally {
 	}

@@ -8,7 +8,7 @@
 		</div>
 		
 		<!-- 电池与运行状态栏-->
-		<div class="flex flex-col md:flex-row justify-between items-center p-4 smiley-sans" v-show="!isConnectState">
+		<div class="flex flex-col md:flex-row justify-between items-center p-4 smiley-sans" v-show="!disconnect">
 			<div class="flex flex-row w-auto items-center">
 				<span class="text-xl text-gray-500">电池电量： </span>
 				<div class="w-32">
@@ -24,7 +24,7 @@
 				运行步骤：{{ runStepsNameList[runStepsIndex] }}
 			</span>
 		</div>
-		<div class="flex flex-col md:flex-row justify-between items-center p-2 smiley-sans" v-show="!isConnectState">
+		<div class="flex flex-col md:flex-row justify-between items-center p-2 smiley-sans" v-show="!disconnect">
 			<div class="flex flex-col md:flex-row w-auto items-center px-2">
 				<span class="text-xl text-gray-500">流量卡状态： </span>
 				<span class="text-xl text-gray-700 px-2">卡状态</span>
@@ -43,13 +43,13 @@
 		
 		<!-- 通信异常内容 -->
 		<div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 h-auto
-			md:h-rem-30 rounded-2xl bg-theme-1-color-6 inner-shadow p-4" v-show="isConnectState">
+			md:h-rem-30 rounded-2xl bg-theme-1-color-6 inner-shadow p-4" v-show="disconnect">
 			<span class="text-8xl text-theme-1-color-2">设备离线</span>
 		</div>
 		
 		<!-- 主内容 -->
 		<div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 md:space-x-4 h-auto
-			md:h-rem-30 rounded-2xl bg-theme-1-color-6 inner-shadow p-4" v-show="!isConnectState">
+			md:h-rem-28 rounded-2xl bg-theme-1-color-6 inner-shadow p-4" v-show="!disconnect">
 			<!-- 第一个图表 -->
 			<!--			<div class="rounded w-full md:w-3/12 h-96 md:h-full p-2">-->
 			<!--				&lt;!&ndash;				<ApPieChart :ap-data="apValue"/>&ndash;&gt;-->
@@ -59,7 +59,7 @@
 			<!--			<div class="rounded w-full md:w-7/12 h-rem-30 md:h-full p-4">-->
 			<!--				<ThLineChart :th-value="lineChartData" :current-time="currentTime"/>-->
 			<!--			</div>-->
-			<!-- 右侧操作区 -->
+			<!-- 开关操作区 -->
 			<div class="rounded w-full md:w-2/12 h-rem-28 md:h-full space-y-4 flex flex-col overflow-hidden justify-start
 			 md:justify-center">
 				<div class="h-1/6 rounded overflow-hidden flex items-center p-6 justify-center">
@@ -118,10 +118,11 @@
 					<span class="text-sm p-2 text-whit w-20">{{ switchNameList[index] }}</span>
 				</div>
 			</div>
+			<!--历史图表-->
 			<div class="flex flex-col rounded w-full md:w-10/12 h-rem-30 md:h-full">
-				<div class="flex flex-col w-full h-1/4 md:flex-row ">
+				<div class="flex flex-col w-full h-96 md:h-1/5 md:flex-row ">
 					<div class="flex flex-col items-center justify-center w-full md:w-1/3 rounded-xl px-4 h-full">
-						<p class="w-full text-left p-2">选择数据：</p>
+<!--						<p class="w-full text-left p-2 pb-3">选择数据：</p>-->
 						<el-cascader
 							v-model="deviceHistorSelected"
 							:options="singleDeviceOption"
@@ -132,19 +133,20 @@
 							class="w-full"
 						/>
 					</div>
-					<div class="flex flex-col items-center justify-center w-auto md:w-1/3 rounded-xl px-4">
-						<p class="w-full text-left p-2">选择时间范围：</p>
+					<div class="flex flex-col items-center justify-center w-auto md:w-1/3 rounded-xl px-4 h-full">
+<!--						<p class="w-full text-left p-2">选择时间范围：</p>-->
 						<TimeDatePicker v-model="timeRange"/>
 					</div>
-					<div class="flex flex-col items-center justify-center md:flex-row w-full md:w-1/3 rounded-xl ">
-						<div class="p-2 w-full md:1/2">
-							<el-button type="primary" @click="getHistoryData" round>加载数据</el-button>
+					<div class="flex flex-col items-center justify-center md:flex-row w-full md:w-1/3 rounded-xl p-4">
+						<div class="w-full p-2">
+							<el-button class="w-full" type="primary" @click="getHistoryData" round>加载数据</el-button>
 						</div>
-						<div class="p-2 w-full md:1/2">
+						<div class="w-full p-2">
 							<el-tooltip content="提醒:历史大数据下载建议使用数据下载界面"
 							            placement="bottom"
 							            effect="customized">
-								<el-button v-if="!historyLoading"
+								<el-button class="w-full"
+								           v-if="!historyLoading"
 								           type="primary"
 								           @click="historyDataDownload"
 								           plain
@@ -155,14 +157,11 @@
 					</div>
 				</div>
 				<el-divider></el-divider>
-				<div class="p-2 w-full h-3/4 bg-theme-1-color-6 ">
+				<div class="p-2 w-full h-96 md:h-4/5 bg-theme-1-color-6 ">
 					<div v-if="historyLoading" class="flex flex-col justify-center items-center py-4 space-y-4 h-full">
 						<DataLoading/>
 					</div>
-					<HistoryChart v-else
-					              :historyData="historyData"
-					              :xAxisData="xAxisData"
-					              :historyLoading="historyLoading"/>
+					<HistoryChart v-else :historyData="historyData" :xAxisData="xAxisData"/>
 				</div>
 			</div>
 		</div>
@@ -222,13 +221,11 @@ import TableTemplate from "@/components/TableTemplate.vue";
 import {
 	postAlarmLog,
 	postClearAlarm,
-	postDeviceFlow, postHistoryData,
+	postDeviceFlow, postHistoryData, postHistoryDataDownload,
 	postRealData,
 	postSetTime,
 	postSingleSwitch
 } from "@/server/request-apis.js";
-import ThLineChart from "@/components/echarts/RealTimeLineChart.vue";
-import ApGaugeChart from "@/components/echarts/ApGaugeChart.vue";
 import Cookies from "js-cookie";
 import ElementTable from "@/components/ElementAlarmTable.vue";
 import {batteryLevelColors} from "@/utils/preset-data.js";
@@ -256,7 +253,7 @@ const userName = Cookies.get('platform_user');
 const sn = ref(route.params.id);
 
 // 设备是否连接
-const isConnectState = ref(false);
+const disconnect = ref(false);
 
 // 温湿度图表数据
 const lineChartData = ref([]);
@@ -288,117 +285,6 @@ let index = SCGData[0].indexOf(sn.value);
 // 使用索引来找到对应的设备名
 const equipmentName = ref(SCGData[1][index]);
 
-/*************************************************************
- *                   历史数据
- *
- *  简要描述:
- *  ----------------------------------------------------------
- *  - 使用和历史界面一样的接口,不包括设备选择
- *
- *************************************************************/
-// 时间日期选择器绑定的值
-const timeRange = ref(getTimeRange(3))
-
-// 存储接收到的历史数据
-const historyData = ref([]);
-
-// 历史数据的加载状态
-const historyLoading = ref(false);
-
-// 存储X轴的数据
-const xAxisData = ref([]);
-
-// 单通道数据的option
-const singleDeviceOption = ref(JSON.parse(localStorage.getItem("single_history_option")));
-
-// 设备历史选择器
-const deviceHistorSelected = ref([["sensors", "co2_conc_during_meas"]])
-
-/**
- * 获取历史数据
- */
-const getHistoryData = async () => {
-	historyLoading.value = true;
-	try {
-		console.log(deviceHistorSelected.value)
-		let result = selectProcessData(deviceHistorSelected.value)
-		const res = await postHistoryData(sn.value, result.typeDataList, result.varDataList, timeRange.value)
-		historyData.value = res.data.history_data;
-		xAxisData.value = res.data.timest;
-	} catch (e){
-		console.log(e);
-		showMessage('获取历史数据错误');
-	} finally {
-		historyLoading.value = false;
-	}
-}
-
-/**
- * 历史数据下载：
- * 收到接口返回的MinIO的URL然后下载
- */
-const historyDataDownload = async () => {
-	try {
-		let result = selectProcessData(selectedValues2.value)
-		const res = await postHistoryDataDownload(selectedValues1.value[0], result.typeDataList, result.varDataList, timeRange.value);
-		// 创建一个 Blob URL
-		const url = res.data.url;
-		
-		// 创建一个链接元素
-		const link = document.createElement('a');
-		link.href = url;
-		link.setAttribute('download', 'history_data.xlsx'); // 指定下载的文件名
-		
-		// 添加链接到 DOM
-		document.body.appendChild(link);
-		link.click(); // 模拟点击下载
-		link.parentNode.removeChild(link); // 下载后移除链接
-	} catch (e){
-		console.log(e);
-		showMessage('下载错误');
-	} finally {
-		historyLoading.value = false;
-	}
-	
-}
-/*************************************************************
- *                   重要数据展示表
- *
- *************************************************************/
-//重要气压和温湿度数据
-const descriptionsList = ref([])
-
-// 运行步骤
-const runStepsNameList = ref([
-	'箱子关闭，风扇开启',
-	'盖子正在关闭',
-	'风扇搅拌',
-	'读二氧化碳',
-	'抽真空',
-	'箱子打开,风扇关闭',
-	'等待下一循环',
-])
-
-const flowCardState = ['正常', '销号', '停机', '停机']
-
-// 手机流量
-const flowData = ref({})
-
-const runStepsIndex = ref(null)
-
-// 用于适配用户信息的表格手机端的显示模式
-const columnCount = computed(() => {
-	return window.innerWidth < 768 ? 1 : 4;
-})
-
-const getDeviceFlow = async () => {
-	try {
-		const res = await postDeviceFlow(sn.value)
-		flowData.value = res.data.flow.data
-	} catch (e) {
-		console.log(e)
-	}
-}
 
 /*************************************************************
  *                   单通道通信
@@ -422,7 +308,7 @@ const getRealData = async () => {
 	try {
 		const res = await postRealData(sn.value);
 		if (res.data.data_big.length > 0) {
-			isConnectState.value = false;
+			disconnect.value = false;
 			let all_data = res.data.data_big;
 			
 			//赋值给开关变量
@@ -479,7 +365,7 @@ const getRealData = async () => {
 			// 运行步骤
 			runStepsIndex.value = all_data[27] - 1;
 		} else {
-			isConnectState.value = true;
+			disconnect.value = true;
 		}
 	} catch (e) {
 		console.error(e);
@@ -489,6 +375,118 @@ const getRealData = async () => {
 	}
 }
 
+
+
+/*************************************************************
+ *                   历史数据
+ *
+ *  简要描述:
+ *  ----------------------------------------------------------
+ *  - 使用和历史界面一样的接口,不包括设备选择
+ *
+ *************************************************************/
+// 时间日期选择器绑定的值
+const timeRange = ref(getTimeRange(3))
+
+// 存储接收到的历史数据
+const historyData = ref([]);
+
+// 历史数据的加载状态
+const historyLoading = ref(false);
+
+// 存储X轴的数据
+const xAxisData = ref([]);
+
+// 单通道数据的option
+const singleDeviceOption = ref(JSON.parse(localStorage.getItem("single_history_option")));
+
+// 设备历史选择器
+const deviceHistorSelected = ref([["sensors", "co2_conc_during_meas"]])
+
+/**
+ * 获取历史数据
+ */
+const getHistoryData = async () => {
+	historyLoading.value = true;
+	try {
+		let result = selectProcessData(deviceHistorSelected.value)
+		const res = await postHistoryData(sn.value, result.typeDataList, result.varDataList, timeRange.value)
+		historyData.value = res.data.history_data;
+		xAxisData.value = res.data.timest;
+	} catch (e) {
+		console.log(e);
+		showMessage('获取历史数据错误');
+	} finally {
+		historyLoading.value = false;
+	}
+}
+
+/**
+ * 历史数据下载：
+ * 收到接口返回的MinIO的URL然后下载
+ */
+const historyDataDownload = async () => {
+	try {
+		let result = selectProcessData(deviceHistorSelected.value)
+		const res = await postHistoryDataDownload(sn.value, result.typeDataList, result.varDataList, timeRange.value);
+		// 创建一个 Blob URL
+		const url = res.data.url;
+		
+		// 创建一个链接元素
+		const link = document.createElement('a');
+		link.href = url;
+		link.setAttribute('download', 'history_data.xlsx'); // 指定下载的文件名
+		
+		// 添加链接到 DOM
+		document.body.appendChild(link);
+		link.click(); // 模拟点击下载
+		link.parentNode.removeChild(link); // 下载后移除链接
+	} catch (e) {
+		console.log(e);
+		showMessage('下载错误');
+	} finally {
+		historyLoading.value = false;
+	}
+	
+}
+/*************************************************************
+ *                   重要数据展示表
+ *
+ *************************************************************/
+//重要气压和温湿度数据
+const descriptionsList = ref([])
+
+// 运行步骤
+const runStepsNameList = ref([
+	'箱子关闭，风扇开启',
+	'盖子正在关闭',
+	'风扇搅拌',
+	'读二氧化碳',
+	'抽真空',
+	'箱子打开,风扇关闭',
+	'等待下一循环',
+])
+
+const flowCardState = ['正常', '销号', '停机', '停机']
+
+// 手机流量
+const flowData = ref({})
+
+const runStepsIndex = ref(null)
+
+// 用于适配用户信息的表格手机端的显示模式
+const columnCount = computed(() => {
+	return window.innerWidth < 768 ? 1 : 4;
+})
+
+const getDeviceFlow = async () => {
+	try {
+		const res = await postDeviceFlow(sn.value)
+		flowData.value = res.data.flow.data
+	} catch (e) {
+		console.log(e)
+	}
+}
 
 /*************************************************************
  *                   开关控制
@@ -561,7 +559,7 @@ const switchTrigger = async (index) => {
 	
 	// 如果手动状态开关是打开的，就允许其他开关被触发
 	setTimeManualDisabled.value = switchList.value[0] !== 1;
-	if(switchList.value[0] === 1){
+	if (switchList.value[0] === 1) {
 		isManual.value = [false, false, false, false, false];
 		switchNameList.value[0] = '手动模式';
 	} else {

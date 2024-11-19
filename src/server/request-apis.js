@@ -84,7 +84,7 @@ const serverUrl = {
     singleAnalysisData: server + "single_analysis_data",
     
     // 多通道数据分析
-    multiAnalysisData: server + "multi_analysis_data",
+    multiAnalysisData: server + "duo_analysis_data",
     
     //获取该设备的所有报警日志
     alarmLog: fastapiServer + "mistake_value",
@@ -95,8 +95,11 @@ const serverUrl = {
     //进入网站的时候进行Token检查
     initTokenDetect: server + "token_test",
     
-    //进入网站的时候进行Token检查
-    downloadAnalysisData: server + "download_analysis_data",
+    // 单通道碳水通量文件下载
+    downloadSingleChannelFluxData: server + "download_analysis_data",
+    
+    // 碳水通量文件下载
+    downloadMultiChannelFluxData: server + "duo_download_analysis_data",
     
     // 清除所有报警
     clearAlarm: server + "delete_alarm",
@@ -343,11 +346,22 @@ const postSetTime = (value, index, sn) =>
  * 单通道数据分析的数据
  *
  * @param {string} sn : SN码
- * @param {list} proportion : 箱子体积面积比
+ * @param {number} proportion : 箱子体积面积比
  * @param {list} time_frame : 时间范围
  */
 const postSingleAnalysisData = (sn, proportion, time_frame) =>
     apiClient.post(serverUrl.singleAnalysisData, {sn, proportion, time_frame});
+
+/**
+ * 多通道数据分析的数据
+ *
+ * @param {string} sn : SN码
+ * @param {string} index : 子站的索引(表名）
+ * @param {number} proportion : 箱子体积面积比
+ * @param {list} time_frame : 时间范围
+ */
+const postMultiAnalysisData = (sn, index, proportion, time_frame) =>
+    apiClient.post(serverUrl.multiAnalysisData, {sn, index, proportion, time_frame});
 
 
 /**
@@ -380,11 +394,21 @@ const postAlarmLog = (sn) =>
 /**
  * 下载分析数据的文件(用文件流传输）
  * @param {string} sn : SN码
- * @param {list} proportion : 体积面积比
+ * @param {number} proportion : 体积面积比
  * @param {list} time_frame : 时间范围数组
  */
-const postAnalysisDataDownload = (sn, proportion, time_frame) =>
-    apiClient.post(serverUrl.downloadAnalysisData, {sn, proportion, time_frame}, {responseType: "blob"});
+const postSingleChannelDownload = (sn, proportion, time_frame) =>
+    apiClient.post(serverUrl.downloadSingleChannelFluxData, {sn, proportion, time_frame}, {responseType: "blob"});
+
+/**
+ * 下载多通道的分析数据(用文件流传输）
+ * @param {string} sn : SN码
+ * @param {string} index : 子站索引(表名)
+ * @param {number} proportion : 体积面积比
+ * @param {list} time_frame : 时间范围数组
+ */
+const postMultiChannelFluxDownload = (sn, index, proportion, time_frame) =>
+    apiClient.post(serverUrl.downloadMultiChannelFluxData, {sn, index, proportion, time_frame}, {responseType: "blob"});
 
 /**
  * 清除所有报警信息
@@ -472,7 +496,7 @@ export {
     postAlarmAlreadyRead,
     postAlarmLog,
     getInitTokenDetect,
-    postAnalysisDataDownload,
+    postSingleChannelDownload,
     postClearAlarm,
     postHistoryDataDownload,
     postModifyDeviceName,
@@ -482,4 +506,6 @@ export {
     postModifyPhoneCaptcha,
     postModifyUserPhone,
     postDeviceFlow,
+    postMultiAnalysisData,
+    postMultiChannelFluxDownload
 };

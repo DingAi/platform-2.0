@@ -19,6 +19,7 @@ export default defineConfig({
       "/local": {
         target: "http://127.0.0.1:8000",
         changeOrigin: true,
+        ws: true,
         rewrite: (path) => path.replace(/^\/local/, ""),
       },
       "/django": {
@@ -38,6 +39,12 @@ export default defineConfig({
         changeOrigin: true,
         ws: true,
         rewrite: (path) => path.replace(/^\/ylzs/, ""),
+      },
+      "/fws": {
+        target: "ws://127.0.0.1:8000",
+        changeOrigin: true,
+        ws: true,
+        rewrite: (path) => path.replace(/^\/fws/, ""),
       },
     },
   },
