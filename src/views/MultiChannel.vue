@@ -34,7 +34,7 @@
 		<!-- 设备离线内容 -->
 		<div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 h-screen
 			md:h-rem-36 rounded-2xl p-4" v-show="disconnect">
-			 加载状态
+			<!--加载状态-->
 			<div class="flex flex-col justify-center items-center py-4 space-y-4 h-full" v-if="isLoading">
 				<DataLoading/>
 			</div>
@@ -42,11 +42,12 @@
 		</div>
 		
 		<!-- 铝牌电磁阀样式 -->
-		<div class="hidden md:flex flex-row justify-center items-center md:h-60 rounded-2xl space-x-8" v-show="!disconnect">
-			<div class="w-1/3 h-full grid grid-cols-3 gap-2 py-6" >
+		<div class="hidden md:flex flex-row justify-center items-center md:h-60 rounded-2xl space-x-8"
+		     v-show="!disconnect">
+			<div class="w-1/3 h-full grid grid-cols-3 gap-2 py-6">
 				<div class="flex flex-col items-center justify-center" v-for="item in [18,19,20,21,22,23]">
 					<span class="text-pink-600 font-light">{{ multiPointNameList[item] }}</span>
-					<span class="text-gray-500 font-light">{{ pageListData[item] }} {{multiPointUnit[item]}}</span>
+					<span class="text-gray-500 font-light">{{ pageListData[item] }} {{ multiPointUnit[item] }}</span>
 				</div>
 			</div>
 			<div class="w-2/3 flex flex-row justify-center items-center rounded-2xl border-2 py-6 space-x-6 shadow">
@@ -104,7 +105,9 @@
 					:key="item"
 					:label="multiPointNameList[70 + item*22]"
 				>
-					<el-tag :type="pageListData[70 + item*22]>0?'success':'info'">{{ pageListData[70 + item*22] }} {{ multiPointUnit[70 + item*22] }}</el-tag>
+					<el-tag :type="pageListData[70 + item*22]>0?'success':'info'">{{ pageListData[70 + item * 22] }}
+						{{ multiPointUnit[70 + item * 22] }}
+					</el-tag>
 				</el-descriptions-item>
 				<el-descriptions-item :label="multiPointNameList[25]">
 					<el-tag>{{ pageListData[25] }} {{ multiPointUnit[25] }}</el-tag>
@@ -114,7 +117,9 @@
 					:key="item"
 					:label="multiPointNameList[70 + item*22]"
 				>
-					<el-tag :type="pageListData[70 + item*22]>0?'success':'info'">{{ pageListData[70 + item*22] }} {{ multiPointUnit[70 + item*22] }}</el-tag>
+					<el-tag :type="pageListData[70 + item*22]>0?'success':'info'">{{ pageListData[70 + item * 22] }}
+						{{ multiPointUnit[70 + item * 22] }}
+					</el-tag>
 				</el-descriptions-item>
 			</el-descriptions>
 		</div>
@@ -252,9 +257,15 @@
 		</nav>
 		
 		
-		<!-- 主内容 -->
+		<!-- 历史 -->
+		
 		<div class="flex flex-col justify-between items-center space-y-4 md:space-y-0 md:space-x-4 h-screen
 			md:h-96 rounded-2xl bg-theme-1-color-6 inner-shadow p-4">
+<!--			<HistoryComponent-->
+<!--				:sn="sn"-->
+<!--				:selected-value="selectedHistoryValue"-->
+<!--				:select-option="selectedHistoryOption"-->
+<!--				:time-range="timeRange"/>-->
 			<div class="flex flex-col h-1/4 md:flex-row justify-between items-stretch py-2 md:space-y-0 md:space-x-2">
 				<!-- 设备选择器 -->
 				<div class="flex items-center justify-center w-full md:w-2/5 rounded-xl p-4">
@@ -291,7 +302,7 @@
 				</div>
 			</div>
 			<div class="h-3/4 w-full">
-				<div v-if="historyLoading" class="flex flex-col justify-center items-center py-4 space-y-4 h-full">
+				<div v-if="historyLoading && !disconnect" class="flex flex-col justify-center items-center py-4 space-y-4 h-full">
 					<DataLoading/>
 				</div>
 				<HistoryChart v-else :historyData="historyData" :xAxisData="xAxisData"/>
@@ -304,7 +315,10 @@
 			<div class="flex items-center flex-col md:flex-row">
 				<h1 class="text-2xl md:text-4xl mb-6">传感器数据列表</h1>
 			</div>
-			<TableTemplate :column="sensorCol" :header="sensorHeader" :is-loading="sensorLoading" :page-row-number="30"/>
+			<TableTemplate :column="sensorCol"
+			               :header="sensorHeader"
+			               :is-loading="sensorLoading"
+			               :page-row-number="30"/>
 		</div>
 		
 		<!-- 报警列表 -->
@@ -320,7 +334,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 </template>
 
 
@@ -345,6 +359,7 @@ import DataLoading from "@/components/DataLoading.vue";
 import _ from "lodash";
 import Cookies from "js-cookie";
 import {batteryLevelColors} from "@/utils/preset-data.js";
+import HistoryComponent from "@/components/HistoryComponent.vue";
 
 const route = useRoute();
 
@@ -365,7 +380,7 @@ const sn = ref(route.params.id);
 const disconnect = ref(false)
 
 // 界面渲染的时候显示加载
-const isLoading = ref(false);
+const isLoading = ref(true);
 
 // 从本地数据获取到用户的SN码和设备名
 const SCGData = JSON.parse(localStorage.getItem('auth')).SCGData;
@@ -438,53 +453,58 @@ const flowData = ref({})
 const getRealData = async () => {
 	try {
 		const res = await postRealData(sn.value);
-		if (res.data.data_big.length > 0){
+		if (res.data['data_big'].length > 0) {
+			disconnect.value = false;
 			// 时间设置数据赋值（slice是左闭右开的）
-			setTimeList.value = res.data.data_big.slice(42, 48);
+			setTimeList.value = res.data['data_big'].slice(42, 48);
 			
 			// 铝牌电磁阀状态刷新（slice是左闭右开的）
-			aluminumPlateStateFlushed(res.data.data_big.slice(56, 66));
+			aluminumPlateStateFlushed(res.data['data_big'].slice(56, 66));
 			
 			// 开关数据刷新
 			let tempSubStationSwitchList = [];
 			for (let i = 0; i < 10; i++) {
 				tempSubStationSwitchList.push([
-					res.data.data_big[68 + i*22 + 10],
-					res.data.data_big[68 + i*22 + 11],
-					res.data.data_big[68 + i*22 + 20],
+					res.data['data_big'][68 + i * 22 + 10],
+					res.data['data_big'][68 + i * 22 + 11],
+					res.data['data_big'][68 + i * 22 + 20],
 				]);
 			}
 			switchStateList.value = switchStateFlushed(tempSubStationSwitchList);
 			
 			// 电池电量
-			batteryLevel.value = res.data.charged_v;
+			batteryLevel.value = res.data['charged_v'];
 			
-			pageListData.value = res.data.data_big;
+			pageListData.value = res.data['data_big'];
 			// 根据点击主站还是从站切割数据
 			const [start, end] = deviceIndex.value === 0 ? [0, 68] : [68 + (deviceIndex.value - 1) * 22, 68 + (deviceIndex.value * 22)];
 			sensorCol.value = transposeMatrix([
 				multiPointNameList.slice(start, end),
-				res.data.data_big.slice(start, end),
+				res.data['data_big'].slice(start, end),
 				multiPointUnit.slice(start, end),
 			]);
 			
 			// 运行步骤
-			runStepsIndex.value = res.data.data_big[55] - 1;
+			runStepsIndex.value = res.data['data_big'][55] - 1;
 		} else {
 			disconnect.value = true;
+			// 断开连接的时候不要显示正在加载
+			isLoading.value = false;
+			// 断开连接的时候清空传感器列表的值
+			pointCol.value = []
 		}
 	} catch (e) {
 		console.log(e)
 	} finally {
-		isLoading.value = true;
+		isLoading.value = false;
 	}
 }
 
 const getDeviceFlow = async () => {
-	try{
+	try {
 		const res = await postDeviceFlow(sn.value)
 		flowData.value = res.data.flow
-	} catch (e){
+	} catch (e) {
 		console.log(e)
 	}
 }
@@ -508,11 +528,11 @@ const aluminumPlateStateFlushed = (aluminumPlateData) => {
 const switchStateFlushed = (tempSubStationSwitchList) => {
 	// 重新复制aluminumPlateStateList.value不能和其建立ref关联
 	let topDataList = [...aluminumPlateStateList.value];
-	if(topDataList.length > 0){
+	if (topDataList.length > 0) {
 		for (let i = 0; i < 10; i++) {
 			topDataList[i] = [...topDataList[i], ...tempSubStationSwitchList[i]];
 		}
-		return  topDataList;
+		return topDataList;
 	}
 	
 }

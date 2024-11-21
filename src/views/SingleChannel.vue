@@ -44,7 +44,10 @@
 		<!-- 通信异常内容 -->
 		<div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4 h-auto
 			md:h-rem-30 rounded-2xl bg-theme-1-color-6 inner-shadow p-4" v-show="disconnect">
-			<span class="text-8xl text-theme-1-color-2">设备离线</span>
+			<div class="flex flex-col justify-center items-center py-4 space-y-4 h-full" v-if="isLoading">
+				<DataLoading/>
+			</div>
+			<span class="text-8xl text-[#757de8]" v-else>设备离线</span>
 		</div>
 		
 		<!-- 主内容 -->
@@ -118,13 +121,19 @@
 					<span class="text-sm p-2 text-whit w-20">{{ switchNameList[index] }}</span>
 				</div>
 			</div>
-			<!--历史图表-->
+<!--			历史图表-->
+			
 			<div class="flex flex-col rounded w-full md:w-10/12 h-rem-30 md:h-full">
+<!--				<HistoryComponent-->
+<!--					:sn="sn"-->
+<!--					:selected-value="deviceHistorySelected"-->
+<!--					:select-option="singleDeviceOption"-->
+<!--					:time-range="timeRange"/>-->
 				<div class="flex flex-col w-full h-96 md:h-1/5 md:flex-row ">
 					<div class="flex flex-col items-center justify-center w-full md:w-1/3 rounded-xl px-4 h-full">
 <!--						<p class="w-full text-left p-2 pb-3">选择数据：</p>-->
 						<el-cascader
-							v-model="deviceHistorSelected"
+							v-model="deviceHistorySelected"
 							:options="singleDeviceOption"
 							collapse-tags
 							collapse-tags-tooltip
@@ -158,7 +167,7 @@
 				</div>
 				<el-divider></el-divider>
 				<div class="p-2 w-full h-96 md:h-4/5 bg-theme-1-color-6 ">
-					<div v-if="historyLoading" class="flex flex-col justify-center items-center py-4 space-y-4 h-full">
+					<div v-if="historyLoading && !disconnect" class="flex flex-col justify-center items-center py-4 space-y-4 h-full">
 						<DataLoading/>
 					</div>
 					<HistoryChart v-else :historyData="historyData" :xAxisData="xAxisData"/>
@@ -168,7 +177,7 @@
 		
 		
 		<!--温度与气压数据-->
-		<div class="block h-rem-29 md:h-44 my-4 p-6" v-if="isLoading">
+		<div class="block h-rem-29 md:h-44 my-4 p-6" v-if="!disconnect">
 			<el-descriptions title="温度与气压数据" size="large" border :column="columnCount">
 				<el-descriptions-item
 					v-for="(item, index) in [44,45, 46, 47, 53, 54, 55, 56]"
@@ -233,6 +242,7 @@ import DataLoading from "@/components/DataLoading.vue";
 import HistoryChart from "@/components/echarts/HistoryChart.vue";
 import {cascaderProps} from "@/utils/preset-data.js";
 import TimeDatePicker from "@/components/ElementTimeDatePicker.vue";
+import HistoryComponent from "@/components/HistoryComponent.vue";
 
 
 /*************************************************************
@@ -253,7 +263,7 @@ const userName = Cookies.get('platform_user');
 const sn = ref(route.params.id);
 
 // 设备是否连接
-const disconnect = ref(false);
+const disconnect = ref(true);
 
 // 温湿度图表数据
 const lineChartData = ref([]);
@@ -265,7 +275,7 @@ const apValue = ref([]);
 const currentTime = ref('');
 
 // 实时数据的获取状态
-const isLoading = ref(false);
+const isLoading = ref(true);
 
 // 本地的设备数据
 const SCGData = JSON.parse(localStorage.getItem('auth')).SCGData;
@@ -308,9 +318,9 @@ const getRealData = async () => {
 	try {
 		const res = await postRealData(sn.value);
 		if (res.data.data_big.length > 0) {
+			// 这里的状态是为了适配断开连接之后设备再连接的情况
 			disconnect.value = false;
 			let all_data = res.data.data_big;
-			
 			//赋值给开关变量
 			if (!isManualSwitch.value) {
 				await setInitSwitchState(all_data[32])
@@ -366,12 +376,16 @@ const getRealData = async () => {
 			runStepsIndex.value = all_data[27] - 1;
 		} else {
 			disconnect.value = true;
+			// 断开连接的时候不要显示正在加载
+			isLoading.value = false;
+			// 断开连接的时候清空传感器列表的值
+			pointCol.value = []
 		}
 	} catch (e) {
 		console.error(e);
 		showMessage('请求数据失败！')
 	} finally {
-		isLoading.value = true;
+		isLoading.value = false;
 	}
 }
 
@@ -401,7 +415,7 @@ const xAxisData = ref([]);
 const singleDeviceOption = ref(JSON.parse(localStorage.getItem("single_history_option")));
 
 // 设备历史选择器
-const deviceHistorSelected = ref([["sensors", "co2_conc_during_meas"]])
+const deviceHistorySelected = ref([["sensors", "co2_conc_during_meas"]])
 
 /**
  * 获取历史数据
@@ -409,7 +423,7 @@ const deviceHistorSelected = ref([["sensors", "co2_conc_during_meas"]])
 const getHistoryData = async () => {
 	historyLoading.value = true;
 	try {
-		let result = selectProcessData(deviceHistorSelected.value)
+		let result = selectProcessData(deviceHistorySelected.value)
 		const res = await postHistoryData(sn.value, result.typeDataList, result.varDataList, timeRange.value)
 		historyData.value = res.data.history_data;
 		xAxisData.value = res.data.timest;
@@ -634,9 +648,13 @@ const getAlarmLog = async () => {
 	alarmLoading.value = false;
 	try {
 		const res = await postAlarmLog(sn.value);
-		let tempAlarmData = transposeMatrix(res.data.value);
-		tempAlarmData[2] = tempAlarmData[2].map(item => item.replace('T', ' '));
-		alarmTableData.value = elementTableDataConversion(alarmHeaderList.value, transposeMatrix(tempAlarmData));
+		if (res.data.value.length > 0){
+			let tempAlarmData = transposeMatrix(res.data.value);
+			tempAlarmData[2] = tempAlarmData[2].map(item => item.replace('T', ' '));
+			alarmTableData.value = elementTableDataConversion(alarmHeaderList.value, transposeMatrix(tempAlarmData));
+		} else if(res.status === 500){
+			console.log('报警日志请求错误')
+		}
 	} catch (e) {
 		console.log(e)
 	} finally {
@@ -690,6 +708,8 @@ watch(
 	() => route.params.id,
 	(newId) => {
 		sn.value = newId;
+		disconnect.value = false;
+		isLoading.value = true;
 		isManualSwitch.value = false;
 		alarmTableData.value = []
 		descriptionsList.value = [];
